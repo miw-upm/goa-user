@@ -1,0 +1,18 @@
+server:
+  port: 8081
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/tpvuser
+    username: postgres
+    password: postgres
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: client-id
+      client-secret: client-secret

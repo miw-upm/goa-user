@@ -1,0 +1,70 @@
+spring:
+  application:
+    name: tpv-user
+  profiles:
+    # Profile ----------------------------------------
+    active: dev
+  # ------------------------------------------------
+  output:
+    ansi:
+      enabled: ALWAYS
+  cache:
+    type: none
+  jackson:
+    default-property-inclusion: NON_NULL
+  jpa:
+    open-in-view: false
+  security:
+    oauth2:
+      clients:
+        issuer: http://localhost:8080/tpv-user
+        open-api-client-id: client-id
+        open-api-client-secret: client-secret
+        open-api-redirect-uris:
+          - http://localhost:8081/swagger-ui/oauth2-redirect.html
+          - http://localhost:8082/swagger-ui/oauth2-redirect.html
+          - http://localhost:8083/swagger-ui/oauth2-redirect.html
+        spa-client-id: spa-client-id
+        spa-login-redirect-uri: http://localhost:4200/callback
+        spa-logout-redirect-uri: http://localhost:4200
+        api-client-id: api-client-id
+        api-client-secret: api-client-secret
+
+server:
+  forward-headers-strategy: native
+#  servlet:
+#    context-path: /tpv-user
+
+info:
+  app:
+    artifact: "@project.artifactId@"
+    version: "@project.version@"
+    build: "@maven.build.timestamp@"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  info:
+    env:
+      enabled: true
+
+logging:
+  level:
+    root: WARN
+    es.upm: DEBUG
+#    org.springframework.security: DEBUG
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+miw:
+  admin: admin
+  mobile: 6
+  password: 6

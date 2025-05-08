@@ -1,0 +1,38 @@
+server:
+  port: 8081
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/tpvuser
+    username: postgres
+    password: postgres
+  security:
+    oauth2:
+      clients:
+        issuer: http://localhost:8081
+        open-api-client-id: client-id
+        open-api-client-secret: client-secret
+        open-api-redirect-uris:
+          - http://localhost:8081/swagger-ui/oauth2-redirect.html
+          - http://localhost:8082/swagger-ui/oauth2-redirect.html
+          - http://localhost:8083/swagger-ui/oauth2-redirect.html
+        spa-client-id: spa-client-id
+        spa-login-redirect-uri: http://localhost:4200/callback
+        spa-logout-redirect-uri: http://localhost:4200
+        api-client-id: api-client-id
+        api-client-secret: api-client-secret
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
