@@ -1,6 +1,6 @@
 spring:
   application:
-    name: tpv-user
+    name: goa-user
   profiles:
     # Profile ----------------------------------------
     active: dev
@@ -17,7 +17,7 @@ spring:
   security:
     oauth2:
       clients:
-        issuer: http://localhost:8080/tpv-user
+        issuer: http://localhost:8080/goa-user
         open-api-client-id: client-id
         open-api-client-secret: client-secret
         open-api-redirect-uris:
