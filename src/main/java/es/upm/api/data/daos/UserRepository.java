@@ -20,15 +20,15 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByEmail(String email);
 
-    boolean existsByDni(String dni);
+    boolean existsByIdentity(String identity);
 
     @Query("select u from User u where " +
             "(coalesce(?1, '') = '' or u.mobile like concat('%',?1,'%')) and " +
             "(coalesce(?2, '') = '' or lower(u.firstName) like lower(concat('%',?2,'%'))) and" +
             "(coalesce(?3, '') = '' or lower(u.familyName) like lower(concat('%',?3,'%'))) and" +
             "(coalesce(?4, '') = '' or lower(u.email) like lower(concat('%',?4,'%'))) and" +
-            "(coalesce(?5, '') = '' or lower(u.dni) like lower(concat('%',?5,'%'))) and" +
+            "(coalesce(?5, '') = '' or lower(u.identity) like lower(concat('%',?5,'%'))) and" +
             "(u.role in ?6)")
     List<User> findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
-            String mobile, String firstName, String familyName, String email, String dni, Collection<Role> roles);
+            String mobile, String firstName, String familyName, String email, String identity, Collection<Role> roles);
 }

@@ -47,7 +47,7 @@ class UserServiceTest {
     @Test
     @WithMockUser(username = "666666003", roles = {"manager"})
     void testCreateUserForbiddenByDni() {
-        User userDto = User.builder().id(UUID.randomUUID()).mobile("000000003").firstName("k").dni("66666601C").role(Role.ADMIN).build();
+        User userDto = User.builder().id(UUID.randomUUID()).mobile("000000003").firstName("k").identity("66666601C").role(Role.ADMIN).build();
         assertThrows(ForbiddenException.class, () -> this.userService.createUser(userDto));
     }
 

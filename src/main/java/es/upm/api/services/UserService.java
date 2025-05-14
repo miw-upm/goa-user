@@ -36,7 +36,7 @@ public class UserService {
         }
         this.assertNoExistByMobile(user.getMobile());
         this.assertNoExistByEmail(user.getEmail());
-        this.assertNoExistByDni(user.getDni());
+        this.assertNoExistByDni(user.getIdentity());
         user.setId(UUID.randomUUID());
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         user.setRegistrationDate(LocalDateTime.now());
@@ -81,7 +81,7 @@ public class UserService {
     }
 
     private void assertNoExistByDni(String dni) {
-        if (dni != null && this.userRepository.existsByDni(dni)) {
+        if (dni != null && this.userRepository.existsByIdentity(dni)) {
             throw new ConflictException("The dni already exists: " + dni);
         }
     }
@@ -92,7 +92,7 @@ public class UserService {
             userDtos = this.userRepository.findByRoleIn(authorizedScopes()).stream();
         } else {
             userDtos = this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
-                    criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(), criteria.getEmail(), criteria.getDni(), this.authorizedScopes()
+                    criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(), criteria.getEmail(), criteria.getIdentity(), this.authorizedScopes()
             ).stream();
         }
         if (SecurityContextHolder.getContext().getAuthentication().getAuthorities()

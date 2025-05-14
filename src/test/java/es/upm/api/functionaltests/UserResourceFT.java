@@ -118,7 +118,7 @@ class UserResourceFT {
     @Test
     void testSearch() {
         ResponseEntity<UserDto[]> response = this.httpRequestBuilder
-                .get(USERS).param("dni", "c").role(MANAGER).exchange(UserDto[].class);
+                .get(USERS).param("identity", "c").role(MANAGER).exchange(UserDto[].class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(Arrays.stream(response.getBody()).map(UserDto::getFirstName).toList())

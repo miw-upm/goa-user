@@ -25,9 +25,11 @@ public class User {
     private String familyName;
     @Column(unique = true)
     private String email;
+    private DocumentType documentType;
     @Column(unique = true)
-    private String dni;
+    private String identity;
     private String address;
+    private Integer postcode;
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
