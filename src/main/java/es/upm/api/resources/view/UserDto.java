@@ -15,7 +15,6 @@ import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.UUID;
 
 @Builder
 @Data
@@ -41,13 +40,10 @@ public class UserDto {
 
     public UserDto(User user) {
         BeanUtils.copyProperties(user, this);
-        this.password = "********";
+        this.password = null;
     }
 
     public void doDefault() {
-        if (Objects.isNull(password)) {
-            password = UUID.randomUUID().toString();
-        }
         if (Objects.isNull(role)) {
             this.role = Role.CUSTOMER;
         }

@@ -7,7 +7,6 @@ import es.upm.api.data.entities.UserFindCriteria;
 import es.upm.api.services.exceptions.ConflictException;
 import es.upm.api.services.exceptions.ForbiddenException;
 import es.upm.api.services.exceptions.NotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -41,6 +40,9 @@ public class UserService {
         this.assertNoExistByEmail(user.getEmail());
         this.assertNoExistByDni(user.getIdentity());
         user.setId(UUID.randomUUID());
+        if (Objects.isNull(user.getPassword())) {
+            user.setPassword(this.passwordEncoder.encode(UUID.randomUUID().toString()));
+        }
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         user.setRegistrationDate(LocalDate.now());
         this.userRepository.save(user);
@@ -54,11 +56,16 @@ public class UserService {
         if (!mobile.equals(user.getMobile())) {
             this.assertNoExistByMobile(user.getMobile());
         }
-        if (!Objects.equals(userBD.getEmail(),user.getEmail())) {
+        if (!Objects.equals(userBD.getEmail(), user.getEmail())) {
             this.assertNoExistByEmail(user.getEmail());
         }
-        if (!Objects.equals(userBD.getIdentity(),user.getIdentity())) {
+        if (!Objects.equals(userBD.getIdentity(), user.getIdentity())) {
             this.assertNoExistByDni(user.getIdentity());
+        }
+        if (Objects.isNull(user.getPassword())) {
+            user.setPassword(userBD.getPassword());
+        } else {
+            user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         }
         BeanUtils.copyProperties(user, userBD, "id", "registrationDate");
         return this.userRepository.save(userBD);

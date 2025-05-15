@@ -50,8 +50,8 @@ public class UserResource {
     }
 
     @PutMapping(MOBILE_ID)
-    public UserDto updateByMobile(@PathVariable String mobile, @Valid @RequestBody UserDto userDto){
-        return new UserDto(this.userService.updateByMobile(mobile,userDto.toUser()));
+    public UserDto updateByMobile(@PathVariable String mobile, @Valid @RequestBody UserDto userDto) {
+        return new UserDto(this.userService.updateByMobile(mobile, userDto.toUser()));
     }
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_CUSTOMER)
