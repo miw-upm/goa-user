@@ -7,14 +7,17 @@ import es.upm.api.data.entities.UserFindCriteria;
 import es.upm.api.services.exceptions.ConflictException;
 import es.upm.api.services.exceptions.ForbiddenException;
 import es.upm.api.services.exceptions.NotFoundException;
+import jakarta.validation.Valid;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -32,15 +35,33 @@ public class UserService {
 
     public void createUser(User user) {
         if (!authorizedScopes().contains(user.getRole())) {
-            throw new ForbiddenException("Insufficient role to create this userDto: " + user);
+            throw new ForbiddenException("Insufficient role to create this user: " + user);
         }
         this.assertNoExistByMobile(user.getMobile());
         this.assertNoExistByEmail(user.getEmail());
         this.assertNoExistByDni(user.getIdentity());
         user.setId(UUID.randomUUID());
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
-        user.setRegistrationDate(LocalDateTime.now());
+        user.setRegistrationDate(LocalDate.now());
         this.userRepository.save(user);
+    }
+
+    public User updateByMobile(String mobile, User user) {
+        if (!authorizedScopes().contains(user.getRole())) {
+            throw new ForbiddenException("Insufficient role to update this user: " + user);
+        }
+        User userBD = this.readByMobile(mobile);
+        if (!mobile.equals(user.getMobile())) {
+            this.assertNoExistByMobile(user.getMobile());
+        }
+        if (!Objects.equals(userBD.getEmail(),user.getEmail())) {
+            this.assertNoExistByEmail(user.getEmail());
+        }
+        if (!Objects.equals(userBD.getIdentity(),user.getIdentity())) {
+            this.assertNoExistByDni(user.getIdentity());
+        }
+        BeanUtils.copyProperties(user, userBD, "id", "registrationDate");
+        return this.userRepository.save(userBD);
     }
 
     private List<Role> authorizedScopes() {

@@ -1,5 +1,6 @@
 package es.upm.api.resources.view;
 
+import es.upm.api.data.entities.DocumentType;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.resources.view.validations.Validations;
@@ -12,7 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -30,11 +31,12 @@ public class UserDto {
     private String firstName;
     private String familyName;
     private String email;
-    private String dni;
+    private DocumentType documentType;
+    private String identity;
     private String address;
     private String password;
     private Role role;
-    private LocalDateTime registrationDate;
+    private LocalDate registrationDate;
     private Boolean active;
 
     public UserDto(User user) {
@@ -54,8 +56,11 @@ public class UserDto {
         }
     }
 
-    public UserDto ofMobileFirstName() {
-        return UserDto.builder().mobile(this.getMobile()).firstName(this.getFirstName()).build();
+    public UserDto ofMobileFirstNameFamilyName() {
+        return UserDto.builder()
+                .mobile(this.getMobile())
+                .firstName(this.getFirstName())
+                .familyName(this.getFamilyName()).build();
     }
 
     public User toUser() {

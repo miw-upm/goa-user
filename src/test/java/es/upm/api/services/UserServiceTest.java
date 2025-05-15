@@ -52,17 +52,17 @@ class UserServiceTest {
     }
 
     @Test
-    @WithMockUser(username = "666666003", roles = {"manager"})
+    @WithMockUser(username = "61", roles = {"manager"})
     void testReadOwnerUser() {
         UserFindCriteria criteria = new UserFindCriteria();
-        criteria.setMobile("666666003");
+        criteria.setMobile("61");
         criteria.setProjection(true);
         List<User> users = this.userService.findNullSafe(criteria).toList();
         assertThat(users)
                 .isNotNull()
                 .isNotEmpty()
                 .hasSize(1)
-                .allMatch(user -> user.getMobile().equals("666666003"));
+                .allMatch(user -> user.getMobile().equals("61"));
     }
 
     @Test
@@ -73,7 +73,21 @@ class UserServiceTest {
         criteria.setProjection(true);
         List<User> users = this.userService.findNullSafe(criteria).toList();
         assertThat(users).isEmpty();
+    }
 
+    @Test
+    @WithMockUser(username = "61", roles = {"manager"})
+    void testUpdateUser() {
+        User oldUser = userService.readByMobile("666666002");
+        oldUser.setMobile("666666666");
+        this.userService.updateByMobile("666666002", oldUser);
+        User user = userService.readByMobile("666666666");
+        assertThat(user)
+                .isNotNull()
+                .extracting(User::getFirstName)
+                .isEqualTo(oldUser.getFirstName());
+        oldUser.setMobile("666666002");
+        this.userService.updateByMobile("666666666", oldUser);
     }
 
 }

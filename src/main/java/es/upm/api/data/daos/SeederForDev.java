@@ -2,6 +2,7 @@ package es.upm.api.data.daos;
 
 import es.upm.api.data.entities.DocumentType;
 import es.upm.api.data.entities.Role;
+import es.upm.api.data.entities.UUIDBase64;
 import es.upm.api.data.entities.User;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -45,31 +46,25 @@ public class SeederForDev {
         log.warn("------- Initial Load from JAVA -----------");
         User[] users = {
                 User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0000"))
-                        .mobile("66").firstName("customer").password(pass).role(Role.CUSTOMER)
-                        .registrationDate(LocalDateTime.now()).active(true).build(),
+                        .mobile("61").firstName("manager").password(pass).role(Role.MANAGER)
+                        .registrationDate(LocalDate.now()).active(true).build(),
                 User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0001"))
-                        .mobile("666666000").firstName("adm").password(pass).identity(null).address("C/TPV, 0")
-                        .email("adm@gmail.com").role(Role.ADMIN).registrationDate(LocalDateTime.now()).active(true)
-                        .build(),
+                        .mobile("62").firstName("operator").password(pass).role(Role.OPERATOR)
+                        .registrationDate(LocalDate.now()).active(true).build(),
                 User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0002"))
-                        .mobile("666666001").firstName("man").password(pass).documentType(DocumentType.DNI)
-                        .identity("66666601C").address("C/TPV, 1").email("man@gmail.com").role(Role.MANAGER)
-                        .registrationDate(LocalDateTime.now()).active(true).build(),
-                User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0003"))
-                        .mobile("666666002").firstName("ope").password(pass).documentType(DocumentType.DNI)
-                        .identity("66666602K").address("C/TPV, 2").email("ope@gmail.com").role(Role.OPERATOR)
-                        .registrationDate(LocalDateTime.now()).active(true).build(),
+                        .mobile("66").firstName("customer").password(pass).role(Role.CUSTOMER)
+                        .registrationDate(LocalDate.now()).active(true).build(),
                 User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0004"))
-                        .mobile("666666003").firstName("c1").familyName("ac1").password(pass).documentType(DocumentType.DNI)
-                        .identity("66666603E").address("C/TPV, 3").email("c1@gmail.com").role(Role.CUSTOMER)
-                        .registrationDate(LocalDateTime.now()).active(true).build(),
+                        .mobile("666666000").firstName("c1").familyName("family-c1").password(UUIDBase64.URL.encode())
+                        .documentType(DocumentType.DNI).identity("66666603E").address("C/TPV, 3").email("c1@gmail.com")
+                        .role(Role.CUSTOMER).registrationDate(LocalDate.now()).active(true).build(),
                 User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0005"))
-                        .mobile("666666004").firstName("c2").familyName("ac2").password(pass).documentType(DocumentType.DNI)
-                        .identity("66666604T").address("C/TPV, 4").email("c2@gmail.com").role(Role.CUSTOMER)
-                        .registrationDate(LocalDateTime.now()).active(true).build(),
+                        .mobile("666666001").firstName("c2").familyName("family-c2").password(UUIDBase64.URL.encode())
+                        .documentType(DocumentType.DNI).identity("66666604T").address("C/TPV, 4").email("c2@gmail.com")
+                        .role(Role.CUSTOMER).registrationDate(LocalDate.now()).active(true).build(),
                 User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0006"))
-                        .mobile("666666005").firstName("c3").password(pass).role(Role.CUSTOMER)
-                        .registrationDate(LocalDateTime.now()).active(true).build()
+                        .mobile("666666002").firstName("c3").password(UUIDBase64.URL.encode()).role(Role.CUSTOMER)
+                        .registrationDate(LocalDate.now()).active(true).build()
         };
         this.userRepository.saveAll(Arrays.asList(users));
         log.warn("        ------- users");

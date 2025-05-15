@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Builder
@@ -33,6 +33,6 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
-    private LocalDateTime registrationDate;
+    private LocalDate registrationDate;
     private Boolean active;
 }

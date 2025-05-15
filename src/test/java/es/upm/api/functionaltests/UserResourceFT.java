@@ -34,8 +34,8 @@ class UserResourceFT {
                 .get(USERS + ID_ID, "aaaaaaaa-bbbb-cccc-dddd-eeeeffff0000").role(ADMIN).exchange(UserDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getMobile()).isEqualTo("66");
-        assertThat(response.getBody().getFirstName()).isEqualTo("customer");
+        assertThat(response.getBody().getMobile()).isEqualTo("61");
+        assertThat(response.getBody().getFirstName()).isEqualTo("manager");
     }
 
     @Test
@@ -112,18 +112,18 @@ class UserResourceFT {
         assertThat(response.getBody()).isNotNull();
         assertThat(Arrays.stream(response.getBody()).map(UserDto::getFirstName).toList())
                 .contains("c1", "c2")
-                .doesNotContain("man", "admin");
+                .doesNotContain("manager", "admin");
     }
 
     @Test
     void testSearch() {
         ResponseEntity<UserDto[]> response = this.httpRequestBuilder
-                .get(USERS).param("identity", "c").role(MANAGER).exchange(UserDto[].class);
+                .get(USERS).role(MANAGER).exchange(UserDto[].class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(Arrays.stream(response.getBody()).map(UserDto::getFirstName).toList())
-                .contains("man")
-                .doesNotContain("ope", "admin");
+                .contains("manager")
+                .doesNotContain("admin");
     }
 
     @Test

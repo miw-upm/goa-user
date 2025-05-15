@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,7 +43,7 @@ public class DatabaseStarting {
         if (this.userRepository.findByRoleIn(List.of(Role.ADMIN)).isEmpty()) {
             User user = User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff6666")).mobile(this.mobile).firstName(this.admin)
                     .password(this.passwordEncoder.encode(this.password))
-                    .role(Role.ADMIN).registrationDate(LocalDateTime.now()).active(true).build();
+                    .role(Role.ADMIN).registrationDate(LocalDate.now()).active(true).build();
             this.userRepository.save(user);
             log.warn("------- Created Admin -----------");
         }

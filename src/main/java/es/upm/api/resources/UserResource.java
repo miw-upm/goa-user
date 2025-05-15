@@ -1,5 +1,6 @@
 package es.upm.api.resources;
 
+import es.upm.api.data.entities.DocumentType;
 import es.upm.api.data.entities.UserFindCriteria;
 import es.upm.api.resources.view.UserDto;
 import es.upm.api.services.UserService;
@@ -21,6 +22,7 @@ public class UserResource {
     public static final String ID_ID = "/{id}";
     public static final String MOBILE = "/mobile";
     public static final String MOBILE_ID = "/{mobile}";
+    public static final String DOCUMENT_TYPES = "/document-types";
     private final UserService userService;
 
     @Autowired
@@ -47,6 +49,11 @@ public class UserResource {
         return new UserDto(this.userService.readByMobile(mobile));
     }
 
+    @PutMapping(MOBILE_ID)
+    public UserDto updateByMobile(@PathVariable String mobile, @Valid @RequestBody UserDto userDto){
+        return new UserDto(this.userService.updateByMobile(mobile,userDto.toUser()));
+    }
+
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_CUSTOMER)
     @GetMapping
     public Stream<UserDto> findNullSafe(@ModelAttribute UserFindCriteria criteria) {
@@ -55,8 +62,13 @@ public class UserResource {
         if (criteria.isProjection()) {
             return userDtos;
         } else {
-            return userDtos.map(UserDto::ofMobileFirstName);
+            return userDtos.map(UserDto::ofMobileFirstNameFamilyName);
         }
+    }
+
+    @GetMapping(DOCUMENT_TYPES)
+    public DocumentType[] getDocumentTypes() {
+        return DocumentType.values();
     }
 
 }
