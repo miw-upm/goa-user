@@ -73,7 +73,7 @@ class UserResourceFT {
     }
 
     @Test
-    void testCreateUserWithAdmin() {
+    void testCreateWithAdmin() {
         UserDto userDto = UserDto.builder().mobile("666001666").firstName("daemon").build();
         ResponseEntity<Void> response = this.httpRequestBuilder
                 .post(USERS).body(userDto).role(ADMIN).exchange(Void.class);
@@ -81,7 +81,7 @@ class UserResourceFT {
     }
 
     @Test
-    void testCreateUserConflict() {
+    void testCreateConflict() {
         UserDto userDto = UserDto.builder().mobile("666666000").firstName("daemon").build();
         ResponseEntity<Void> response = this.httpRequestBuilder
                 .post(USERS).body(userDto).role(ADMIN).exchange(Void.class);
@@ -89,7 +89,7 @@ class UserResourceFT {
     }
 
     @Test
-    void testCreateUserBadNumber() {
+    void testCreateBadNumber() {
         UserDto userDto = UserDto.builder().mobile("1").firstName("daemon").build();
         ResponseEntity<Void> response = this.httpRequestBuilder
                 .post(USERS).body(userDto).role(ADMIN).exchange(Void.class);

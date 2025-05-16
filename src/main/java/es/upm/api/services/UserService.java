@@ -32,7 +32,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void createUser(User user) {
+    public void create(User user) {
         if (!authorizedScopes().contains(user.getRole())) {
             throw new ForbiddenException("Insufficient role to create this user: " + user);
         }

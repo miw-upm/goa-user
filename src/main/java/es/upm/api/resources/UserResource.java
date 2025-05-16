@@ -32,9 +32,9 @@ public class UserResource {
 
     @PreAuthorize(Security.ALL)
     @PostMapping
-    public void createUser(@Valid @RequestBody UserDto creationUserDto) {
+    public void create(@Valid @RequestBody UserDto creationUserDto) {
         creationUserDto.doDefault();
-        this.userService.createUser(creationUserDto.toUser());
+        this.userService.create(creationUserDto.toUser());
     }
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_URL_TOKEN)

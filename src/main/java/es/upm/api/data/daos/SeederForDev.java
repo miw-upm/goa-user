@@ -1,9 +1,6 @@
 package es.upm.api.data.daos;
 
-import es.upm.api.data.entities.DocumentType;
-import es.upm.api.data.entities.Role;
-import es.upm.api.data.entities.UUIDBase64;
-import es.upm.api.data.entities.User;
+import es.upm.api.data.entities.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -23,13 +21,17 @@ public class SeederForDev {
     private final String noPass;
     private final DatabaseStarting databaseStarting;
     private final UserRepository userRepository;
+    private final AccessLinkRepository accessLinkRepository;
 
     @Autowired
-    public SeederForDev(UserRepository userRepository, DatabaseStarting databaseStarting, @Value("${miw.password}") String password, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public SeederForDev(DatabaseStarting databaseStarting, @Value("${miw.password}") String password,
+                        PasswordEncoder passwordEncoder, UserRepository userRepository, AccessLinkRepository accessLinkRepository) {
         this.databaseStarting = databaseStarting;
         this.pass = passwordEncoder.encode(password);
         this.noPass = passwordEncoder.encode(UUIDBase64.URL.encode());
+        this.userRepository = userRepository;
+        this.accessLinkRepository = accessLinkRepository;
+
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -40,6 +42,7 @@ public class SeederForDev {
 
     public void deleteAllAndInitialize() {
         this.userRepository.deleteAll();
+        this.accessLinkRepository.deleteAll();
         log.warn("------- Deleted All -----------");
         this.databaseStarting.initialize();
     }
@@ -73,6 +76,19 @@ public class SeederForDev {
         };
         this.userRepository.saveAll(Arrays.asList(users));
         log.warn("        ------- users");
+
+        AccessLink[] accessLinks = {
+                AccessLink.builder().id("GiTBDnRkS-aNYOayM69_kA").createdAt(LocalDateTime.now())
+                        .expiresAt(LocalDateTime.now().plusDays(5)).used(false).purpose("EDIT_PROFILE").build(),
+                AccessLink.builder().id("XWBLFua2T6GLVh5wqKHB8w").createdAt(LocalDateTime.now())
+                        .expiresAt(LocalDateTime.now().plusDays(5)).used(false).purpose("VIEW_INVOICE").build(),
+                AccessLink.builder().id("hNSvhWOmQH6-NNo3gXnyow").createdAt(LocalDateTime.now().minusDays(10))
+                        .expiresAt(LocalDateTime.now().minusDays(5)).used(false).purpose("EXPIRED").build(),
+                AccessLink.builder().id("6JuwxpWVSiuv90nxgfwKmA").createdAt(LocalDateTime.now())
+                        .expiresAt(LocalDateTime.now().plusDays(5)).used(true).purpose("USED").build(),
+        };
+        this.accessLinkRepository.saveAll(Arrays.asList(accessLinks));
+        log.warn("        ------- accessLinks");
     }
 
 }
