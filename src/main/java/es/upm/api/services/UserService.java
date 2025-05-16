@@ -54,7 +54,7 @@ public class UserService {
     }
 
     public User updateByMobile(String mobile, User user) {
-        if (!authorizedScopes().contains(user.getRole())) {
+        if (!this.authorizedScopes().contains(user.getRole())) {
             throw new ForbiddenException("Insufficient role to update this user: " + user);
         }
         User userBD = this.readByMobile(mobile);
@@ -79,7 +79,23 @@ public class UserService {
     public User updateByMobileWithToken(String mobile, String token, User user) {
         this.useAccessToken(mobile, token);
         user.setRole(Role.CUSTOMER);
-        return this.updateByMobile(mobile, user);
+        User userBD = this.readByMobile(mobile);
+        if (!mobile.equals(user.getMobile())) {
+            this.assertNoExistByMobile(user.getMobile());
+        }
+        if (!Objects.equals(userBD.getEmail(), user.getEmail())) {
+            this.assertNoExistByEmail(user.getEmail());
+        }
+        if (!Objects.equals(userBD.getIdentity(), user.getIdentity())) {
+            this.assertNoExistByDni(user.getIdentity());
+        }
+        if (Objects.isNull(user.getPassword())) {
+            user.setPassword(userBD.getPassword());
+        } else {
+            user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        }
+        BeanUtils.copyProperties(user, userBD, "id", "registrationDate");
+        return this.userRepository.save(userBD);
     }
 
     private List<Role> authorizedScopes() {

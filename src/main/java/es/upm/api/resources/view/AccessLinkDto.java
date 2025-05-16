@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class AccessLinkDto {
-    private String accessLink;
+    private String value;
 
     public AccessLinkDto(AccessLink accessLink) {
-        this.accessLink = "/" + accessLink.getUser().getMobile() + "/" + accessLink.getId();
+        this.value = "/" + accessLink.getUser().getMobile() + "/" + accessLink.getId();
     }
 }

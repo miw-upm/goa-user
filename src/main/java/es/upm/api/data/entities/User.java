@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "betcaUser") // conflict with user table
+@Table(name = "goaUser") // conflict with user table
 public class User {
     @Id
     @Column(updatable = false, nullable = false, columnDefinition = "uuid")

@@ -41,8 +41,8 @@ public class SeederForDev {
     }
 
     public void deleteAllAndInitialize() {
-        this.userRepository.deleteAll();
         this.accessLinkRepository.deleteAll();
+        this.userRepository.deleteAll();
         log.warn("------- Deleted All -----------");
         this.databaseStarting.initialize();
     }

@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import static es.upm.api.data.entities.Role.*;
-import static es.upm.api.resources.AccessLinksResource.ACCESS_LINKS;
+import static es.upm.api.resources.AccessLinksResource.ACCESS_LINK;
 import static es.upm.api.resources.UserResource.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,8 +56,8 @@ class UserResourceFT {
     void testReadByMobileWithToken() {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder()
                 .mobile("666666000").scope("EDIT_PROFILE").build();
-        String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINKS).body(creationAccessLink)
-                .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getAccessLink();
+        String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
+                .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getValue();
         ResponseEntity<UserDto> response = this.httpRequestBuilder
                 .get(USERS + MOBILE + accessLink).exchange(UserDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -91,8 +91,8 @@ class UserResourceFT {
     void testReadByMobileWithTokenForbiddenUse() {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder()
                 .mobile("666666000").scope("EDIT_PROFILE").build();
-        String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINKS).body(creationAccessLink)
-                .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getAccessLink();
+        String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
+                .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getValue();
         this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class);
         this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class);
         this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class);
@@ -192,8 +192,8 @@ class UserResourceFT {
     @Test
     void testUpdateWithToken() {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder().mobile("666666000").scope("EDIT_PROFILE").build();
-        String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINKS).body(creationAccessLink)
-                .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getAccessLink();
+        String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
+                .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getValue();
         UserDto userDto = this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class).getBody();
         assert userDto != null;
         String oldName = userDto.getFirstName();

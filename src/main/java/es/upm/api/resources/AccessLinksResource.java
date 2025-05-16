@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
 @RestController
-@RequestMapping(AccessLinksResource.ACCESS_LINKS)
+@RequestMapping(AccessLinksResource.ACCESS_LINK)
 public class AccessLinksResource {
-    public static final String ACCESS_LINKS = "/access-links";
+    public static final String ACCESS_LINK = "/access-link";
     private final AccessLinkService accessLinkService;
 
     @Autowired
