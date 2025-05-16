@@ -1,5 +1,6 @@
 package es.upm.api.data.entities;
 
+import es.upm.api.services.exceptions.ForbiddenException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -22,7 +23,17 @@ public class AccessLink {
     private User user;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
-    private boolean used;
+    private Integer used;
     private String purpose;
+
+    public void use() {
+        if (this.expiresAt.isBefore(LocalDateTime.now())) {
+            throw new ForbiddenException("Expired token");
+        }
+        if (this.used <= 0) {
+            throw new ForbiddenException("Used token");
+        }
+        this.used--;
+    }
 }
 

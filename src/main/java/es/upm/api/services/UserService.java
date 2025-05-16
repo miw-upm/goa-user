@@ -1,6 +1,8 @@
 package es.upm.api.services;
 
+import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.daos.UserRepository;
+import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.data.entities.UserFindCriteria;
@@ -25,11 +27,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AccessLinkRepository accessLinkRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AccessLinkRepository accessLinkRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.accessLinkRepository = accessLinkRepository;
     }
 
     public void create(User user) {
@@ -71,6 +75,12 @@ public class UserService {
         return this.userRepository.save(userBD);
     }
 
+    public User updateByMobileWithToken(String mobile, String token, User user) {
+        this.useAccessToken(mobile, token);
+        user.setRole(Role.CUSTOMER);
+        return this.updateByMobile(mobile, user);
+    }
+
     private List<Role> authorizedScopes() {
         Role role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -94,6 +104,24 @@ public class UserService {
     public User readByMobile(String mobile) {
         return this.userRepository.findByMobile(mobile)
                 .orElseThrow(() -> new NotFoundException("The mobile don't exists: " + mobile));
+    }
+
+    public User readByMobileWithToken(String mobile, String token) {
+        if (!this.useAccessToken(mobile, token).equals("EDIT_PROFILE")) {
+            throw new ForbiddenException("Forbidden purpose");
+        }
+        return this.readByMobile(mobile);
+    }
+
+    private String useAccessToken(String mobile, String token) {
+        AccessLink accessLink = this.accessLinkRepository.findById(token)
+                .orElseThrow(() -> new NotFoundException("The token don't exist: " + token));
+        if (!accessLink.getUser().getMobile().equals(mobile)) {
+            throw new ForbiddenException("Forbidden token");
+        }
+        accessLink.use();
+        this.accessLinkRepository.save(accessLink);
+        return accessLink.getPurpose();
     }
 
     private void assertNoExistByEmail(String email) {

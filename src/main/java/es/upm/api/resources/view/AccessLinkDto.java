@@ -10,6 +10,6 @@ public class AccessLinkDto {
     private String accessLink;
 
     public AccessLinkDto(AccessLink accessLink) {
-        this.accessLink = accessLink.getUser().getMobile() + "/" + accessLink.getId();
+        this.accessLink = "/" + accessLink.getUser().getMobile() + "/" + accessLink.getId();
     }
 }

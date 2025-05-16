@@ -59,6 +59,19 @@ public class UserDto {
                 .familyName(this.getFamilyName()).build();
     }
 
+    public UserDto ofMobileFirstNameFamilyNameEmailDocumentTypeIdentityAddress() {
+        return UserDto.builder()
+                .mobile(this.getMobile())
+                .firstName(this.getFirstName())
+                .familyName(this.getFamilyName())
+                .email(this.getEmail())
+                .documentType(this.getDocumentType())
+                .identity(this.getIdentity())
+                .address(this.getAddress())
+                .build();
+    }
+
+
     public User toUser() {
         User user = new User();
         BeanUtils.copyProperties(this, user);
