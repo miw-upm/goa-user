@@ -23,17 +23,17 @@ public class AccessLink {
     private User user;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
-    private Integer used;
-    private String purpose;
+    private Integer remainingUses;
+    private String scope;
 
     public void use() {
         if (this.expiresAt.isBefore(LocalDateTime.now())) {
             throw new ForbiddenException("Expired token");
         }
-        if (this.used <= 0) {
+        if (this.remainingUses <= 0) {
             throw new ForbiddenException("Used token");
         }
-        this.used--;
+        this.remainingUses--;
     }
 }
 

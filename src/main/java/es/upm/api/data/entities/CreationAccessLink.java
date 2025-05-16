@@ -17,5 +17,5 @@ public class CreationAccessLink {
     private String mobile;
     @NotNull
     @NotBlank
-    private String purpose;
+    private String scope;
 }

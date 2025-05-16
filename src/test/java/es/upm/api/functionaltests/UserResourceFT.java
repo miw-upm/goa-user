@@ -55,7 +55,7 @@ class UserResourceFT {
     @Test
     void testReadByMobileWithToken() {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder()
-                .mobile("666666000").purpose("EDIT_PROFILE").build();
+                .mobile("666666000").scope("EDIT_PROFILE").build();
         String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINKS).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getAccessLink();
         ResponseEntity<UserDto> response = this.httpRequestBuilder
@@ -90,7 +90,7 @@ class UserResourceFT {
     @Test
     void testReadByMobileWithTokenForbiddenUse() {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder()
-                .mobile("666666000").purpose("EDIT_PROFILE").build();
+                .mobile("666666000").scope("EDIT_PROFILE").build();
         String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINKS).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getAccessLink();
         this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class);
@@ -191,7 +191,7 @@ class UserResourceFT {
 
     @Test
     void testUpdateWithToken() {
-        CreationAccessLink creationAccessLink = CreationAccessLink.builder().mobile("666666000").purpose("EDIT_PROFILE").build();
+        CreationAccessLink creationAccessLink = CreationAccessLink.builder().mobile("666666000").scope("EDIT_PROFILE").build();
         String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINKS).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getAccessLink();
         UserDto userDto = this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class).getBody();

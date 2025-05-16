@@ -79,13 +79,13 @@ public class SeederForDev {
 
         AccessLink[] accessLinks = {
                 AccessLink.builder().id("GiTBDnRkS-aNYOayM69_kA").user(users[4]).createdAt(LocalDateTime.now())
-                        .expiresAt(LocalDateTime.now().plusDays(5)).used(4).purpose("EDIT_PROFILE").build(),
+                        .expiresAt(LocalDateTime.now().plusDays(5)).remainingUses(4).scope("EDIT_PROFILE").build(),
                 AccessLink.builder().id("XWBLFua2T6GLVh5wqKHB8w").createdAt(LocalDateTime.now())
-                        .expiresAt(LocalDateTime.now().plusDays(5)).user(users[3]).used(4).purpose("VIEW_INVOICE").build(),
+                        .expiresAt(LocalDateTime.now().plusDays(5)).user(users[3]).remainingUses(4).scope("VIEW_INVOICE").build(),
                 AccessLink.builder().id("hNSvhWOmQH6-NNo3gXnyow").createdAt(LocalDateTime.now().minusDays(10))
-                        .expiresAt(LocalDateTime.now().minusDays(5)).user(users[3]).used(4).purpose("EXPIRED").build(),
+                        .expiresAt(LocalDateTime.now().minusDays(5)).user(users[3]).remainingUses(4).scope("EXPIRED").build(),
                 AccessLink.builder().id("6JuwxpWVSiuv90nxgfwKmA").createdAt(LocalDateTime.now())
-                        .expiresAt(LocalDateTime.now().plusDays(5)).user(users[3]).used(0).purpose("USED").build(),
+                        .expiresAt(LocalDateTime.now().plusDays(5)).user(users[3]).remainingUses(0).scope("USED").build(),
         };
         this.accessLinkRepository.saveAll(Arrays.asList(accessLinks));
         log.warn("        ------- accessLinks");

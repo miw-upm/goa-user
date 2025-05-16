@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 @Service
 public class UserService {
+    public static final String SCOPE_EDIT_PROFILE = "EDIT_PROFILE";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -107,7 +108,7 @@ public class UserService {
     }
 
     public User readByMobileWithToken(String mobile, String token) {
-        if (!this.useAccessToken(mobile, token).equals("EDIT_PROFILE")) {
+        if (!this.useAccessToken(mobile, token).equals(SCOPE_EDIT_PROFILE)) {
             throw new ForbiddenException("Forbidden purpose");
         }
         return this.readByMobile(mobile);
@@ -121,7 +122,7 @@ public class UserService {
         }
         accessLink.use();
         this.accessLinkRepository.save(accessLink);
-        return accessLink.getPurpose();
+        return accessLink.getScope();
     }
 
     private void assertNoExistByEmail(String email) {

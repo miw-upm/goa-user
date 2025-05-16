@@ -31,7 +31,7 @@ class AccessLinkResourceFT {
     @Test
     void testCreate() {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder()
-                .mobile("666666000").purpose("EDIT_PROFILE").build();
+                .mobile("666666000").scope("EDIT_PROFILE").build();
         ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -40,7 +40,7 @@ class AccessLinkResourceFT {
     }
 
     @Test
-    void testCreateNotPurpose() {
+    void testCreateBadRequestScope() {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder()
                 .mobile("666666000").build();
         ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(creationAccessLink)
@@ -49,18 +49,18 @@ class AccessLinkResourceFT {
     }
 
     @Test
-    void testCreateNotMobile() {
+    void testCreateBadRequestMobile() {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder()
-                .purpose("EDIT_PROFILE").build();
+                .scope("EDIT_PROFILE").build();
         ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
-    void testCreateBadMobile() {
+    void testCreateNotFoundMobile() {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder()
-                .mobile("123000123").purpose("EDIT_PROFILE").build();
+                .mobile("123000123").scope("EDIT_PROFILE").build();
         ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -69,7 +69,7 @@ class AccessLinkResourceFT {
     @Test
     void testCreateUnauthorized() {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder()
-                .mobile("666666000").purpose("EDIT_PROFILE").build();
+                .mobile("666666000").scope("EDIT_PROFILE").build();
         ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(creationAccessLink)
                 .role(CUSTOMER).exchange(AccessLinkDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
