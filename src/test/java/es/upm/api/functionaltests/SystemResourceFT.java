@@ -19,7 +19,7 @@ class SystemResourceFT {
 
     @Test
     void testReadBadge() {
-        ResponseEntity<String> response = restTemplate.getForEntity(SystemResource.VERSION_BADGE, String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(SystemResource.SYSTEM + SystemResource.VERSION_BADGE, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody())
@@ -29,7 +29,7 @@ class SystemResourceFT {
 
     @Test
     void testReadInfo() {
-        ResponseEntity<String> response = restTemplate.getForEntity("/", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(SystemResource.SYSTEM, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody())

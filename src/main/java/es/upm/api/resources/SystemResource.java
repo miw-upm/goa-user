@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping(SystemResource.SYSTEM)
 public class SystemResource {
-
+    public static final String SYSTEM = "/system";
     public static final String VERSION_BADGE = "/version-badge";
 
     @Value("${info.app.artifact}")

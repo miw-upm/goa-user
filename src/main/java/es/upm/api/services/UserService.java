@@ -2,10 +2,7 @@ package es.upm.api.services;
 
 import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.daos.UserRepository;
-import es.upm.api.data.entities.AccessLink;
-import es.upm.api.data.entities.Role;
-import es.upm.api.data.entities.User;
-import es.upm.api.data.entities.UserFindCriteria;
+import es.upm.api.data.entities.*;
 import es.upm.api.services.exceptions.ConflictException;
 import es.upm.api.services.exceptions.ForbiddenException;
 import es.upm.api.services.exceptions.NotFoundException;
@@ -38,15 +35,13 @@ public class UserService {
     }
 
     public void create(User user) {
-        if (!authorizedScopes().contains(user.getRole())) {
-            throw new ForbiddenException("Insufficient role to create this user: " + user);
-        }
+        this.validateAuthorizedRole(user.getRole());
         this.assertNoExistByMobile(user.getMobile());
         this.assertNoExistByEmail(user.getEmail());
         this.assertNoExistByDni(user.getIdentity());
         user.setId(UUID.randomUUID());
         if (Objects.isNull(user.getPassword())) {
-            user.setPassword(this.passwordEncoder.encode(UUID.randomUUID().toString()));
+            user.setPassword(UUIDBase64.BASIC.encode());
         }
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         user.setRegistrationDate(LocalDate.now());
@@ -54,58 +49,50 @@ public class UserService {
     }
 
     public User updateByMobile(String mobile, User user) {
-        if (!this.authorizedScopes().contains(user.getRole())) {
-            throw new ForbiddenException("Insufficient role to update this user: " + user);
-        }
-        User userBD = this.readByMobile(mobile);
-        if (!mobile.equals(user.getMobile())) {
-            this.assertNoExistByMobile(user.getMobile());
-        }
-        if (!Objects.equals(userBD.getEmail(), user.getEmail())) {
-            this.assertNoExistByEmail(user.getEmail());
-        }
-        if (!Objects.equals(userBD.getIdentity(), user.getIdentity())) {
-            this.assertNoExistByDni(user.getIdentity());
-        }
-        if (Objects.isNull(user.getPassword())) {
-            user.setPassword(userBD.getPassword());
-        } else {
-            user.setPassword(this.passwordEncoder.encode(user.getPassword()));
-        }
-        BeanUtils.copyProperties(user, userBD, "id", "registrationDate");
-        return this.userRepository.save(userBD);
+        this.validateAuthorizedRole(user.getRole());
+        return this.updateUser(mobile, user);
     }
 
     public User updateByMobileWithToken(String mobile, String token, User user) {
         this.useAccessToken(mobile, token);
         user.setRole(Role.CUSTOMER);
-        User userBD = this.readByMobile(mobile);
+        return this.updateUser(mobile, user);
+    }
+
+    private User updateUser(String mobile, User user) {
+        User existing = this.readByMobile(mobile);
         if (!mobile.equals(user.getMobile())) {
             this.assertNoExistByMobile(user.getMobile());
         }
-        if (!Objects.equals(userBD.getEmail(), user.getEmail())) {
+        if (!Objects.equals(existing.getEmail(), user.getEmail())) {
             this.assertNoExistByEmail(user.getEmail());
         }
-        if (!Objects.equals(userBD.getIdentity(), user.getIdentity())) {
+        if (!Objects.equals(existing.getIdentity(), user.getIdentity())) {
             this.assertNoExistByDni(user.getIdentity());
         }
         if (Objects.isNull(user.getPassword())) {
-            user.setPassword(userBD.getPassword());
+            user.setPassword(existing.getPassword());
         } else {
             user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         }
-        BeanUtils.copyProperties(user, userBD, "id", "registrationDate");
-        return this.userRepository.save(userBD);
+        BeanUtils.copyProperties(user, existing, "id", "registrationDate");
+        return this.userRepository.save(existing);
     }
 
-    private List<Role> authorizedScopes() {
-        Role role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+    private void validateAuthorizedRole(Role role) {
+        List<Role> roles = this.validRoles();
+        if (!roles.contains(role)) {
+            throw new ForbiddenException("Insufficient role to update this user, role: " + role);
+        }
+    }
+
+    private List<Role> validRoles() {
+        Role authRole = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst()
                 .map(Role::of)
                 .orElse(Role.ANONYMOUS);
-
-        return switch (role) {
+        return switch (authRole) {
             case ADMIN -> List.of(Role.ADMIN, Role.MANAGER, Role.OPERATOR, Role.CUSTOMER);
             case MANAGER -> List.of(Role.MANAGER, Role.OPERATOR, Role.CUSTOMER);
             case OPERATOR, CUSTOMER, URL_TOKEN -> List.of(Role.CUSTOMER);
@@ -162,10 +149,10 @@ public class UserService {
     public Stream<User> findNullSafe(UserFindCriteria criteria) {
         Stream<User> userDtos;
         if (criteria.all()) {
-            userDtos = this.userRepository.findByRoleIn(authorizedScopes()).stream();
+            userDtos = this.userRepository.findByRoleIn(validRoles()).stream();
         } else {
             userDtos = this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
-                    criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(), criteria.getEmail(), criteria.getIdentity(), this.authorizedScopes()
+                    criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(), criteria.getEmail(), criteria.getIdentity(), this.validRoles()
             ).stream();
         }
         if (SecurityContextHolder.getContext().getAuthentication().getAuthorities()
@@ -177,7 +164,6 @@ public class UserService {
             userDtos = userDtos.filter(user -> user.getMobile().equals(SecurityContextHolder.getContext().getAuthentication().getName()));
         }
         return userDtos;
-
     }
 
 }

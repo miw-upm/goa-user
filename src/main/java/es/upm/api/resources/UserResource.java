@@ -65,8 +65,8 @@ public class UserResource {
     @PreAuthorize(Security.ALL)
     @PutMapping(MOBILE_ID + TOKEN_ID)
     public UserDto updateByMobileWithToken(@PathVariable String mobile, @PathVariable String token, @Valid @RequestBody UserDto userDto) {
-      return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser()))
-              .ofMobileFirstNameFamilyNameEmailDocumentTypeIdentityAddress();
+        return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser()))
+                .ofMobileFirstNameFamilyNameEmailDocumentTypeIdentityAddress();
     }
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_CUSTOMER)
@@ -77,7 +77,7 @@ public class UserResource {
         if (criteria.isProjection()) {
             return userDtos;
         } else {
-            return userDtos.map(UserDto::ofMobileFirstNameFamilyName);
+            return userDtos.map(UserDto::ofMobileFirstNameFamilyNameEmail);
         }
     }
 

@@ -52,11 +52,12 @@ public class UserDto {
         }
     }
 
-    public UserDto ofMobileFirstNameFamilyName() {
+    public UserDto ofMobileFirstNameFamilyNameEmail() {
         return UserDto.builder()
                 .mobile(this.getMobile())
                 .firstName(this.getFirstName())
-                .familyName(this.getFamilyName()).build();
+                .familyName(this.getFamilyName())
+                .email(this.getEmail()).build();
     }
 
     public UserDto ofMobileFirstNameFamilyNameEmailDocumentTypeIdentityAddress() {
