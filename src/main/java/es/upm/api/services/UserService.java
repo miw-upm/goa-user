@@ -150,11 +150,14 @@ public class UserService {
         Stream<User> userDtos;
         if (criteria.all()) {
             userDtos = this.userRepository.findByRoleIn(validRoles()).stream();
+        } else if (criteria.getAttribute() != null) {
+            userDtos = this.userRepository.findByAll(criteria.getAttribute(), List.of(Role.CUSTOMER)).stream();
         } else {
             userDtos = this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
                     criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(), criteria.getEmail(), criteria.getIdentity(), this.validRoles()
             ).stream();
         }
+
         if (SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                 .stream()
                 .anyMatch(authority ->

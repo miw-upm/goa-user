@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class UserDtoRepositoryIT {
+class UserRepositoryIT {
 
     @Autowired
     private UserRepository userRepository;
@@ -43,5 +43,11 @@ class UserDtoRepositoryIT {
         assertThat(this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
                 null, null, null, null, "kk", List.of(ADMIN, MANAGER, OPERATOR, CUSTOMER)))
                 .isEmpty();
+    }
+
+    @Test
+    void testFindByAll() {
+        assertThat(this.userRepository.findByAll("1", List.of(CUSTOMER)))
+                .allMatch(user -> user.getRole().equals(CUSTOMER));
     }
 }

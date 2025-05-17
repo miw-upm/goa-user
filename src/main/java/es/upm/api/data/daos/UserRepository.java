@@ -22,13 +22,28 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByIdentity(String identity);
 
-    @Query("select u from User u where " +
-            "(coalesce(?1, '') = '' or u.mobile like concat('%',?1,'%')) and " +
-            "(coalesce(?2, '') = '' or lower(u.firstName) like lower(concat('%',?2,'%'))) and" +
-            "(coalesce(?3, '') = '' or lower(u.familyName) like lower(concat('%',?3,'%'))) and" +
-            "(coalesce(?4, '') = '' or lower(u.email) like lower(concat('%',?4,'%'))) and" +
-            "(coalesce(?5, '') = '' or lower(u.identity) like lower(concat('%',?5,'%'))) and" +
-            "(u.role in ?6)")
+    @Query("""
+                select u from User u where
+                (coalesce(?1, '') = '' or u.mobile like concat('%', ?1, '%')) and
+                (coalesce(?2, '') = '' or lower(u.firstName) like lower(concat('%', ?2, '%'))) and
+                (coalesce(?3, '') = '' or lower(u.familyName) like lower(concat('%', ?3, '%'))) and
+                (coalesce(?4, '') = '' or lower(u.email) like lower(concat('%', ?4, '%'))) and
+                (coalesce(?5, '') = '' or lower(u.identity) like lower(concat('%', ?5, '%'))) and
+                (u.role in ?6)
+            """)
     List<User> findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
             String mobile, String firstName, String familyName, String email, String identity, Collection<Role> roles);
+
+    @Query("""
+                select u from User u
+                where (
+                    u.mobile like concat('%', ?1, '%') or
+                    lower(u.firstName) like lower(concat('%', ?1, '%')) or
+                    lower(u.familyName) like lower(concat('%', ?1, '%')) or
+                    lower(u.email) like lower(concat('%', ?1, '%')) or
+                    lower(u.identity) like lower(concat('%', ?1, '%'))
+                )
+                and u.role in ?2
+            """)
+    List<User> findByAll(String attribute, Collection<Role> roles);
 }
