@@ -102,16 +102,6 @@ class UserResourceFT {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
-
-    @Test
-    void testFindAll() {
-        ResponseEntity<UserDto[]> response = this.httpRequestBuilder
-                .get(USERS).role(ADMIN).exchange(UserDto[].class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody()).isNotEmpty();
-    }
-
     @Test
     void testReadUserNotFound() {
         ResponseEntity<UserDto> response = this.httpRequestBuilder
@@ -170,7 +160,7 @@ class UserResourceFT {
     }
 
     @Test
-    void testSearch() {
+    void testFind() {
         ResponseEntity<UserDto[]> response = this.httpRequestBuilder
                 .get(USERS).role(MANAGER).exchange(UserDto[].class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -181,12 +171,45 @@ class UserResourceFT {
     }
 
     @Test
-    void testSearchDoesNotContainNull() {
+    void testFindWithProjection() {
+        ResponseEntity<UserDto[]> response = this.httpRequestBuilder
+                .get(USERS).role(MANAGER).param("projection", "true").exchange(UserDto[].class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(Arrays.stream(response.getBody()).map(UserDto::getActive).findFirst()).isNotNull();
+    }
+
+    @Test
+    void testFindDoesNotContainNull() {
         ResponseEntity<String> response = this.httpRequestBuilder
                 .get(USERS).role(MANAGER).exchange(String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).doesNotContain("null");
         log.debug("json: {}", response.getBody());
+    }
+
+    @Test
+    void testFindAll() {
+        ResponseEntity<UserDto[]> response = this.httpRequestBuilder
+                .get(USERS).role(ADMIN).exchange(UserDto[].class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).isNotEmpty();
+    }
+
+    @Test
+    void testUpdate() {
+        UserDto userDto = this.httpRequestBuilder.get(USERS + MOBILE + MOBILE_ID, "666666000")
+                .role(ADMIN).exchange(UserDto.class).getBody();
+        assert userDto != null;
+        String oldName = userDto.getFirstName();
+        userDto.setFirstName("new");
+        ResponseEntity<UserDto> response = this.httpRequestBuilder
+                .put(USERS + MOBILE + MOBILE_ID, "666666000").role(ADMIN).body(userDto).exchange(UserDto.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(Objects.requireNonNull(response.getBody()).getFirstName()).isEqualTo("new");
+        userDto.setFirstName(oldName);
+        this.httpRequestBuilder.put(USERS + MOBILE + MOBILE_ID, "666666000").role(ADMIN).body(userDto).exchange(UserDto.class);
     }
 
     @Test
@@ -199,11 +222,11 @@ class UserResourceFT {
         String oldName = userDto.getFirstName();
         userDto.setFirstName("new");
         ResponseEntity<UserDto> response = this.httpRequestBuilder
-                .put(USERS + accessLink).body(userDto).exchange(UserDto.class);
+                .put(USERS + MOBILE + accessLink).body(userDto).exchange(UserDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getFirstName()).isEqualTo("new");
         userDto.setFirstName(oldName);
-        this.httpRequestBuilder.put(USERS + accessLink).body(userDto).exchange(UserDto.class);
+        this.httpRequestBuilder.put(USERS + MOBILE + accessLink).body(userDto).exchange(UserDto.class);
     }
 
 }

@@ -1,6 +1,5 @@
 package es.upm.api.resources;
 
-import es.upm.api.data.entities.DocumentType;
 import es.upm.api.data.entities.UserFindCriteria;
 import es.upm.api.resources.view.UserDto;
 import es.upm.api.services.UserService;
@@ -57,13 +56,13 @@ public class UserResource {
                 .ofMobileFirstNameFamilyNameEmailDocumentTypeIdentityAddress();
     }
 
-    @PutMapping(MOBILE_ID)
+    @PutMapping(MOBILE + MOBILE_ID)
     public UserDto updateByMobile(@PathVariable String mobile, @Valid @RequestBody UserDto userDto) {
         return new UserDto(this.userService.updateByMobile(mobile, userDto.toUser()));
     }
 
     @PreAuthorize(Security.ALL)
-    @PutMapping(MOBILE_ID + TOKEN_ID)
+    @PutMapping(MOBILE + MOBILE_ID + TOKEN_ID)
     public UserDto updateByMobileWithToken(@PathVariable String mobile, @PathVariable String token, @Valid @RequestBody UserDto userDto) {
         return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser()))
                 .ofMobileFirstNameFamilyNameEmailDocumentTypeIdentityAddress();
@@ -79,11 +78,6 @@ public class UserResource {
         } else {
             return userDtos.map(UserDto::ofMobileFirstNameFamilyNameEmail);
         }
-    }
-
-    @GetMapping(DOCUMENT_TYPES)
-    public DocumentType[] getDocumentTypes() {
-        return DocumentType.values();
     }
 
 }
