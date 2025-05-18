@@ -5,10 +5,12 @@ import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.CreationAccessLink;
 import es.upm.api.data.entities.UUIDBase64;
 import es.upm.api.data.entities.User;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
 @Service
 public class AccessLinkService {
@@ -31,4 +33,12 @@ public class AccessLinkService {
         return this.accessLinkRepository.save(accessLink);
     }
 
+    public Stream<AccessLink> findAll() {
+        return this.accessLinkRepository.findAll().stream();
+    }
+
+    @Transactional
+    public void deleteById(String idSuffix) {
+        this.accessLinkRepository.deleteByIdSuffix(idSuffix);
+    }
 }

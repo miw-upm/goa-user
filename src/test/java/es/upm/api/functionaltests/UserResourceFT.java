@@ -1,7 +1,7 @@
 package es.upm.api.functionaltests;
 
 import es.upm.api.data.entities.CreationAccessLink;
-import es.upm.api.resources.view.AccessLinkDto;
+import es.upm.api.resources.view.CustomerAccessLinkDto;
 import es.upm.api.resources.view.UserDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
@@ -57,7 +57,7 @@ class UserResourceFT {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder()
                 .mobile("666666000").scope("EDIT_PROFILE").build();
         String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
-                .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getValue();
+                .role(ADMIN).exchange(CustomerAccessLinkDto.class).getBody()).getValue();
         ResponseEntity<UserDto> response = this.httpRequestBuilder
                 .get(USERS + MOBILE + accessLink).exchange(UserDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -92,7 +92,7 @@ class UserResourceFT {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder()
                 .mobile("666666000").scope("EDIT_PROFILE").build();
         String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
-                .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getValue();
+                .role(ADMIN).exchange(CustomerAccessLinkDto.class).getBody()).getValue();
         this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class);
         this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class);
         this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class);
@@ -216,7 +216,7 @@ class UserResourceFT {
     void testUpdateWithToken() {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder().mobile("666666000").scope("EDIT_PROFILE").build();
         String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
-                .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getValue();
+                .role(ADMIN).exchange(CustomerAccessLinkDto.class).getBody()).getValue();
         UserDto userDto = this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class).getBody();
         assert userDto != null;
         String oldName = userDto.getFirstName();

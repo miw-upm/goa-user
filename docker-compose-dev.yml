@@ -16,3 +16,6 @@ networks:
     external: true
 
 #> docker compose -f docker-compose-dev.yml up --build -d
+
+#> ports: -"0:8081" or -"8081" or remove
+#> docker-compose -f docker-compose-dev.yml -p tpv-articles up --scale tpv-article=2 -d
