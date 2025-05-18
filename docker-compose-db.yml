@@ -12,7 +12,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - miw
+      - goa
 
   postgres:
     image: postgres:15.10
@@ -27,7 +27,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - miw
+      - goa
 
   mongo:
     image: mongodb/mongodb-community-server:7.0.16-ubuntu2204
@@ -43,7 +43,7 @@ services:
       - mongo_data:/data/db
       - mongo_config:/data/configdb
     networks:
-      - miw
+      - goa
 
 volumes:
   mysql_data:
@@ -56,7 +56,7 @@ volumes:
     name: "mongo-config"
 
 networks:
-  miw:
+  goa:
     external: true
 
 # Construir todas las BD
