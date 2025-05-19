@@ -19,20 +19,18 @@ spring:
   security:
     oauth2:
       clients:
-        issuer: http://localhost:8081
-        open-api-client-id: client-id
-        open-api-client-secret: client-secret
+        issuer: https://gestion.ocanabogados.es/goa-user
+        open-api-client-id: ${OPEN_API_CLIENT_ID}
+        open-api-client-secret: ${OPEN_API_CLIENT_SECRET}
         open-api-redirect-uris:
-          - http://localhost:8081/swagger-ui/oauth2-redirect.html
-          - http://localhost:8082/swagger-ui/oauth2-redirect.html
-          - http://localhost:8083/swagger-ui/oauth2-redirect.html
-        spa-client-id: spa-client-id
-        spa-login-redirect-uri: http://localhost:4200/callback
-        spa-logout-redirect-uri: http://localhost:4200
-        api-client-id: api-client-id
-        api-client-secret: api-client-secret
+          - https://gestion.ocanabogados.es/oauth2-redirect.html
+        spa-client-id: ${SPA_CLIENT_ID}
+        spa-login-redirect-uri: https://gestion.ocanabogados.es/callback
+        spa-logout-redirect-uri: https://gestion.ocanabogados.es
+        api-client-id: ${API_CLIENT_ID}
+        api-client-secret: ${API_CLIENT_SECRET}
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://goa-eureka:8761/eureka/
