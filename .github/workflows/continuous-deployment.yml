@@ -54,11 +54,11 @@ jobs:
           key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY }}
           script: |
             echo ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }} | docker login ${{ env.GHCR_URL }} -u ${{ github.actor }} --password-stdin
-            docker rm -f ${{ env.ARTIFACT }}-1 || true
+            docker rm -f ${{ env.ARTIFACT }} || true
             docker rmi ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest || true
             docker pull ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest
             docker run -d \
-              --name ${{ env.ARTIFACT }}-1 \
+              --name ${{ env.ARTIFACT }} \
               --restart always \
               --network goa \
               -p 8081:8081 \
