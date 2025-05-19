@@ -23,8 +23,8 @@ spring:
         open-api-client-id: ${OPEN_API_CLIENT_ID}
         open-api-client-secret: ${OPEN_API_CLIENT_SECRET}
         open-api-redirect-uris:
-          - https://gestion.ocanabogados.es/oauth2-redirect.html
-        spa-client-id: ${SPA_CLIENT_ID}
+          - https://gestion.ocanabogados.es/api/oauth2-redirect.html
+        spa-client-id: spaClientId
         spa-login-redirect-uri: https://gestion.ocanabogados.es/callback
         spa-logout-redirect-uri: https://gestion.ocanabogados.es
         api-client-id: ${API_CLIENT_ID}

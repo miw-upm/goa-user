@@ -24,7 +24,7 @@ spring:
           - http://localhost:8081/swagger-ui/oauth2-redirect.html
           - http://localhost:8082/swagger-ui/oauth2-redirect.html
           - http://localhost:8083/swagger-ui/oauth2-redirect.html
-        spa-client-id: spa-client-id
+        spa-client-id: spaClientId
         spa-login-redirect-uri: http://localhost:4200/callback
         spa-logout-redirect-uri: http://localhost:4200
         api-client-id: api-client-id
