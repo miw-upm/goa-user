@@ -61,6 +61,7 @@ jobs:
               --name ${{ env.ARTIFACT }}-1 \
               --restart always \
               --network goa \
-              -p 8080:8080 \
+              -p 8081:8081 \
+              -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/goauser \
               -e EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://goa-eureka:8761/eureka/ \
               ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest

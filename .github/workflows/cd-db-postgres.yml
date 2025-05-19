@@ -23,7 +23,7 @@ jobs:
               --network goa \
               -e POSTGRES_USER=postgres \
               -e POSTGRES_PASSWORD=postgres \
-              -e POSTGRES_DB=goa \
+              -e POSTGRES_DB=goauser \
               -p 5432:5432 \
               -v postgres-data:/var/lib/postgresql/data \
               postgres:15.10

@@ -1,7 +1,7 @@
 services:
   goa-user:
     build: .
-    image: goa-user:1.0.0
+    image: goa-user:latest
     restart: always
     ports:
       - "8081:8081"
