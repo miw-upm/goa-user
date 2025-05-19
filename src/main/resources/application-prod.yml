@@ -19,7 +19,7 @@ spring:
   security:
     oauth2:
       clients:
-        issuer: https://gestion.ocanabogados.es/goa-user
+        issuer: https://gestion.ocanabogados.es/api/goa-user
         open-api-client-id: ${OPEN_API_CLIENT_ID}
         open-api-client-secret: ${OPEN_API_CLIENT_SECRET}
         open-api-redirect-uris:
