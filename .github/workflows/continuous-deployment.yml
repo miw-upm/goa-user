@@ -9,7 +9,7 @@ env:
 
 jobs:
   cd:
-    name: Build & Push GitHub Package & Deploy on Render Docker Image
+    name: Build & Push GitHub Package & Deploy on AWS Lightsail
     runs-on: ubuntu-22.04
     steps:
       - name: Clone repository
@@ -46,3 +46,21 @@ jobs:
             ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:${{ env.VERSION }}
             ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest
 
+      - name: Deploy on AWS Lightsail
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.AWS_LIGHTSAIL_IP }}
+          username: ${{ secrets.AWS_LIGHTSAIL_USER }}
+          key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY }}
+          script: |
+            echo ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }} | docker login ${{ env.GHCR_URL }} -u ${{ github.actor }} --password-stdin
+            docker rm -f ${{ env.ARTIFACT }}-1 || true
+            docker rmi ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest || true
+            docker pull ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest
+            docker run -d \
+              --name ${{ env.ARTIFACT }}-1 \
+              --restart always \
+              --network goa \
+              -p 8080:8080 \
+              -e EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://goa-eureka:8761/eureka/ \
+              ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest

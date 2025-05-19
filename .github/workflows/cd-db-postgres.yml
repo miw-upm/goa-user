@@ -1,0 +1,29 @@
+name: CD - GitHub Packages
+on:
+  push:
+    branches: [ postgres ]
+
+jobs:
+  cd:
+    name:  Deploy Docker Postgres on AWS Lightsail
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Deploy on AWS Lightsail
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.AWS_LIGHTSAIL_IP }}
+          username: ${{ secrets.AWS_LIGHTSAIL_USER }}
+          key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY }}
+          script: |
+            docker rm -f postgres-server || true
+            docker rmi postgres-server:15.10 || true
+            docker run -d \
+              --name postgres-server \
+              --restart always \
+              --network goa \
+              -e POSTGRES_USER=postgres \
+              -e POSTGRES_PASSWORD=postgres \
+              -e POSTGRES_DB=goa \
+              -p 5432:5432 \
+              -v postgres-data:/var/lib/postgresql/data \
+              postgres:15.10

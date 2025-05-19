@@ -1,19 +1,4 @@
 services:
-
-  mysql:
-    image: mysql:8.4
-    container_name: mysql-server
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: devops
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - goa
-
   postgres:
     image: postgres:15.10
     container_name: postgres-server
@@ -21,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: devops
+      POSTGRES_DB: goa
     ports:
       - "5432:5432"
     volumes:
@@ -29,31 +14,9 @@ services:
     networks:
       - goa
 
-  mongo:
-    image: mongodb/mongodb-community-server:7.0.16-ubuntu2204
-    container_name: mongo-server
-    restart: always
-    environment:
-      MONGODB_INITDB_ROOT_USERNAME: mongo
-      MONGODB_INITDB_ROOT_PASSWORD: mongo
-      MONGODB_INITDB_DATABASE: devops
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-      - mongo_config:/data/configdb
-    networks:
-      - goa
-
 volumes:
-  mysql_data:
-    name: "mysql-data"
   postgres_data:
     name: "postgres-data"
-  mongo_data:
-    name: "mongo-data"
-  mongo_config:
-    name: "mongo-config"
 
 networks:
   goa:
