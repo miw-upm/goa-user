@@ -17,6 +17,7 @@ jobs:
           script: |
             docker rm -f postgres-server || true
             docker rmi postgres-server:15.10 || true
+            docker volume rm postgres-data
             docker run -d \
               --name postgres-server \
               --restart always \
