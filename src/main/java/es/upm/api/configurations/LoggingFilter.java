@@ -20,7 +20,7 @@ import java.util.Enumeration;
 @Log4j2
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@Profile({"dev"})
+//@Profile({"dev"})
 public class LoggingFilter extends OncePerRequestFilter {
 
 
