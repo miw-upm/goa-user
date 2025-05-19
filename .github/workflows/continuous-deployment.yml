@@ -62,7 +62,7 @@ jobs:
               --restart always \
               --network goa \
               -p 8081:8081 \
-              -e "SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/goauser" \
+              -e "SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-server:5432/goauser" \
               -e EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://goa-eureka:8761/eureka/ \
               -e OPEN_API_CLIENT_ID=${{ secrets.OPEN_API_CLIENT_ID }} \
               -e OPEN_API_CLIENT_SECRET=${{ secrets.OPEN_API_CLIENT_SECRET }} \
