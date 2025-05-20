@@ -27,6 +27,7 @@ public class AccessLinkDto {
 
     public AccessLinkDto(AccessLink accessLink) {
         BeanUtils.copyProperties(accessLink, this);
+        this.link = String.format("/%s/%s", accessLink.getUser().getMobile(), accessLink.getId());
         this.id = MASK + this.id.substring(this.id.length() - CODE_SIZE);
     }
 
@@ -42,7 +43,7 @@ public class AccessLinkDto {
 
     public static AccessLinkDto ofLink(AccessLinkDto accessLinkDto) {
         return AccessLinkDto.builder()
-                .link(String.format("/%s/%s", accessLinkDto.getUser().getMobile(), accessLinkDto.getId()))
+                .link(accessLinkDto.link)
                 .build();
     }
 
