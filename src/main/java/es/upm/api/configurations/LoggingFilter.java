@@ -45,10 +45,10 @@ public class LoggingFilter extends OncePerRequestFilter {
         // Ahora que se ha procesado la request, se puede obtener el cuerpo
         byte[] requestArray = wrappedRequest.getContentAsByteArray();
         String requestBody = new String(requestArray, wrappedRequest.getCharacterEncoding());
-        log.debug("     Request body (JSON): {}", requestBody);
+        log.debug("     Body (request): {}", requestBody);
         byte[] responseArray = wrappedResponse.getContentAsByteArray();
         String responseBody = new String(responseArray, response.getCharacterEncoding());
-        log.debug("     Response body: {}", responseBody);
+        log.debug("     Body (response): {}", responseBody);
         wrappedResponse.copyBodyToResponse();
     }
 }

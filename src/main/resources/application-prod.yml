@@ -1,12 +1,3 @@
-server:
-  port: 8081
-
-springdoc:
-  api-docs:
-    enabled: false
-  swagger-ui:
-    enabled: false
-
 spring:
   jpa:
     hibernate:
@@ -20,17 +11,14 @@ spring:
     oauth2:
       clients:
         issuer: https://gestion.ocanabogados.es/api/goa-user
-        open-api-client-id: ${OPEN_API_CLIENT_ID}
-        open-api-client-secret: ${OPEN_API_CLIENT_SECRET}
-        open-api-redirect-uris:
-          - https://gestion.ocanabogados.es/api/oauth2-redirect.html
         spa-client-id: spaClientId
         spa-login-redirect-uri: https://gestion.ocanabogados.es/callback
         spa-logout-redirect-uri: https://gestion.ocanabogados.es
         api-client-id: ${API_CLIENT_ID}
         api-client-secret: ${API_CLIENT_SECRET}
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://goa-eureka:8761/eureka/
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

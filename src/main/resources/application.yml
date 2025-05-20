@@ -31,6 +31,7 @@ spring:
         api-client-secret: api-client-secret
 
 server:
+  port: 8081
   forward-headers-strategy: native
 #  servlet:
 #    context-path: /tpv-user

@@ -5,7 +5,7 @@ on:
 
 jobs:
   cd:
-    name:  Deploy Docker Postgres on AWS Lightsail
+    name: Deploy Docker Postgres on AWS Lightsail
     runs-on: ubuntu-22.04
     steps:
       - name: Deploy on AWS Lightsail

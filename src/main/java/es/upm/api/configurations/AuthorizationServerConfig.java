@@ -65,8 +65,8 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     @Bean
     @Order(2)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println(">>>> SpaLoginRedirectUr"+this.oAuth2Properties.getSpaLoginRedirectUri());
-        System.out.println(">>>> SpaIssuer"+this.oAuth2Properties.getIssuer());
+        System.out.println(">>>> SpaLoginRedirectUr" + this.oAuth2Properties.getSpaLoginRedirectUri());
+        System.out.println(">>>> SpaIssuer" + this.oAuth2Properties.getIssuer());
         OAuth2AuthorizationServerConfigurer
                 authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer();
         return http
