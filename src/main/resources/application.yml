@@ -33,8 +33,7 @@ spring:
 server:
   port: 8081
   forward-headers-strategy: framework
-  servlet:
-   context-path: /api/goa-user
+
 
 info:
   app:
