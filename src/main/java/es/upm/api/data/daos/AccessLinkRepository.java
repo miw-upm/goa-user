@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface AccessLinkRepository extends JpaRepository<AccessLink, String> {
     @Modifying
-    @Query("DELETE FROM AccessLink a WHERE a.id LIKE CONCAT('%', ?1)")
+    @Query("delete from AccessLink a where a.id like concat('%', ?1)")
     void deleteByIdSuffix(String idSuffix);
 }
