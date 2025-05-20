@@ -66,7 +66,6 @@ jobs:
               -e "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://goa-eureka:8761/eureka/" \
               -e OPEN_API_CLIENT_ID=${{ secrets.OPEN_API_CLIENT_ID }} \
               -e OPEN_API_CLIENT_SECRET=${{ secrets.OPEN_API_CLIENT_SECRET }} \
-              -e SPA_CLIENT_ID=${{ secrets.SPA_CLIENT_ID }} \
               -e API_CLIENT_ID=${{ secrets.API_CLIENT_ID }} \
               -e API_CLIENT_SECRET=${{ secrets.API_CLIENT_SECRET }} \
               ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest

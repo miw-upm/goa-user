@@ -108,7 +108,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
 
         RegisteredClient spaClient =
                 RegisteredClient.withId(UUID.randomUUID().toString())
-                        .clientId(this.oAuth2Properties.getSpaClientId())
+                        .clientId("spaClientId")
                         .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                         .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                         .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
