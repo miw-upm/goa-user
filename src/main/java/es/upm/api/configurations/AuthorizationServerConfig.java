@@ -65,8 +65,6 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     @Bean
     @Order(2)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println(">>>> SpaLoginRedirectUr" + this.oAuth2Properties.getSpaLoginRedirectUri());
-        System.out.println(">>>> SpaIssuer" + this.oAuth2Properties.getIssuer());
         OAuth2AuthorizationServerConfigurer
                 authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer();
         return http
@@ -92,7 +90,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/error").permitAll()
+                        .requestMatchers("/login", "/error", "/actuator").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults())

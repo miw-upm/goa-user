@@ -42,7 +42,6 @@ public class LoggingFilter extends OncePerRequestFilter {
             log.error("Error during filter processing", e);
             throw e;
         }
-        // Ahora que se ha procesado la request, se puede obtener el cuerpo
         byte[] requestArray = wrappedRequest.getContentAsByteArray();
         String requestBody = new String(requestArray, wrappedRequest.getCharacterEncoding());
         log.debug("     Body (request): {}", requestBody);

@@ -33,8 +33,6 @@ spring:
 server:
   port: 8081
   forward-headers-strategy: native
-#  servlet:
-#    context-path: /tpv-user
 
 info:
   app:
@@ -54,7 +52,7 @@ logging:
   level:
     root: WARN
     es.upm: DEBUG
-#    org.springframework.security: DEBUG
+    org.springframework.security: WARN
 
 eureka:
   instance:
