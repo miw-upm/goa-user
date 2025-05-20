@@ -17,6 +17,7 @@ public class UserFindCriteria {
     private boolean projection = false;
 
     public boolean all() {
-        return mobile == null && firstName == null && familyName == null && email == null && identity == null && attribute == null;
+        return mobile == null && firstName == null && familyName == null && email == null && identity == null
+                && attribute == null;
     }
 }

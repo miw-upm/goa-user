@@ -23,6 +23,7 @@ public class AccessLinkDto {
     private LocalDateTime expiresAt;
     private Integer remainingUses;
     private String scope;
+    private String link;
 
     public AccessLinkDto(AccessLink accessLink) {
         BeanUtils.copyProperties(accessLink, this);
@@ -33,10 +34,15 @@ public class AccessLinkDto {
         return AccessLinkDto.builder()
                 .id(accessLinkDto.id)
                 .user(User.builder().mobile(accessLinkDto.getUser().getMobile()).build())
-                .createdAt(accessLinkDto.createdAt)
                 .expiresAt(accessLinkDto.expiresAt)
                 .remainingUses(accessLinkDto.remainingUses)
                 .scope(accessLinkDto.scope)
+                .build();
+    }
+
+    public static AccessLinkDto ofLink(AccessLinkDto accessLinkDto) {
+        return AccessLinkDto.builder()
+                .link(String.format("/%s/%s", accessLinkDto.getUser().getMobile(), accessLinkDto.getId()))
                 .build();
     }
 

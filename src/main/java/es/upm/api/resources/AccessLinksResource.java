@@ -2,7 +2,6 @@ package es.upm.api.resources;
 
 import es.upm.api.data.entities.CreationAccessLink;
 import es.upm.api.resources.view.AccessLinkDto;
-import es.upm.api.resources.view.CustomerAccessLinkDto;
 import es.upm.api.services.AccessLinkService;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
@@ -27,8 +26,9 @@ public class AccessLinksResource {
     }
 
     @PostMapping
-    public CustomerAccessLinkDto create(@Valid @RequestBody CreationAccessLink creationAccessLink) {
-        return new CustomerAccessLinkDto(this.accessLinkService.create(creationAccessLink));
+    public AccessLinkDto create(@Valid @RequestBody CreationAccessLink creationAccessLink) {
+        AccessLinkDto dto = new AccessLinkDto(accessLinkService.create(creationAccessLink));
+        return AccessLinkDto.ofLink(dto);
     }
 
     @GetMapping

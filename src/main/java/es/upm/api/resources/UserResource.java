@@ -21,7 +21,6 @@ public class UserResource {
     public static final String ID_ID = "/{id}";
     public static final String MOBILE = "/mobile";
     public static final String MOBILE_ID = "/{mobile}";
-    public static final String DOCUMENT_TYPES = "/document-types";
     public static final String TOKEN_ID = "/{token}";
     private final UserService userService;
 
