@@ -25,7 +25,6 @@ jobs:
               -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
               -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
               -e POSTGRES_DB=goauser \
-              -p 5432:5432 \
               -v postgres-data:/var/lib/postgresql/data \
               postgres:15.10
               sleep 5

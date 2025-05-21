@@ -4,7 +4,7 @@ spring:
       ddl-auto: update
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/goauser
+    url: jdbc:postgresql://postgres-server:5432/goauser
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
   security:
