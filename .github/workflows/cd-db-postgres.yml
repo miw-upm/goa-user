@@ -25,7 +25,10 @@ jobs:
               -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
               -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
               -e POSTGRES_DB=goauser \
-              -e POSTGRES_INITDB_ARGS="--auth-host=scram-sha-256" \
               -p 5432:5432 \
               -v postgres-data:/var/lib/postgresql/data \
               postgres:15.10
+              sleep 5
+              docker exec postgres-server bash -c "echo 'host all all all scram-sha-256' > /var/lib/postgresql/data/pg_hba.conf"
+              docker exec postgres-server bash -c "echo 'local all all scram-sha-256' >> /var/lib/postgresql/data/pg_hba.conf"
+              docker restart postgres-server
