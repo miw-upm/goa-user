@@ -22,8 +22,8 @@ jobs:
               --name postgres-server \
               --restart always \
               --network goa \
-              -e POSTGRES_USER=${{ env.POSTGRES_USER }} \
-              -e POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }} \
+              -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+              -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
               -e POSTGRES_DB=goauser \
               -p 5432:5432 \
               -v postgres-data:/var/lib/postgresql/data \
