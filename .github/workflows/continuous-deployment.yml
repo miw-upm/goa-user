@@ -55,7 +55,6 @@ jobs:
           script: |
             echo ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }} | docker login ${{ env.GHCR_URL }} -u ${{ github.actor }} --password-stdin
             docker rm -f ${{ env.ARTIFACT }} || true
-            docker rmi ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest || true
             docker pull ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest
             docker run -d \
               --name ${{ env.ARTIFACT }} \
