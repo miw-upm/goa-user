@@ -1,19 +1,5 @@
 services:
 
-  mysql:
-    image: mysql:8.4
-    container_name: mysql-server
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: devops
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - miw
-
   postgres:
     image: postgres:15.10
     container_name: postgres-server
@@ -27,7 +13,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - miw
+      - goa
 
   mongo:
     image: mongodb/mongodb-community-server:7.0.16-ubuntu2204
@@ -43,7 +29,7 @@ services:
       - mongo_data:/data/db
       - mongo_config:/data/configdb
     networks:
-      - miw
+      - goa
 
 volumes:
   mysql_data:
@@ -56,23 +42,11 @@ volumes:
     name: "mongo-config"
 
 networks:
-  miw:
+  goa:
     external: true
 
 # Construir todas las BD
 #> docker compose -f docker-compose-db.yml -p databases up -d
-
-# CONSOLA & COMANDOS MySQL
-#> docker exec -it mysql-server mysql -u root -p
-#  show databases;
-#  create database poo;
-#  drop database poo;
-#  use poo;
-#  show tables;
-#  describe mytable;
-#  select * from mytable;
-#  drop table mytable;
-#  exit
 
 # CONSOLA & COMANDOS Postgres
 #> docker exec -it postgres-server  psql -U postgres

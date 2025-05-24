@@ -5,7 +5,7 @@ on:
 
 jobs:
   ci:
-    name: Test - Unit & Integration & SonarCloud Scan & Slack WebHook
+    name: Test - Unit & Integration & SonarCloud Scan
     runs-on: ubuntu-22.04
     steps:
       - name: clone repository

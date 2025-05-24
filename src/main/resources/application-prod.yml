@@ -17,6 +17,11 @@ spring:
         api-client-id: ${API_CLIENT_ID}
         api-client-secret: ${API_CLIENT_SECRET}
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://goa-eureka:8761/eureka/
+
 springdoc:
   api-docs:
     enabled: false
