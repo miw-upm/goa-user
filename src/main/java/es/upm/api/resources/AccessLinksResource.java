@@ -43,4 +43,9 @@ public class AccessLinksResource {
         this.accessLinkService.deleteById(AccessLinkDto.cleanId(id));
     }
 
+    @GetMapping(ID_ID)
+    public AccessLinkDto read(@PathVariable String id) {
+        return AccessLinkDto.ofSummary(new AccessLinkDto(this.accessLinkService.read(AccessLinkDto.cleanId(id))));
+    }
+
 }

@@ -5,6 +5,7 @@ import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.CreationAccessLink;
 import es.upm.api.data.entities.UUIDBase64;
 import es.upm.api.data.entities.User;
+import es.upm.api.services.exceptions.NotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
@@ -40,5 +41,11 @@ public class AccessLinkService {
     @Transactional
     public void deleteById(String idSuffix) {
         this.accessLinkRepository.deleteByIdSuffix(idSuffix);
+    }
+
+    public AccessLink read(String idSuffix) {
+        return this.accessLinkRepository.read(idSuffix).stream()
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("The id don't exist: " + idSuffix));
     }
 }
