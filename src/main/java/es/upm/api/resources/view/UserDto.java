@@ -15,12 +15,14 @@ import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
+    private UUID id;
     @NotNull
     @NotBlank
     @Pattern(regexp = Validations.NINE_DIGITS)
@@ -54,6 +56,7 @@ public class UserDto {
 
     public UserDto ofMobileFirstNameFamilyNameEmail() {
         return UserDto.builder()
+                .id(this.getId())
                 .mobile(this.getMobile())
                 .firstName(this.getFirstName())
                 .familyName(this.getFamilyName())
@@ -62,6 +65,7 @@ public class UserDto {
 
     public UserDto ofMobileFirstNameFamilyNameEmailDocumentTypeIdentityAddress() {
         return UserDto.builder()
+                .id(this.getId())
                 .mobile(this.getMobile())
                 .firstName(this.getFirstName())
                 .familyName(this.getFamilyName())
