@@ -29,7 +29,9 @@ public class User {
     @Column(unique = true)
     private String identity;
     private String address;
-    private Integer postcode;
+    private String city;
+    private Province province;
+    private Integer postalCode;
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;

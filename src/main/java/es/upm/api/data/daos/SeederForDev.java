@@ -62,13 +62,16 @@ public class SeederForDev {
                 User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0004"))
                         .mobile("666666000").firstName("c1").familyName("family-c1").password(noPass)
                         .documentType(DocumentType.DNI).identity("66666603E").address("C/TPV, 3").email("c1@gmail.com")
+                        .city("Madrid").province(Province.MADRID).postalCode(28012)
                         .role(Role.CUSTOMER).registrationDate(LocalDate.now()).active(true).build(),
                 User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0005"))
                         .mobile("666666001").firstName("c2").familyName("family-c2").password(noPass)
                         .documentType(DocumentType.DNI).identity("66666604T").address("C/TPV, 4").email("c2@gmail.com")
+                        .city("Sevilla").province(Province.SEVILLA).postalCode(41001)
                         .role(Role.CUSTOMER).registrationDate(LocalDate.now()).active(true).build(),
                 User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0006"))
                         .mobile("666666002").firstName("c3").password(noPass).role(Role.CUSTOMER)
+                        .city("Cádiz").province(Province.CADIZ).postalCode(11001)
                         .registrationDate(LocalDate.now()).active(true).build(),
                 User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0007"))
                         .mobile("666666003").firstName("admin3").password(pass).role(Role.ADMIN)

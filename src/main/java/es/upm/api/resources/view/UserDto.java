@@ -1,6 +1,7 @@
 package es.upm.api.resources.view;
 
 import es.upm.api.data.entities.DocumentType;
+import es.upm.api.data.entities.Province;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.resources.view.validations.Validations;
@@ -35,6 +36,9 @@ public class UserDto {
     private DocumentType documentType;
     private String identity;
     private String address;
+    private String city;
+    private Province province;
+    private Integer postalCode;
     private String password;
     private Role role;
     private LocalDate registrationDate;
@@ -63,7 +67,7 @@ public class UserDto {
                 .email(this.getEmail()).build();
     }
 
-    public UserDto ofMobileFirstNameFamilyNameEmailDocumentTypeIdentityAddress() {
+    public UserDto ofAllBasic() {
         return UserDto.builder()
                 .id(this.getId())
                 .mobile(this.getMobile())
@@ -73,9 +77,11 @@ public class UserDto {
                 .documentType(this.getDocumentType())
                 .identity(this.getIdentity())
                 .address(this.getAddress())
+                .city(this.getCity())
+                .province(this.getProvince())
+                .postalCode(this.getPostalCode())
                 .build();
     }
-
 
     public User toUser() {
         User user = new User();

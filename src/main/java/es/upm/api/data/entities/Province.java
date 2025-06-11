@@ -2,7 +2,6 @@ package es.upm.api.data.entities;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public enum Province {
     ALAVA("01"),
@@ -71,15 +70,6 @@ public enum Province {
 
     public String getCode() {
         return code;
-    }
-
-    public String capitalize() {
-        return Arrays.stream(this.name().split("_"))
-                .map(word -> {
-                    String lower = word.toLowerCase();
-                    return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
-                })
-                .collect(Collectors.joining(" "));
     }
 
 }

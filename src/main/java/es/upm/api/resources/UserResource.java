@@ -1,6 +1,8 @@
 package es.upm.api.resources;
 
+import es.upm.api.data.entities.Province;
 import es.upm.api.data.entities.UserFindCriteria;
+import es.upm.api.resources.view.ProvincesDto;
 import es.upm.api.resources.view.UserDto;
 import es.upm.api.services.UserService;
 import jakarta.validation.Valid;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -22,6 +25,7 @@ public class UserResource {
     public static final String MOBILE = "/mobile";
     public static final String MOBILE_ID = "/{mobile}";
     public static final String TOKEN_ID = "/{token}";
+    public static final String PROVINCES = "/provinces";
     private final UserService userService;
 
     @Autowired
@@ -52,7 +56,7 @@ public class UserResource {
     @GetMapping(MOBILE + MOBILE_ID + TOKEN_ID)
     public UserDto readByMobileWithToken(@PathVariable String mobile, @PathVariable String token) {
         return new UserDto(this.userService.readByMobileWithToken(mobile, token))
-                .ofMobileFirstNameFamilyNameEmailDocumentTypeIdentityAddress();
+                .ofAllBasic();
     }
 
     @PutMapping(MOBILE + MOBILE_ID)
@@ -64,7 +68,7 @@ public class UserResource {
     @PutMapping(MOBILE + MOBILE_ID + TOKEN_ID)
     public UserDto updateByMobileWithToken(@PathVariable String mobile, @PathVariable String token, @Valid @RequestBody UserDto userDto) {
         return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser()))
-                .ofMobileFirstNameFamilyNameEmailDocumentTypeIdentityAddress();
+                .ofAllBasic();
     }
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_CUSTOMER)
@@ -77,6 +81,14 @@ public class UserResource {
         } else {
             return userDtos.map(UserDto::ofMobileFirstNameFamilyNameEmail);
         }
+    }
+
+    @PreAuthorize(Security.ALL)
+    @GetMapping(PROVINCES)
+    public ProvincesDto findProvinces() {
+        return new ProvincesDto(Arrays.stream(Province.values())
+                .map(Province::name)
+                .toList());
     }
 
 }
