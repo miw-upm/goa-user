@@ -60,8 +60,10 @@ jobs:
               --name ${{ env.ARTIFACT }} \
               --restart always \
               --network goa \
-              -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
-              -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
-              -e API_CLIENT_ID=${{ secrets.API_CLIENT_ID }} \
-              -e API_CLIENT_SECRET=${{ secrets.API_CLIENT_SECRET }} \
+              -e POSTGRES_USER="${{ secrets.POSTGRES_USER }}" \
+              -e POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" \
+              -e API_CLIENT_ID="${{ secrets.API_CLIENT_ID }}" \
+              -e API_CLIENT_SECRET="${{ secrets.API_CLIENT_SECRET }}" \
               ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest
+            sleep 20
+            docker image prune --filter "until=12h" -f
