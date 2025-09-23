@@ -1,14 +1,16 @@
-name: CD - GitHub Packages
+name: CD
 on:
   push:
-    branches: [ postgres ]
+    branches:
+      - postgres
 
 jobs:
   cd:
     name: Deploy Docker Postgres on AWS Lightsail
     runs-on: ubuntu-22.04
+
     steps:
-      - name: Deploy on AWS Lightsail
+      - name: 🚀 Deploy on AWS Lightsail
         uses: appleboy/ssh-action@v1.2.1
         with:
           host: ${{ secrets.AWS_LIGHTSAIL_IP }}
