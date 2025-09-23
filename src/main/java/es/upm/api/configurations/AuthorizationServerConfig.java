@@ -115,6 +115,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                         .tokenSettings(tokenSettings)
                         .clientSettings(ClientSettings.builder()
                                 .requireAuthorizationConsent(false)
+                                .requireProofKey(true)
                                 .build())
                         .postLogoutRedirectUri(this.oAuth2Properties.getSpaLogoutRedirectUri())
                         .build();
@@ -147,18 +148,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
         return new InMemoryRegisteredClientRepository(openApiClient, apiClient, spaClient);
     }
 
-    // AUTHORIZATION_CODE
-    // 1º- Se inicia: http://localhost:8080/oauth2/authorize?response_type=code&client_id=client-id
-    // 2º- Se redirige a la ruta programada, el usuario se logea y se redirije a la url programada
-    // http://localhost:8080/login/oauth2/code/cliente-oidc?code=4mnIudIk-YKKyFI3B6L6tztFAP7Xz90fqQ_NbxHE....
-    // 3º http://localhost:8080/oauth2/token
-    //      Header: Auth Basic cliente-id:client-secret & "Content-Type" = "application/x-www-form-urlencoded"
-    //      Body: "grant_type=authorization_code &code=$code"
-    // 4º - $token = response.token_access
-    // 5º - Para invocar un recurso:
-    //      Header: Bearer $Token....
-
-    @Bean
+   @Bean
     public JWKSource<SecurityContext> jwkSource() {
         RSAKey rsaKey = generateRsa(); // Genera el par de claves
         JWKSet jwkSet = new JWKSet(rsaKey);
@@ -191,8 +181,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     @Bean
     public OAuth2TokenCustomizer<JwtEncodingContext> oAuth2TokenCustomizerByRolesAndName() {
         return context -> {
-            if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())
-            ) {
+            if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
                 Set<String> roles = new HashSet<>();
                 if (context.getPrincipal() != null
                         && context.getPrincipal().getAuthorities() != null
@@ -205,8 +194,10 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                                     .collect(Collectors.toSet())
                     ); //Scope of user
                     String mobile = context.getPrincipal().getName();
-                    context.getClaims().claim("name", this.userRepository.findByMobile(mobile)
-                            .orElseThrow(() -> new NotFoundException("Mobile not found: " + mobile)).getFirstName());
+                    context.getClaims().claim("name",
+                            this.userRepository.findByMobile(mobile)
+                            .orElseThrow(() -> new NotFoundException("Mobile not found: " + mobile))
+                                    .getFirstName());
                 } else if (context.getAuthorizationGrant() instanceof OAuth2ClientCredentialsAuthenticationToken clientCredentialsToken) {
                     String role = (String) clientCredentialsToken.getAdditionalParameters().get("role");
                     roles.add(role);
