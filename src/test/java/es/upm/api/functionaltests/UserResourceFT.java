@@ -134,7 +134,7 @@ class UserResourceFT {
 
     @Test
     void testCreateBadNumber() {
-        UserDto userDto = UserDto.builder().mobile("1").firstName("daemon").build();
+        UserDto userDto = UserDto.builder().mobile("123").firstName("daemon").build();
         ResponseEntity<Void> response = this.httpRequestBuilder
                 .post(USERS).body(userDto).role(ADMIN).exchange(Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
