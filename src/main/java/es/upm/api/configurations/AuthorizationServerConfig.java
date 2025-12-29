@@ -148,7 +148,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
         return new InMemoryRegisteredClientRepository(openApiClient, apiClient, spaClient);
     }
 
-   @Bean
+    @Bean
     public JWKSource<SecurityContext> jwkSource() {
         RSAKey rsaKey = generateRsa(); // Genera el par de claves
         JWKSet jwkSet = new JWKSet(rsaKey);
@@ -196,7 +196,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                     String mobile = context.getPrincipal().getName();
                     context.getClaims().claim("name",
                             this.userRepository.findByMobile(mobile)
-                            .orElseThrow(() -> new NotFoundException("Mobile not found: " + mobile))
+                                    .orElseThrow(() -> new NotFoundException("Mobile not found: " + mobile))
                                     .getFirstName());
                 } else if (context.getAuthorizationGrant() instanceof OAuth2ClientCredentialsAuthenticationToken clientCredentialsToken) {
                     String role = (String) clientCredentialsToken.getAdditionalParameters().get("role");

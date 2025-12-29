@@ -45,11 +45,11 @@ class UserResourceFT {
     @Test
     void testReadByMobile() {
         ResponseEntity<UserDto> response = this.httpRequestBuilder
-                .get(USERS + MOBILE + MOBILE_ID, "66").role(ADMIN).exchange(UserDto.class);
+                .get(USERS + ID_ID, "666666000").role(ADMIN).exchange(UserDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getMobile()).isEqualTo("66");
-        assertThat(response.getBody().getFirstName()).isEqualTo("customer");
+        assertThat(response.getBody().getMobile()).isEqualTo("666666000");
+        assertThat(response.getBody().getFirstName()).isEqualTo("c1");
     }
 
     @Test
@@ -59,7 +59,7 @@ class UserResourceFT {
         String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getLink();
         ResponseEntity<UserDto> response = this.httpRequestBuilder
-                .get(USERS + MOBILE + accessLink).exchange(UserDto.class);
+                .get(USERS + accessLink).exchange(UserDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getMobile()).isEqualTo("666666000");
@@ -69,21 +69,21 @@ class UserResourceFT {
     @Test
     void testReadByMobileWithTokenNotFoundToken() {
         ResponseEntity<UserDto> response = this.httpRequestBuilder
-                .get(USERS + MOBILE + MOBILE_ID + "/KkK", "666666000").exchange(UserDto.class);
+                .get(USERS + ID_ID + "/KkK", "666666000").exchange(UserDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
     void testReadByMobileWithTokenForbiddenMobile() {
         ResponseEntity<UserDto> response = this.httpRequestBuilder
-                .get(USERS + MOBILE + MOBILE_ID + "/GiTBDnRkS-aNYOayM69_kA", "666666000").exchange(UserDto.class);
+                .get(USERS + MOBILE_ID_TOKEN_ID, "666666000", "GiTBDnRkS-aNYOayM69_kA").exchange(UserDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
     void testReadByMobileWithTokenForbiddenExpired() {
         ResponseEntity<UserDto> response = this.httpRequestBuilder
-                .get(USERS + MOBILE + MOBILE_ID + "/hNSvhWOmQH6-NNo3gXnyow", "666666000").exchange(UserDto.class);
+                .get(USERS + MOBILE_ID_TOKEN_ID, "666666000", "hNSvhWOmQH6-NNo3gXnyow").exchange(UserDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
@@ -93,12 +93,12 @@ class UserResourceFT {
                 .mobile("666666000").scope("EDIT_PROFILE").build();
         String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getLink();
-        this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class);
-        this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class);
-        this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class);
-        this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class);
+        this.httpRequestBuilder.get(USERS + accessLink).exchange(UserDto.class);
+        this.httpRequestBuilder.get(USERS + accessLink).exchange(UserDto.class);
+        this.httpRequestBuilder.get(USERS + accessLink).exchange(UserDto.class);
+        this.httpRequestBuilder.get(USERS + accessLink).exchange(UserDto.class);
         ResponseEntity<UserDto> response = this.httpRequestBuilder
-                .get(USERS + MOBILE + accessLink).exchange(UserDto.class);
+                .get(USERS + accessLink).exchange(UserDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
@@ -199,17 +199,17 @@ class UserResourceFT {
 
     @Test
     void testUpdate() {
-        UserDto userDto = this.httpRequestBuilder.get(USERS + MOBILE + MOBILE_ID, "666666000")
+        UserDto userDto = this.httpRequestBuilder.get(USERS + ID_ID, "666666000")
                 .role(ADMIN).exchange(UserDto.class).getBody();
         assert userDto != null;
         String oldName = userDto.getFirstName();
         userDto.setFirstName("new");
         ResponseEntity<UserDto> response = this.httpRequestBuilder
-                .put(USERS + MOBILE + MOBILE_ID, "666666000").role(ADMIN).body(userDto).exchange(UserDto.class);
+                .put(USERS + ID_ID, "666666000").role(ADMIN).body(userDto).exchange(UserDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getFirstName()).isEqualTo("new");
         userDto.setFirstName(oldName);
-        this.httpRequestBuilder.put(USERS + MOBILE + MOBILE_ID, "666666000").role(ADMIN).body(userDto).exchange(UserDto.class);
+        this.httpRequestBuilder.put(USERS + ID_ID, "666666000").role(ADMIN).body(userDto).exchange(UserDto.class);
     }
 
     @Test
@@ -217,16 +217,16 @@ class UserResourceFT {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder().mobile("666666000").scope("EDIT_PROFILE").build();
         String accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class).getBody()).getLink();
-        UserDto userDto = this.httpRequestBuilder.get(USERS + MOBILE + accessLink).exchange(UserDto.class).getBody();
+        UserDto userDto = this.httpRequestBuilder.get(USERS + accessLink).exchange(UserDto.class).getBody();
         assert userDto != null;
         String oldName = userDto.getFirstName();
         userDto.setFirstName("new");
         ResponseEntity<UserDto> response = this.httpRequestBuilder
-                .put(USERS + MOBILE + accessLink).body(userDto).exchange(UserDto.class);
+                .put(USERS + accessLink).body(userDto).exchange(UserDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getFirstName()).isEqualTo("new");
         userDto.setFirstName(oldName);
-        this.httpRequestBuilder.put(USERS + MOBILE + accessLink).body(userDto).exchange(UserDto.class);
+        this.httpRequestBuilder.put(USERS + accessLink).body(userDto).exchange(UserDto.class);
     }
 
 }

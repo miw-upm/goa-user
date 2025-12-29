@@ -26,7 +26,7 @@ public class UserDto {
     private UUID id;
     @NotNull
     @NotBlank
-    @Pattern(regexp = Validations.NINE_DIGITS)
+    @Pattern(regexp = Validations.MOBILE_RX)
     private String mobile;
     @NotNull
     @NotBlank
