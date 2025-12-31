@@ -1,7 +1,7 @@
 package es.upm.api.resources;
 
 import es.upm.api.data.entities.CreationAccessLink;
-import es.upm.api.resources.view.AccessLinkDto;
+import es.upm.api.resources.dtos.AccessLinkDto;
 import es.upm.api.services.AccessLinkService;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;

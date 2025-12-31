@@ -1,8 +1,8 @@
 package es.upm.api.functionaltests;
 
 import es.upm.api.data.entities.CreationAccessLink;
-import es.upm.api.resources.view.AccessLinkDto;
-import es.upm.api.resources.view.UserDto;
+import es.upm.api.resources.dtos.AccessLinkDto;
+import es.upm.api.resources.dtos.UserDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

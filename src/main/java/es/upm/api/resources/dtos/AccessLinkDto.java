@@ -1,4 +1,4 @@
-package es.upm.api.resources.view;
+package es.upm.api.resources.dtos;
 
 import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.User;

@@ -1,4 +1,4 @@
-package es.upm.api.resources.view;
+package es.upm.api.resources.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

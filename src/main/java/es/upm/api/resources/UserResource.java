@@ -2,9 +2,9 @@ package es.upm.api.resources;
 
 import es.upm.api.data.entities.Province;
 import es.upm.api.data.entities.UserFindCriteria;
-import es.upm.api.resources.view.ProvincesDto;
-import es.upm.api.resources.view.UserDto;
-import es.upm.api.resources.view.validations.Validations;
+import es.upm.api.resources.dtos.ProvincesDto;
+import es.upm.api.resources.dtos.UserDto;
+import es.upm.api.resources.dtos.validations.Validations;
 import es.upm.api.services.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
