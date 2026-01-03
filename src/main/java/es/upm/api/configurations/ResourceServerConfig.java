@@ -12,7 +12,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -28,12 +30,15 @@ public class ResourceServerConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain userTokenAccess(HttpSecurity http) throws Exception {
+        PathPatternRequestMatcher.Builder p = PathPatternRequestMatcher.withDefaults();
+
+        RequestMatcher matcher = new OrRequestMatcher(
+                p.matcher("/users/**"),
+                p.matcher("/access-link/**"),
+                p.matcher("/system/**")
+        );
         return http
-                .securityMatcher(request ->
-                        new AntPathRequestMatcher("/users/**").matches(request) ||
-                                new AntPathRequestMatcher("/access-link/**").matches(request) ||
-                                new AntPathRequestMatcher("/system/**").matches(request)
-                )
+                .securityMatcher(matcher)
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(
                         jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
