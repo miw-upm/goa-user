@@ -11,7 +11,7 @@ import java.util.List;
 @ConfigurationProperties(prefix = "spring.security.oauth2.clients")
 @Data
 public class OAuth2Properties {
-    private String issuer;
+    private String issuerUri;
     private String openApiClientId;
     private String openApiClientSecret;
     private List<String> openApiRedirectUris = new ArrayList<>();

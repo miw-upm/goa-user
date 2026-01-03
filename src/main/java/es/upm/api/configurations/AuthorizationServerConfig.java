@@ -174,7 +174,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
-                .issuer(this.oAuth2Properties.getIssuer()) //Emisor
+                .issuer(this.oAuth2Properties.getIssuerUri()) //Emisor
                 .build();
     }
 

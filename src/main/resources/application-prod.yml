@@ -10,7 +10,7 @@ spring:
   security:
     oauth2:
       clients:
-        issuer: https://gestion.ocanabogados.es/api/goa-user
+        issuer-uri: https://gestion.ocanabogados.es/api/goa-user
         spa-client-id: spaClientId
         spa-login-redirect-uri: https://gestion.ocanabogados.es/callback
         spa-logout-redirect-uri: https://gestion.ocanabogados.es
