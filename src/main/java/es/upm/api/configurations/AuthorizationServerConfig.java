@@ -6,6 +6,7 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.Role;
+import es.upm.api.data.entities.exceptions.BadCredentialsException;
 import es.upm.api.services.exceptions.NotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -67,9 +69,10 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer
                 authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer();
+        RequestMatcher endpoints = authorizationServerConfigurer.getEndpointsMatcher();
         return http
-                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .csrf(AbstractHttpConfigurer::disable)
+                .securityMatcher(endpoints)
+                .csrf(csrf -> csrf.ignoringRequestMatchers(endpoints))
                 .with(authorizationServerConfigurer, authorizationServer ->
                         authorizationServer.oidc(Customizer.withDefaults())    // Enable OpenID Connect 1.0
                 )
@@ -100,13 +103,13 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
         TokenSettings tokenSettings = TokenSettings.builder()
-                .accessTokenTimeToLive(Duration.ofMinutes(60))
-                .refreshTokenTimeToLive(Duration.ofDays(30))
+                .accessTokenTimeToLive(Duration.ofMinutes(15))
+                .refreshTokenTimeToLive(Duration.ofDays(1))
                 .build();
 
         RegisteredClient spaClient =
-                RegisteredClient.withId(UUID.randomUUID().toString())
-                        .clientId("spaClientId")
+                RegisteredClient.withId("spa-client")
+                        .clientId(oAuth2Properties.getSpaClientId())
                         .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                         .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                         .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
@@ -121,7 +124,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                         .build();
 
         RegisteredClient openApiClient =
-                RegisteredClient.withId(UUID.randomUUID().toString())
+                RegisteredClient.withId("open-api-client")
                         .clientId(this.oAuth2Properties.getOpenApiClientId())
                         .clientSecret(passwordEncoder.encode(this.oAuth2Properties.getOpenApiClientSecret()))
                         .clientAuthenticationMethods(methods -> methods.addAll(Set.of(
@@ -136,7 +139,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                         .build();
 
         RegisteredClient apiClient =
-                RegisteredClient.withId(UUID.randomUUID().toString())
+                RegisteredClient.withId("api-client")
                         .clientId(this.oAuth2Properties.getApiClientId())
                         .clientSecret(passwordEncoder.encode(this.oAuth2Properties.getApiClientSecret()))
                         .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
@@ -164,7 +167,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
             RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
             return new RSAKey.Builder(publicKey)
                     .privateKey(privateKey)
-                    .keyID(UUID.randomUUID().toString())
+                    .keyID("goa-jwt")
                     .build();
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException(e);
@@ -199,10 +202,13 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                                     .orElseThrow(() -> new NotFoundException("Mobile not found: " + mobile))
                                     .getFirstName());
                 } else if (context.getAuthorizationGrant() instanceof OAuth2ClientCredentialsAuthenticationToken clientCredentialsToken) {
-                    String role = (String) clientCredentialsToken.getAdditionalParameters().get("role");
-                    roles.add(role);
+                    String roleParam = (String) clientCredentialsToken.getAdditionalParameters().get("role");
+                    if (roleParam == null || roleParam.isBlank()) {
+                        throw new BadCredentialsException("Invalid token: missing role");
+                    }
+                    roles.add(Role.from(roleParam).jwtClaimValue());
                 }
-                context.getClaims().claim("roles", String.join(" ", roles));
+                context.getClaims().claim("roles", roles);
             }
         };
     }
