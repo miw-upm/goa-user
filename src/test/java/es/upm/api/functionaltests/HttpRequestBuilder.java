@@ -1,6 +1,6 @@
 package es.upm.api.functionaltests;
 
-import es.upm.api.configurations.Scope;
+import es.upm.api.configurations.OAuth2Scope;
 import es.upm.api.data.entities.Role;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
@@ -96,7 +96,7 @@ public class HttpRequestBuilder {
         headers.set(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
         MultiValueMap<String, String> credentialsBody = new LinkedMultiValueMap<>();
         credentialsBody.add("grant_type", "client_credentials");
-        credentialsBody.add("scope", Scope.PROFILE.value());
+        credentialsBody.add("scope", OAuth2Scope.PROFILE.jwtClaimValue());
         credentialsBody.add("role", role);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(credentialsBody, headers);
         Map<?, ?> responseBody = Objects.requireNonNull(

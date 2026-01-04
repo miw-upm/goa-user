@@ -111,7 +111,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                         .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                         .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                         .redirectUri(this.oAuth2Properties.getSpaLoginRedirectUri())
-                        .scopes(scopes -> scopes.addAll(Scope.allValues()))
+                        .scopes(scopes -> scopes.addAll(OAuth2Scope.allJwtClaimValues()))
                         .tokenSettings(tokenSettings)
                         .clientSettings(ClientSettings.builder()
                                 .requireAuthorizationConsent(false)
@@ -131,7 +131,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                         .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                         .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                         .redirectUris(uris -> uris.addAll(this.oAuth2Properties.getOpenApiRedirectUris()))
-                        .scopes(scopes -> scopes.addAll(Scope.allValues()))
+                        .scopes(scopes -> scopes.addAll(OAuth2Scope.allJwtClaimValues()))
                         .tokenSettings(tokenSettings)
                         .build();
 
@@ -141,7 +141,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                         .clientSecret(passwordEncoder.encode(this.oAuth2Properties.getApiClientSecret()))
                         .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                         .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                        .scope(Scope.PROFILE.value())
+                        .scope(OAuth2Scope.PROFILE.jwtClaimValue())
                         .tokenSettings(tokenSettings)
                         .build();
 
@@ -192,7 +192,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                                     .map(Role::from)
                                     .map(Role::jwtClaimValue)
                                     .collect(Collectors.toSet())
-                    ); //Scope of user
+                    ); //OAuth2Scope of user
                     String mobile = context.getPrincipal().getName();
                     context.getClaims().claim("name",
                             this.userRepository.findByMobile(mobile)
