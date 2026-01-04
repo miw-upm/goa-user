@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 @Log4j2
-@PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
+@PreAuthorize(Security.AUTHENTICATED)
 @RestController
 @RequestMapping(UserResource.USERS)
 public class UserResource {
@@ -58,6 +58,7 @@ public class UserResource {
                 .ofAllBasic();
     }
 
+    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
     @PutMapping(Validations.ID_WITH_MOBILE)
     public UserDto updateByMobile(@PathVariable("id") String mobile, @Valid @RequestBody UserDto userDto) {
         return new UserDto(this.userService.updateByMobile(mobile, userDto.toUser()));

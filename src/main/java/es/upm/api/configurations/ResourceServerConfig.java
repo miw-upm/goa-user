@@ -1,9 +1,13 @@
 package es.upm.api.configurations;
 
 import es.upm.api.data.entities.Role;
+import es.upm.api.resources.AccessLinksResource;
+import es.upm.api.resources.SystemResource;
+import es.upm.api.resources.UserResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,7 +32,7 @@ public class ResourceServerConfig {
     @Order(1)
     public SecurityFilterChain systemPublic(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/system/**")
+                .securityMatcher(SystemResource.SYSTEM + "/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(a -> a.anyRequest().permitAll())
                 .build();
@@ -38,9 +42,16 @@ public class ResourceServerConfig {
     @Order(2)
     public SecurityFilterChain apiJwt(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/users/**", "/access-link/**")
+                .securityMatcher(UserResource.USERS + "/**", AccessLinksResource.ACCESS_LINK + "/**")
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(a -> a.anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, UserResource.USERS).permitAll()
+                        .requestMatchers(HttpMethod.GET, UserResource.USERS + UserResource.PROVINCES).permitAll()
+                        .requestMatchers(HttpMethod.GET, UserResource.USERS + "/*/*").permitAll()
+                        .requestMatchers(HttpMethod.PUT, UserResource.USERS + "/*/*").permitAll()
+
+                        .anyRequest().authenticated()
+                )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(
                         jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())
                 ))
