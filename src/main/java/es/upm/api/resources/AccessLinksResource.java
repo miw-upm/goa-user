@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 @Log4j2
 @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
@@ -32,10 +32,11 @@ public class AccessLinksResource {
     }
 
     @GetMapping
-    public Stream<AccessLinkDto> findAll() {
+    public List<AccessLinkDto> findAll() {
         return this.accessLinkService.findAll()
                 .map(AccessLinkDto::new)
-                .map(AccessLinkDto::ofSummary);
+                .map(AccessLinkDto::ofSummary)
+                .toList();
     }
 
     @DeleteMapping(ID_ID)

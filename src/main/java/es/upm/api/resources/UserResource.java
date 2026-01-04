@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -73,13 +74,13 @@ public class UserResource {
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_CUSTOMER)
     @GetMapping
-    public Stream<UserDto> findNullSafe(@ModelAttribute UserFindCriteria criteria) {
+    public List<UserDto> findNullSafe(@ModelAttribute UserFindCriteria criteria) {
         Stream<UserDto> userDtos = this.userService.findNullSafe(criteria)
                 .map(UserDto::new);
         if (criteria.isProjection()) {
-            return userDtos;
+            return userDtos.toList();
         } else {
-            return userDtos.map(UserDto::ofMobileFirstNameFamilyNameEmail);
+            return userDtos.map(UserDto::ofMobileFirstNameFamilyNameEmail).toList();
         }
     }
 
