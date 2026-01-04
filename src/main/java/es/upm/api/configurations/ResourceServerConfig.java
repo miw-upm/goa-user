@@ -31,7 +31,6 @@ public class ResourceServerConfig {
     @Order(1)
     public SecurityFilterChain userTokenAccess(HttpSecurity http) throws Exception {
         PathPatternRequestMatcher.Builder p = PathPatternRequestMatcher.withDefaults();
-
         RequestMatcher matcher = new OrRequestMatcher(
                 p.matcher("/users/**"),
                 p.matcher("/access-link/**"),

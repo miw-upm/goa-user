@@ -189,8 +189,8 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                     roles.addAll(
                             context.getPrincipal().getAuthorities().stream()
                                     .map(GrantedAuthority::getAuthority)
-                                    .map(Role::of)
-                                    .map(Role::value)
+                                    .map(Role::from)
+                                    .map(Role::jwtClaimValue)
                                     .collect(Collectors.toSet())
                     ); //Scope of user
                     String mobile = context.getPrincipal().getName();

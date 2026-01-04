@@ -1,5 +1,6 @@
 package es.upm.api.resources.httperrors;
 
+import es.upm.api.data.entities.exceptions.BadCredentialsException;
 import es.upm.api.services.exceptions.*;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,8 @@ public class ApiExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({
-            org.springframework.security.access.AccessDeniedException.class
+            org.springframework.security.access.AccessDeniedException.class,
+            BadCredentialsException.class
     })
     @ResponseBody
     public void unauthorizedRequest(Exception exception) {

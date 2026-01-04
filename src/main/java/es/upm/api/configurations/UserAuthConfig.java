@@ -28,13 +28,13 @@ public class UserAuthConfig { // Authentication with user:password
             return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getMobile())
                     .password(user.getPassword())
-                    .roles(user.getRole().value())
+                    .roles(user.getRole().jwtClaimValue())
                     .build();
         };
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder(); // BCrypt by default
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }

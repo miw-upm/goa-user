@@ -1,5 +1,7 @@
 package es.upm.api.data.entities;
 
+import es.upm.api.data.entities.exceptions.BadCredentialsException;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,23 +10,29 @@ public enum Role {
 
     public static final String PREFIX = "ROLE_";
 
-    public static List<String> allValues() {
+    public static List<String> allJwtClaimValues() {
         return Arrays.stream(Role.values())
-                .map(Role::value)
+                .map(Role::jwtClaimValue)
                 .toList();
     }
 
-    public static Role of(String withPrefix) {
-        return Role.valueOf(withPrefix
-                .replace(PREFIX, "")
-                .toUpperCase());
+    public static Role from(String value) {
+        if (value == null || value.isBlank()) {
+            throw new BadCredentialsException("Missing role");
+        }
+        String normalized = value.trim().replace(PREFIX, "").toUpperCase();
+        try {
+            return Role.valueOf(normalized);
+        } catch (IllegalArgumentException ex) {
+            throw new BadCredentialsException("Invalid role: " + value);
+        }
     }
 
-    public String roleValue() {
-        return PREFIX + this.value();
+    public String springSecurityAuthority() {
+        return PREFIX + this.jwtClaimValue();
     }
 
-    public String value() {
+    public String jwtClaimValue() {
         return this.name().toLowerCase();
     }
 

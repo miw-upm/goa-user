@@ -90,7 +90,7 @@ public class UserService {
         Role authRole = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst()
-                .map(Role::of)
+                .map(Role::from)
                 .orElse(Role.ANONYMOUS);
         return switch (authRole) {
             case ADMIN -> List.of(Role.ADMIN, Role.MANAGER, Role.OPERATOR, Role.CUSTOMER);
@@ -161,7 +161,7 @@ public class UserService {
         if (SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                 .stream()
                 .anyMatch(authority ->
-                        authority.getAuthority().equals(Role.CUSTOMER.roleValue())
+                        authority.getAuthority().equals(Role.CUSTOMER.springSecurityAuthority())
                 )
         ) {
             userDtos = userDtos.filter(user -> user.getMobile().equals(SecurityContextHolder.getContext().getAuthentication().getName()));

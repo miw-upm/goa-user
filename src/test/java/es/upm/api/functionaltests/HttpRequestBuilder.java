@@ -77,7 +77,7 @@ public class HttpRequestBuilder {
 
 
     public HttpRequestBuilder role(Role role) {
-        this.role = role.value();
+        this.role = role.jwtClaimValue();
         return this;
     }
 
