@@ -24,11 +24,11 @@ public class UserAuthConfig { // Authentication with user:password
     public UserDetailsService userDetailsService() {
         return mobile -> {
             User user = userRepository.findByMobile(mobile)
-                    .orElseThrow(() -> new UsernameNotFoundException("UserDto not found: " + mobile));
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + mobile));
             return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getMobile())
                     .password(user.getPassword())
-                    .roles(user.getRole().jwtClaimValue())
+                    .authorities(user.getRole().jwtClaimValue())
                     .build();
         };
     }
