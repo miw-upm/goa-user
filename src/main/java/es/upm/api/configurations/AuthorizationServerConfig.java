@@ -17,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -46,7 +45,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -208,7 +206,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                     }
                     roles.add(Role.from(roleParam).jwtClaimValue());
                 }
-                context.getClaims().claim("roles", roles);
+                context.getClaims().claim("roles", String.join(" ", roles));
             }
         };
     }
