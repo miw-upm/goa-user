@@ -1,7 +1,6 @@
 package es.upm.api.configurations;
 
 import es.upm.api.data.daos.UserRepository;
-import es.upm.api.data.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,15 +21,9 @@ public class UserAuthConfig { // Authentication with user:password
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return mobile -> {
-            User user = userRepository.findByMobile(mobile)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + mobile));
-            return org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getMobile())
-                    .password(user.getPassword())
-                    .authorities(user.getRole().jwtClaimValue())
-                    .build();
-        };
+        return mobile -> userRepository.findByMobile(mobile)
+                .map(AuthUser::new)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + mobile));
     }
 
     @Bean

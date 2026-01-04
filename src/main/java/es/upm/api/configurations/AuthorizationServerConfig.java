@@ -7,7 +7,6 @@ import com.nimbusds.jose.proc.SecurityContext;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.exceptions.BadCredentialsException;
-import es.upm.api.services.exceptions.NotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -194,11 +193,10 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                                     .map(Role::jwtClaimValue)
                                     .collect(Collectors.toSet())
                     ); //OAuth2Scope of user
-                    String mobile = context.getPrincipal().getName();
-                    context.getClaims().claim("name",
-                            this.userRepository.findByMobile(mobile)
-                                    .orElseThrow(() -> new NotFoundException("Mobile not found: " + mobile))
-                                    .getFirstName());
+                    Object principal = context.getPrincipal().getPrincipal();
+                    if (principal instanceof AuthUser authUser) {
+                        context.getClaims().claim("name", authUser.getFirstName());
+                    }
                 } else if (context.getAuthorizationGrant() instanceof OAuth2ClientCredentialsAuthenticationToken clientCredentialsToken) {
                     String roleParam = (String) clientCredentialsToken.getAdditionalParameters().get("role");
                     if (roleParam == null || roleParam.isBlank()) {
