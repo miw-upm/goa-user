@@ -34,12 +34,12 @@ class AccessLinkResourceFT {
     @Test
     void testCreate() {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder()
-                .mobile("666666000").scope("EDIT_PROFILE").build();
+                .mobile("666666000").scope("edit-profile").build();
         ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getLink()).contains("666666000/");
+        assertThat(response.getBody().getMobile()).contains("666666000");
     }
 
     @Test
@@ -86,9 +86,7 @@ class AccessLinkResourceFT {
         assertThat(response.getBody())
                 .isNotEmpty()
                 .allSatisfy(accessLink -> {
-                    assertThat(accessLink.getId()).startsWith("***");
-                    assertThat(accessLink.getUser()).isNotNull();
-                    assertThat(accessLink.getUser().getId()).isNull();
+                    assertThat(accessLink.getMobile()).isNotNull();
                 });
     }
 
@@ -98,10 +96,9 @@ class AccessLinkResourceFT {
                 .mobile("666666000").scope("EDIT_PROFILE").build();
         ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class);
-        String link = Objects.requireNonNull(response.getBody()).getLink();
-        String idSuffix = link.substring(link.length() - 8);
+        AccessLinkDto link = Objects.requireNonNull(response.getBody());
         ResponseEntity<Void> response2 = this.httpRequestBuilder
-                .delete(ACCESS_LINK + ID_ID, idSuffix).role(ADMIN).exchange(Void.class);
+                .delete(ACCESS_LINK + ID_ID, link.getId()).role(ADMIN).exchange(Void.class);
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 

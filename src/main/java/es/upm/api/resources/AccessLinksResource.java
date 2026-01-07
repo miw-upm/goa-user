@@ -27,26 +27,24 @@ public class AccessLinksResource {
 
     @PostMapping
     public AccessLinkDto create(@Valid @RequestBody CreationAccessLink creationAccessLink) {
-        AccessLinkDto dto = new AccessLinkDto(accessLinkService.create(creationAccessLink));
-        return AccessLinkDto.ofLink(dto);
+        return new AccessLinkDto(accessLinkService.create(creationAccessLink));
     }
 
     @GetMapping
     public List<AccessLinkDto> findAll() {
         return this.accessLinkService.findAll()
                 .map(AccessLinkDto::new)
-                .map(AccessLinkDto::ofSummary)
                 .toList();
     }
 
     @DeleteMapping(ID_ID)
     public void delete(@PathVariable String id) {
-        this.accessLinkService.deleteById(AccessLinkDto.cleanId(id));
+        this.accessLinkService.deleteById(id);
     }
 
     @GetMapping(ID_ID)
     public AccessLinkDto read(@PathVariable String id) {
-        return AccessLinkDto.ofSummary(new AccessLinkDto(this.accessLinkService.read(AccessLinkDto.cleanId(id))));
+        return new AccessLinkDto(this.accessLinkService.read(id));
     }
 
 }

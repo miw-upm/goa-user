@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 @Service
 public class UserService {
-    public static final String SCOPE_EDIT_PROFILE = "EDIT_PROFILE";
+    public static final String SCOPE_EDIT_PROFILE = "edit-profile";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

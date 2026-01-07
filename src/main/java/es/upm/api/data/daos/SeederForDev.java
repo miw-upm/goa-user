@@ -82,13 +82,14 @@ public class SeederForDev {
 
         AccessLink[] accessLinks = {
                 AccessLink.builder().id("GiTBDnRkS-aNYOayM69_kA").user(users[4]).createdAt(LocalDateTime.now())
-                        .expiresAt(LocalDateTime.now().plusDays(5)).remainingUses(4).scope("EDIT_PROFILE").build(),
+                        .expiresAt(LocalDateTime.now().plusDays(5)).remainingUses(4).scope("edit-profile").build(),
                 AccessLink.builder().id("XWBLFua2T6GLVh5wqKHB8w").createdAt(LocalDateTime.now())
-                        .expiresAt(LocalDateTime.now().plusDays(5)).user(users[3]).remainingUses(4).scope("VIEW_INVOICE").build(),
+                        .expiresAt(LocalDateTime.now().plusDays(10)).user(users[3]).remainingUses(2).scope("accept-engagement")
+                        .document(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0007")).build(),
                 AccessLink.builder().id("hNSvhWOmQH6-NNo3gXnyow").createdAt(LocalDateTime.now().minusDays(10))
-                        .expiresAt(LocalDateTime.now().minusDays(5)).user(users[3]).remainingUses(4).scope("EXPIRED").build(),
+                        .expiresAt(LocalDateTime.now().minusDays(5)).user(users[3]).remainingUses(4).scope("edit-profile").build(),
                 AccessLink.builder().id("6JuwxpWVSiuv90nxgfwKmA").createdAt(LocalDateTime.now())
-                        .expiresAt(LocalDateTime.now().plusDays(5)).user(users[3]).remainingUses(0).scope("USED").build(),
+                        .expiresAt(LocalDateTime.now().plusDays(5)).user(users[3]).remainingUses(0).scope("edit-profile").build(),
         };
         this.accessLinkRepository.saveAll(Arrays.asList(accessLinks));
         log.warn("        ------- accessLinks");

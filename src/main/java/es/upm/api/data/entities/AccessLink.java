@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Builder
 @Data
@@ -25,6 +26,7 @@ public class AccessLink {
     private LocalDateTime expiresAt;
     private Integer remainingUses;
     private String scope;
+    private UUID document;
 
     public void use() {
         if (this.expiresAt.isBefore(LocalDateTime.now())) {
