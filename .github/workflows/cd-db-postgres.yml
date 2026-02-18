@@ -33,3 +33,8 @@ jobs:
               docker exec postgres-server bash -c "echo 'host all all all scram-sha-256' > /var/lib/postgresql/data/pg_hba.conf"
               docker exec postgres-server bash -c "echo 'local all all scram-sha-256' >> /var/lib/postgresql/data/pg_hba.conf"
               docker restart postgres-server
+
+# Para crear una basses de datos:
+# docker exec -e PGPASSWORD='password' -it postgres-server psql -U userPostgres -d postgres -c "CREATE DATABASE goauserdb;"
+# Para ver los logs de arranque
+# docker logs -f goa-user
