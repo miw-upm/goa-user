@@ -18,3 +18,8 @@ networks:
     external: true
 
 #> docker compose up --build -d
+
+# Para crear una basses de datos:
+#> docker exec -e PGPASSWORD='password' -it postgres-server psql -U userPostgres -d postgres -c "CREATE DATABASE goauserdb;"
+# Para ver los logs de arranque
+#> docker logs -f goa-user
