@@ -8,6 +8,11 @@ Es un ejemplo de un API Rest completo, basado en Spring Boot, con una arquitectu
 bases de datos con JPA soportado por Hibernate y Postgres.
 La seguridad esta basada en OAuth2 y OpenId Connect, desarrollando ambos procesos en el API
 
+### Estado del código
+[![CI goa-user](https://github.com/miw-upm/goa-user/actions/workflows/ci.yml/badge.svg)](https://github.com/miw-upm/goa-user/actions/workflows/ci.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=miw-upm-github_goa-user&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=miw-upm-github_goa-user)
+[![AWS broken](https://https://gestion.ocanabogados.es/api/goa-user/system/version-badge)](https://gestion.ocanabogados.es/api/goa-user/system)
+
 ## Tecnologías necesarias
 
 `Java` `Maven` `GitHub` `Spring-Boot` `Sonarcloud` `JPA` `PostgreSQL` `Docker` `OAuth2` `OpenID Connect`
