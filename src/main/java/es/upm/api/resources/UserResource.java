@@ -1,7 +1,7 @@
 package es.upm.api.resources;
 
 import es.upm.api.data.entities.Province;
-import es.upm.api.data.entities.UserFindCriteria;
+import es.upm.api.services.UserFindCriteria;
 import es.upm.api.resources.dtos.ProvincesDto;
 import es.upm.api.resources.dtos.UserDto;
 import es.upm.api.resources.dtos.validations.Validations;

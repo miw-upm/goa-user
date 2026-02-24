@@ -1,4 +1,4 @@
-package es.upm.api.data.entities;
+package es.upm.api.services;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

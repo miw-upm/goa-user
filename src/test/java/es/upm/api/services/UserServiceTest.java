@@ -2,7 +2,6 @@ package es.upm.api.services;
 
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
-import es.upm.api.data.entities.UserFindCriteria;
 import es.upm.api.services.exceptions.ForbiddenException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
