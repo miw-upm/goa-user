@@ -20,7 +20,7 @@ class UserRepositoryIT {
 
     @Test
     void testFindByMobile() {
-        assertThat(this.userRepository.findByMobile("777")).isPresent();
+        assertThat(this.userRepository.findByMobile("6")).isPresent();
     }
 
     @Test
