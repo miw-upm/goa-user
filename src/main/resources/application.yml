@@ -22,6 +22,7 @@ spring:
         open-api-client-secret: client-secret
         open-api-redirect-uris:
           - http://localhost:8081/swagger-ui/oauth2-redirect.html
+          - http://localhost:8080/api/goa-support/swagger-ui/oauth2-redirect.html
         spa-client-id: spaClientId
         spa-login-redirect-uri: http://localhost:4200/callback
         spa-logout-redirect-uri: http://localhost:4200
