@@ -1,12 +1,8 @@
+# Local Mongodb database (local or Dockerized) -------------
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: update
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/goauserdb
-    username: postgres
-    password: postgres
+  data:
+    mongodb:
+      uri: mongodb://mongo:mongo@localhost:27017/goauserdb?authSource=admin
 
 springdoc:
   swagger-ui:
