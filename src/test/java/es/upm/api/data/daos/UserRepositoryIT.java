@@ -33,6 +33,7 @@ class UserRepositoryIT {
 
     @Test
     void testFindByMobileAndFirstNameAndFamilyNameAndEmailAndDniNullSafeWithMobile() {
+        System.out.println(this.userRepository.findAll());
         assertThat(this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
                 "1", null, null, ".com", null, List.of(CUSTOMER)))
                 .anyMatch(user -> "666666001".equals(user.getMobile()));

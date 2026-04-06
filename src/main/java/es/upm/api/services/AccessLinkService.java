@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -38,7 +39,8 @@ public class AccessLinkService {
     }
 
     public void deleteById(String idSuffix) {
-        this.accessLinkRepository.deleteByIdSuffix(idSuffix);
+        List<AccessLink> links = accessLinkRepository.findByIdSuffix(idSuffix);
+        accessLinkRepository.deleteAll(links);
     }
 
     public AccessLink read(String idSuffix) {
