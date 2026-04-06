@@ -2,15 +2,15 @@ package es.upm.api.data.daos;
 
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository extends MongoRepository<User, UUID> {
 
     Optional<User> findByMobile(String mobile);
 
@@ -23,27 +23,29 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByIdentity(String identity);
 
     @Query("""
-                select u from User u where
-                (coalesce(?1, '') = '' or u.mobile like concat('%', ?1, '%')) and
-                (coalesce(?2, '') = '' or lower(u.firstName) like lower(concat('%', ?2, '%'))) and
-                (coalesce(?3, '') = '' or lower(u.familyName) like lower(concat('%', ?3, '%'))) and
-                (coalesce(?4, '') = '' or lower(u.email) like lower(concat('%', ?4, '%'))) and
-                (coalesce(?5, '') = '' or lower(u.identity) like lower(concat('%', ?5, '%'))) and
-                (u.role in ?6)
-            """)
+    {$and: [
+        ?#{ [0] == null ? {_id: {$ne: null}} : {mobile: {$regex: [0], $options: 'i'}} },
+        ?#{ [1] == null ? {_id: {$ne: null}} : {firstName: {$regex: [1], $options: 'i'}} },
+        ?#{ [2] == null ? {_id: {$ne: null}} : {familyName: {$regex: [2], $options: 'i'}} },
+        ?#{ [3] == null ? {_id: {$ne: null}} : {email: {$regex: [3], $options: 'i'}} },
+        ?#{ [4] == null ? {_id: {$ne: null}} : {identity: {$regex: [4], $options: 'i'}} },
+        {role: {$in: [5]}}
+    ]}
+    """)
     List<User> findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
             String mobile, String firstName, String familyName, String email, String identity, Collection<Role> roles);
 
     @Query("""
-                select u from User u
-                where (
-                    u.mobile like concat('%', ?1, '%') or
-                    lower(u.firstName) like lower(concat('%', ?1, '%')) or
-                    lower(u.familyName) like lower(concat('%', ?1, '%')) or
-                    lower(u.email) like lower(concat('%', ?1, '%')) or
-                    lower(u.identity) like lower(concat('%', ?1, '%'))
-                )
-                and u.role in ?2
-            """)
+    {$and: [
+        {$or: [
+            {mobile:     {$regex: ?0, $options: 'i'}},
+            {firstName:  {$regex: ?0, $options: 'i'}},
+            {familyName: {$regex: ?0, $options: 'i'}},
+            {email:      {$regex: ?0, $options: 'i'}},
+            {identity:   {$regex: ?0, $options: 'i'}}
+        ]},
+        {role: {$in: ?1}}
+    ]}
+    """)
     List<User> findByAll(String attribute, Collection<Role> roles);
 }
