@@ -4,11 +4,11 @@ logging:
     es.upm: DEBUG
     org.springframework.security: WARN
 
-# H2 Embedded
-spring:
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 7.0.16
 
 eureka:
   client:

@@ -6,11 +6,11 @@ import es.upm.api.data.entities.CreationAccessLink;
 import es.upm.api.data.entities.UUIDBase64;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.exceptions.NotFoundException;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -38,9 +38,9 @@ public class AccessLinkService {
         return this.accessLinkRepository.findAll().stream();
     }
 
-    @Transactional
     public void deleteById(String idSuffix) {
-        this.accessLinkRepository.deleteByIdSuffix(idSuffix);
+        List<AccessLink> links = accessLinkRepository.findByIdSuffix(idSuffix);
+        accessLinkRepository.deleteAll(links);
     }
 
     public AccessLink read(String idSuffix) {

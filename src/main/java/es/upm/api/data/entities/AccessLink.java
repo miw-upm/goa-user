@@ -1,13 +1,13 @@
 package es.upm.api.data.entities;
 
 import es.upm.api.services.exceptions.ForbiddenException;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,11 +16,11 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Document
 public class AccessLink {
     @Id
     private String id;
-    @ManyToOne
+    @DBRef
     private User user;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
