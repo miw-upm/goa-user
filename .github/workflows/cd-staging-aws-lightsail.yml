@@ -57,8 +57,10 @@ jobs:
             docker run -d \
               --name ${{ env.ARTIFACT }} \
               --restart always \
+              --memory 512m \
+              --memory-swap 1024m \
               --network goa \
-              -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+              -e MONGODB_URI="${{ secrets.MONGODB_URI_STATING }}" \
               -e API_CLIENT_ID="${{ secrets.API_CLIENT_ID }}" \
               -e API_CLIENT_SECRET="${{ secrets.API_CLIENT_SECRET }}" \
               ghcr.io/${{ env.REPOSITORY }}:latest
