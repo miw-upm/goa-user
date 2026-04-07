@@ -64,3 +64,4 @@ jobs:
               ghcr.io/${{ env.REPOSITORY }}:latest
             sleep 20
             docker image prune --filter "until=12h" -f
+
