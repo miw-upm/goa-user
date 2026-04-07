@@ -15,8 +15,8 @@ import java.util.stream.Stream;
 
 @Service
 public class AccessLinkService {
-    public static final int TOKEN_DURATION_DAYS = 5;
-    public static final int TOKEN_USAGE_LIMIT = 4;
+    public static final int TOKEN_DURATION_DAYS = 7;
+    public static final int TOKEN_USAGE_LIMIT = 7;
 
     private final UserService userService;
     private final AccessLinkRepository accessLinkRepository;
