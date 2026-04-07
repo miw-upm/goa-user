@@ -100,7 +100,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
         TokenSettings tokenSettings = TokenSettings.builder()
-                .accessTokenTimeToLive(Duration.ofMinutes(15))
+                .accessTokenTimeToLive(Duration.ofHours(10))
                 .refreshTokenTimeToLive(Duration.ofDays(1))
                 .build();
 
