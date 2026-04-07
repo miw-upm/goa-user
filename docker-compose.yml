@@ -6,9 +6,11 @@ services:
     ports:
       - "8081:8081"
     environment:
+      JAVA_OPTS: "-Xms64m -Xmx384m"
       SPRING_DATA_MONGODB_URI: mongodb://mongo:mongo@mongo:27017/goauserdb?authSource=admin
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/goauserdb
       EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://host.docker.internal:8761/eureka/
+    mem_limit: 512m
     networks:
       - goa
     extra_hosts:
