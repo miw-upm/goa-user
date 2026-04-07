@@ -58,6 +58,8 @@ jobs:
               --name ${{ env.ARTIFACT }} \
               --restart always \
               --network goa \
+              --memory 512m \
+              --memory-swap 1024m \
               -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
               -e API_CLIENT_ID="${{ secrets.API_CLIENT_ID }}" \
               -e API_CLIENT_SECRET="${{ secrets.API_CLIENT_SECRET }}" \
