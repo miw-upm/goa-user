@@ -1,12 +1,7 @@
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: update
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgres-server:5432/goauserdb
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
   security:
     oauth2:
       clients:
