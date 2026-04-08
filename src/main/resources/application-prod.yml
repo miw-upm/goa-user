@@ -5,10 +5,10 @@ spring:
   security:
     oauth2:
       clients:
-        issuer-uri: ${ISSUER_URI}
+        issuer-uri: ${HOST}/api/goa-user
         spa-client-id: spaClientId
-        spa-login-redirect-uri: ${SPA_LOGIN_REDIRECT_URI}
-        spa-logout-redirect-uri: ${SPA_LOGOUT_REDIRECT_URI}
+        spa-login-redirect-uri: ${HOST}/callback
+        spa-logout-redirect-uri: ${HOST}
         api-client-id: ${API_CLIENT_ID}
         api-client-secret: ${API_CLIENT_SECRET}
 

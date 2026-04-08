@@ -61,9 +61,7 @@ jobs:
               --memory-swap 1024m \
               --network goa \
               -e MONGODB_URI="${{ secrets.MONGODB_URI_STAGING }}" \
-              -e ISSUER_URI="https://goa.miwupm.es/api/goa-user" \
-              -e SPA_LOGIN_REDIRECT_URI="https://goa.miwupm.es/callback" \
-              -e SPA_LOGOUT_REDIRECT_URI="https://goa.miwupm.es" \
+              -e HOST="https://goa.miwupm.es" \
               -e API_CLIENT_ID="${{ secrets.API_CLIENT_ID }}" \
               -e API_CLIENT_SECRET="${{ secrets.API_CLIENT_SECRET }}" \
               ghcr.io/${{ env.REPOSITORY }}:latest
