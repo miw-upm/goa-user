@@ -1,32 +1,3 @@
-spring:
-  application:
-    name: goa-user
-  profiles:
-    # Profile ----------------------------------------
-    active: dev
-  # ------------------------------------------------
-  output:
-    ansi:
-      enabled: ALWAYS
-  cache:
-    type: none
-  jackson:
-    default-property-inclusion: NON_NULL
-  security:
-    oauth2:
-      issuer-uri: http://localhost:8080/api/goa-user
-      token-uri: http://localhost:8080/api/goa-user/oauth2/token
-      open-api-client-id: client-id
-      open-api-client-secret: client-secret
-      open-api-redirect-uris:
-        - http://localhost:8081/swagger-ui/oauth2-redirect.html
-      spa-client-id: spaClientId
-      spa-logout-redirect-uri: http://localhost:4200
-      spa-login-redirect-uri: http://localhost:4200/callback
-      api-client-id: api-client-id
-      api-client-secret: api-client-secret
-
-
 server:
   port: 8081
   forward-headers-strategy: framework
@@ -36,6 +7,37 @@ info:
     artifact: "@project.artifactId@"
     version: "@project.version@"
     build: "@maven.build.timestamp@"
+
+spring:
+  application:
+    name: goa-user
+  profiles:
+    default: dev
+  output:
+    ansi:
+      enabled: ALWAYS
+  cache:
+    type: none
+  jackson:
+    default-property-inclusion: NON_NULL
+  security:
+    oauth2:
+      authorizationserver:
+        issuer-uri: http://localhost:8080/api/goa-user
+
+app:
+  oauth2:
+    token-uri: http://localhost:8080/api/goa-user/oauth2/token
+    open-api-client-id: client-id
+    open-api-client-secret: client-secret
+    open-api-redirect-uris:
+      - http://localhost:8081/swagger-ui/oauth2-redirect.html
+    spa-client-id: spaClientId
+    spa-logout-redirect-uri: http://localhost:4200
+    spa-login-redirect-uri: http://localhost:4200/callback
+    api-client-id: api-client-id
+    api-client-secret: api-client-secret
+
 management:
   endpoints:
     web:
@@ -48,8 +50,7 @@ management:
 logging:
   level:
     root: WARN
-    es.upm: DEBUG
-    org.springframework.security: WARN
+    es.upm.api: DEBUG
 
 eureka:
   instance:

@@ -39,7 +39,7 @@ class UserResourceFT {
     private SupportWebClient supportWebClient;
 
     @Autowired
-    UserResourceFT(@Value("${spring.security.oauth2.api-client-id}") String apiClientId, @Value("${spring.security.oauth2.api-client-secret}") String apiClientSecret, TestRestTemplate testRestTemplate) {
+    UserResourceFT(@Value("${app.oauth2.api-client-id}") String apiClientId, @Value("${app.oauth2.api-client-secret}") String apiClientSecret, TestRestTemplate testRestTemplate) {
         this.httpRequestBuilder = HttpRequestBuilder.create(testRestTemplate, apiClientId, apiClientSecret);
     }
 
