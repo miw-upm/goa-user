@@ -29,12 +29,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccessLinkRepository accessLinkRepository;
+    private final SupportWebClient supportWebClient;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AccessLinkRepository accessLinkRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AccessLinkRepository accessLinkRepository, SupportWebClient supportWebClient) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.accessLinkRepository = accessLinkRepository;
+        this.supportWebClient = supportWebClient;
     }
 
     public void create(User user) {
@@ -59,7 +61,14 @@ public class UserService {
     public User updateByMobileWithToken(String mobile, String token, User user) {
         this.useAccessToken(mobile, token);
         user.setRole(Role.CUSTOMER);
-        return this.updateUser(mobile, user);
+        User userDB = this.updateUser(mobile, user);
+        //TODO registrar o actualizar en BD la acceptacion: token, fecha y hora actual, IP?, checkbox, ...
+        this.supportWebClient.sendSimple(Email.builder()
+                .to("j.bernal@upm.es")
+                .subject("Actualizado perfil en Ocaña Abogados")
+                .body("Gracias "+user.getFirstName()+ " por confiar en nosotros. Su perfil ha sido actualizado")
+                .build());
+        return userDB;
     }
 
     private User updateUser(String mobile, User user) {
