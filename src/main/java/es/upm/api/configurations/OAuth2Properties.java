@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@ConfigurationProperties(prefix = "spring.security.oauth2.clients")
+@ConfigurationProperties(prefix = "spring.security.oauth2")
 @Data
 public class OAuth2Properties {
     private String issuerUri;

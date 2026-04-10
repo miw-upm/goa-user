@@ -12,21 +12,20 @@ spring:
     type: none
   jackson:
     default-property-inclusion: NON_NULL
-  jpa:
-    open-in-view: false
   security:
     oauth2:
-      clients:
-        issuer-uri: http://localhost:8080/api/goa-user
-        open-api-client-id: client-id
-        open-api-client-secret: client-secret
-        open-api-redirect-uris:
-          - http://localhost:8081/swagger-ui/oauth2-redirect.html
-        spa-client-id: spaClientId
-        spa-login-redirect-uri: http://localhost:4200/callback
-        spa-logout-redirect-uri: http://localhost:4200
-        api-client-id: api-client-id
-        api-client-secret: api-client-secret
+      issuer-uri: http://localhost:8080/api/goa-user
+      token-uri: http://localhost:8080/api/goa-user/oauth2/token
+      open-api-client-id: client-id
+      open-api-client-secret: client-secret
+      open-api-redirect-uris:
+        - http://localhost:8081/swagger-ui/oauth2-redirect.html
+      spa-client-id: spaClientId
+      spa-logout-redirect-uri: http://localhost:4200
+      spa-login-redirect-uri: http://localhost:4200/callback
+      api-client-id: api-client-id
+      api-client-secret: api-client-secret
+
 
 server:
   port: 8081
