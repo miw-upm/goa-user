@@ -53,13 +53,11 @@ import java.util.stream.Collectors;
 public class AuthorizationServerConfig {  // Generate tokens OAuth2
     private final PasswordEncoder passwordEncoder;
     private final OAuth2Properties oAuth2Properties;
-    private final UserRepository userRepository;
 
     @Autowired
     public AuthorizationServerConfig(PasswordEncoder passwordEncoder, OAuth2Properties oAuth2Properties, UserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
         this.oAuth2Properties = oAuth2Properties;
-        this.userRepository = userRepository;
     }
 
     @Bean
