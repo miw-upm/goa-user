@@ -1,6 +1,5 @@
 package es.upm.api.configurations;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,20 +19,13 @@ import java.util.Objects;
 public class TokenManager {  //TODO utilizar el estandar y casi resuelve esta gestion
     public static final String SCOPE_PROFILE = "profile";
     public static final String ROLE_URL_TOKEN = "url_token";
-    private final String apiClientId;
-    private final String apiClientSecret;
-    private final String tokenUri;
+    private final OAuth2Properties oAuth2Properties;
 
     private String token;
     private Instant expiry;
 
-    public TokenManager(@Value("${spring.security.oauth2.api-client-id}") String apiClientId,
-                        @Value("${spring.security.oauth2.api-client-secret}") String apiClientSecret,
-                        @Value("${spring.security.oauth2.token-uri}") String tokenUri
-    ) {
-        this.apiClientId = apiClientId;
-        this.apiClientSecret = apiClientSecret;
-        this.tokenUri = tokenUri;
+    public TokenManager(OAuth2Properties oAuth2Properties) {
+        this.oAuth2Properties = oAuth2Properties;
         this.token = null;
     }
 
@@ -41,7 +33,7 @@ public class TokenManager {  //TODO utilizar el estandar y casi resuelve esta ge
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        String auth = apiClientId + ":" + apiClientSecret;
+        String auth = this.oAuth2Properties.getApiClientId() + ":" + this.oAuth2Properties.getApiClientSecret();
         String encodedAuth = Base64.getEncoder()
                 .encodeToString(auth.getBytes(StandardCharsets.UTF_8));
         headers.set(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
@@ -54,7 +46,7 @@ public class TokenManager {  //TODO utilizar el estandar y casi resuelve esta ge
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(credentialsBody, headers);
 
         Map<?, ?> responseBody = Objects.requireNonNull(
-                new RestTemplate().postForEntity(this.tokenUri, request, Map.class).getBody()
+                new RestTemplate().postForEntity(this.oAuth2Properties.getTokenUri(), request, Map.class).getBody()
         );
         this.token = responseBody.get("access_token").toString();
         this.expiry = Instant.now().plusSeconds(Long.parseLong(responseBody.get("expires_in").toString()));

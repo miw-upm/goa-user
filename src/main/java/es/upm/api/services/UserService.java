@@ -66,7 +66,7 @@ public class UserService {
         this.supportWebClient.sendSimple(Email.builder()
                 .to("j.bernal@upm.es")
                 .subject("Actualizado perfil en Ocaña Abogados")
-                .body("Gracias "+user.getFirstName()+ " por confiar en nosotros. Su perfil ha sido actualizado")
+                .body("Gracias " + user.getFirstName() + " por confiar en nosotros. Su perfil ha sido actualizado")
                 .build());
         return userDB;
     }

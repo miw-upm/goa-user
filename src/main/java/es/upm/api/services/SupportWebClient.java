@@ -13,7 +13,7 @@ public interface SupportWebClient {
     String HTML = "/html";
 
     @PostMapping(SIMPLE)
-    public void sendSimple(@RequestBody Email email);
+    void sendSimple(@RequestBody Email email);
 
     @PostMapping(HTML)
     void sendHtml(@RequestBody Email email);
