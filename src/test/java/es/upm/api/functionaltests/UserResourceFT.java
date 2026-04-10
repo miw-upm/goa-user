@@ -24,8 +24,10 @@ import static es.upm.api.data.entities.Role.*;
 import static es.upm.api.resources.AccessLinksResource.ACCESS_LINK;
 import static es.upm.api.resources.UserResource.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @Log4j2
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,7 +39,7 @@ class UserResourceFT {
     private SupportWebClient supportWebClient;
 
     @Autowired
-    UserResourceFT(@Value("${spring.security.oauth2.clients.api-client-id}") String apiClientId, @Value("${spring.security.oauth2.clients.api-client-secret}") String apiClientSecret, TestRestTemplate testRestTemplate) {
+    UserResourceFT(@Value("${spring.security.oauth2.api-client-id}") String apiClientId, @Value("${spring.security.oauth2.api-client-secret}") String apiClientSecret, TestRestTemplate testRestTemplate) {
         this.httpRequestBuilder = HttpRequestBuilder.create(testRestTemplate, apiClientId, apiClientSecret);
     }
 
@@ -211,7 +213,6 @@ class UserResourceFT {
     void testUpdate() {
         UserDto userDto = this.httpRequestBuilder.get(USERS + ID_ID, "666666000")
                 .role(ADMIN).exchange(UserDto.class).getBody();
-        BDDMockito.doNothing().when(this.supportWebClient).sendSimple(any(Email.class));
 
         assert userDto != null;
         String oldName = userDto.getFirstName();
@@ -223,7 +224,7 @@ class UserResourceFT {
         userDto.setFirstName(oldName);
         this.httpRequestBuilder.put(USERS + ID_ID, "666666000").role(ADMIN).body(userDto).exchange(UserDto.class);
 
-        verify(this.supportWebClient).sendSimple(any(Email.class));
+        verifyNoInteractions(this.supportWebClient);
     }
 
     @Test
@@ -231,6 +232,7 @@ class UserResourceFT {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder().mobile("666666000").scope("edit-profile").build();
         AccessLinkDto accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class).getBody());
+        BDDMockito.doNothing().when(this.supportWebClient).sendSimple(any(Email.class));
         String link = "/" + accessLink.getMobile() + "/" + accessLink.getId();
         UserDto userDto = this.httpRequestBuilder.get(USERS + link).exchange(UserDto.class).getBody();
         assert userDto != null;
@@ -242,6 +244,7 @@ class UserResourceFT {
         assertThat(Objects.requireNonNull(response.getBody()).getFirstName()).isEqualTo("new");
         userDto.setFirstName(oldName);
         this.httpRequestBuilder.put(USERS + link).body(userDto).exchange(UserDto.class);
+        verify(this.supportWebClient, atLeastOnce()).sendSimple(any(Email.class));
     }
 
 }
