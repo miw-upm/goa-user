@@ -26,9 +26,9 @@ public class DatabaseStarting {
     @Autowired
     public DatabaseStarting(
             UserRepository userRepository,
-            @Value("${miw.admin}") String admin,
-            @Value("${miw.mobile}") String mobile,
-            @Value("${miw.password}") String password,
+            @Value("${app.db.admin}") String admin,
+            @Value("${app.db.mobile}") String mobile,
+            @Value("${app.db.password}") String password,
             PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;

@@ -5,14 +5,14 @@ spring:
   security:
     oauth2:
       authorizationserver:
-        issuer-uri: ${HOST}/api/goa-user
+        issuer-uri: ${BASE_URL}/api/goa-user
 
 app:
   oauth2:
-    token-uri: ${spring.security.oauth2.authorizationserver.issuer-uri}/oauth2/token
+    token-uri: ${BASE_URL}/api/goa-user/oauth2/token
     spa-client-id: spaClientId
-    spa-login-redirect-uri: ${HOST}/callback
-    spa-logout-redirect-uri: ${HOST}
+    spa-login-redirect-uri: ${BASE_URL}/callback
+    spa-logout-redirect-uri: ${BASE_URL}
     api-client-id: ${API_CLIENT_ID}
     api-client-secret: ${API_CLIENT_SECRET}
 

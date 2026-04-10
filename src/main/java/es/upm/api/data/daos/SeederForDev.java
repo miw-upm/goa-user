@@ -24,7 +24,7 @@ public class SeederForDev {
     private final AccessLinkRepository accessLinkRepository;
 
     @Autowired
-    public SeederForDev(DatabaseStarting databaseStarting, @Value("${miw.password}") String password,
+    public SeederForDev(DatabaseStarting databaseStarting, @Value("${app.db.password}") String password,
                         PasswordEncoder passwordEncoder, UserRepository userRepository, AccessLinkRepository accessLinkRepository) {
         this.databaseStarting = databaseStarting;
         this.pass = passwordEncoder.encode(password);

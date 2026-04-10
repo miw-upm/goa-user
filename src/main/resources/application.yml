@@ -23,11 +23,15 @@ spring:
   security:
     oauth2:
       authorizationserver:
-        issuer-uri: http://localhost:8080/api/goa-user
+        issuer-uri: ${BASE_URL:http://localhost:8080}/api/goa-user
 
 app:
+  db:
+    admin: ${DB_ADMIN:admin}
+    mobile: ${DB_MOBILE:6}
+    password: ${DB_PASSWORD:6}
   oauth2:
-    token-uri: http://localhost:8080/api/goa-user/oauth2/token
+    token-uri: ${BASE_URL:http://localhost:8080}/api/goa-user/oauth2/token
     open-api-client-id: client-id
     open-api-client-secret: client-secret
     open-api-redirect-uris:
@@ -60,8 +64,3 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
-
-miw:
-  admin: admin
-  mobile: 6
-  password: 6
