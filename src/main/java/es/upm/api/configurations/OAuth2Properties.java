@@ -11,6 +11,7 @@ import java.util.List;
 @ConfigurationProperties(prefix = "app.oauth2")
 @Data
 public class OAuth2Properties {
+    private String tokenUri;
     private String openApiClientId;
     private String openApiClientSecret;
     private List<String> openApiRedirectUris = new ArrayList<>();

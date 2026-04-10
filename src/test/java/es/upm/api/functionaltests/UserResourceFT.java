@@ -1,5 +1,6 @@
 package es.upm.api.functionaltests;
 
+import es.upm.api.configurations.OAuth2Properties;
 import es.upm.api.data.entities.CreationAccessLink;
 import es.upm.api.resources.dtos.AccessLinkDto;
 import es.upm.api.resources.dtos.UserDto;
@@ -9,7 +10,6 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
@@ -37,8 +37,12 @@ class UserResourceFT {
     private SupportWebClient supportWebClient;
 
     @Autowired
-    UserResourceFT(@Value("${app.oauth2.api-client-id}") String apiClientId, @Value("${app.oauth2.api-client-secret}") String apiClientSecret, TestRestTemplate testRestTemplate) {
-        this.httpRequestBuilder = HttpRequestBuilder.create(testRestTemplate, apiClientId, apiClientSecret);
+    UserResourceFT(OAuth2Properties oAuth2Properties, TestRestTemplate testRestTemplate) {
+        this.httpRequestBuilder = HttpRequestBuilder.create(
+                testRestTemplate,
+                oAuth2Properties.getApiClientId(),
+                oAuth2Properties.getApiClientSecret()
+        );
     }
 
     @Test
