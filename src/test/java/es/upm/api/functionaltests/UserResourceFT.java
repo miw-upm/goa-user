@@ -24,10 +24,8 @@ import static es.upm.api.data.entities.Role.*;
 import static es.upm.api.resources.AccessLinksResource.ACCESS_LINK;
 import static es.upm.api.resources.UserResource.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.*;
 
 @Log4j2
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

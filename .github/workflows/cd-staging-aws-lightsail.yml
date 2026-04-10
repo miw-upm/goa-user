@@ -60,6 +60,7 @@ jobs:
               --memory 512m \
               --memory-swap 1024m \
               --network goa \
+              -e SPRING_PROFILES_ACTIVE=prod \
               -e MONGODB_URI="${{ secrets.MONGODB_URI_STAGING }}" \
               -e BASE_URL="https://goa.miwupm.es" \
               -e API_CLIENT_ID="${{ secrets.API_CLIENT_ID }}" \
