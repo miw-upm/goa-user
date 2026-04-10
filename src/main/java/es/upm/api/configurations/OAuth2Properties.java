@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@ConfigurationProperties(prefix = "spring.security.oauth2")
+@ConfigurationProperties(prefix = "app.oauth2")
 @Data
 public class OAuth2Properties {
-    private String issuerUri;
+    private String tokenUri;
     private String openApiClientId;
     private String openApiClientSecret;
     private List<String> openApiRedirectUris = new ArrayList<>();

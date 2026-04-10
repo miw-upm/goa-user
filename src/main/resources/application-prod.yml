@@ -4,13 +4,17 @@ spring:
       uri: ${MONGODB_URI}
   security:
     oauth2:
-      issuer-uri: ${HOST}/api/goa-user
-      token-uri: ${spring.security.oauth2.issuer-uri}/oauth2/token
-      spa-client-id: spaClientId
-      spa-login-redirect-uri: ${HOST}/callback
-      spa-logout-redirect-uri: ${HOST}
-      api-client-id: ${API_CLIENT_ID}
-      api-client-secret: ${API_CLIENT_SECRET}
+      authorizationserver:
+        issuer-uri: ${BASE_URL}/api/goa-user
+
+app:
+  oauth2:
+    token-uri: ${BASE_URL}/api/goa-user/oauth2/token
+    spa-client-id: spaClientId
+    spa-login-redirect-uri: ${BASE_URL}/callback
+    spa-logout-redirect-uri: ${BASE_URL}
+    api-client-id: ${API_CLIENT_ID}
+    api-client-secret: ${API_CLIENT_SECRET}
 
 eureka:
   client:

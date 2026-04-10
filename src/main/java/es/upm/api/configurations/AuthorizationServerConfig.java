@@ -9,6 +9,7 @@ import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.exceptions.BadCredentialsException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -52,13 +53,11 @@ import java.util.stream.Collectors;
 public class AuthorizationServerConfig {  // Generate tokens OAuth2
     private final PasswordEncoder passwordEncoder;
     private final OAuth2Properties oAuth2Properties;
-    private final UserRepository userRepository;
 
     @Autowired
     public AuthorizationServerConfig(PasswordEncoder passwordEncoder, OAuth2Properties oAuth2Properties, UserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
         this.oAuth2Properties = oAuth2Properties;
-        this.userRepository = userRepository;
     }
 
     @Bean
@@ -172,9 +171,9 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     }
 
     @Bean
-    public AuthorizationServerSettings authorizationServerSettings() {
+    public AuthorizationServerSettings authorizationServerSettings(@Value("${spring.security.oauth2.authorizationserver.issuer-uri}") String issuerUri) {
         return AuthorizationServerSettings.builder()
-                .issuer(this.oAuth2Properties.getIssuerUri()) //Emisor
+                .issuer(issuerUri) //Emisor
                 .build();
     }
 

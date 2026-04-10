@@ -1,9 +1,3 @@
-# logging
-logging:
-  level:
-    es.upm: DEBUG
-    org.springframework.security: WARN
-
 de:
   flapdoodle:
     mongodb:
