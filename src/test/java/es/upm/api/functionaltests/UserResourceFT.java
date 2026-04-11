@@ -234,7 +234,7 @@ class UserResourceFT {
         CreationAccessLink creationAccessLink = CreationAccessLink.builder().mobile("666666000").scope("edit-profile").build();
         AccessLinkDto accessLink = Objects.requireNonNull(this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
                 .role(ADMIN).exchange(AccessLinkDto.class).getBody());
-        BDDMockito.doNothing().when(this.supportWebClient).sendSimple(any(Email.class));
+        BDDMockito.doNothing().when(this.supportWebClient).sendHtml(any(Email.class));
         String link = "/" + accessLink.getMobile() + "/" + accessLink.getId();
         UserDto userDto = this.httpRequestBuilder.get(USERS + link).exchange(UserDto.class).getBody();
         assert userDto != null;
@@ -246,7 +246,7 @@ class UserResourceFT {
         assertThat(Objects.requireNonNull(response.getBody()).getFirstName()).isEqualTo("new");
         userDto.setFirstName(oldName);
         this.httpRequestBuilder.put(USERS + link).body(userDto).exchange(UserDto.class);
-        verify(this.supportWebClient, atLeastOnce()).sendSimple(any(Email.class));
+        verify(this.supportWebClient, atLeastOnce()).sendHtml(any(Email.class));
     }
 
 }

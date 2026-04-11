@@ -68,7 +68,7 @@ public class UserResource {
     @PreAuthorize(Security.ALL)
     @PutMapping(MOBILE_ID_TOKEN_ID)
     public UserDto updateByMobileWithToken(@PathVariable String mobile, @PathVariable String token, @Valid @RequestBody UserDto userDto) {
-        return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser()))
+        return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser(),"x.x.x.x"))
                 .ofAllBasic();
     }
 
