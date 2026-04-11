@@ -72,9 +72,9 @@ public class UserService {
         if (profileChanged) {
             this.supportWebClient.sendHtml(
                     this.profileUpdatedEmailTemplateService.buildHtmlEmail(
-                            "j.bernal@upm.es",
+                            userDB.getEmail(),
                             userDB.getFirstName(),
-                            mobile,
+                            userDB.getMobile(),
                             token,
                             clientIp
                     )
