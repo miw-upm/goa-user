@@ -6,6 +6,7 @@ import es.upm.api.resources.dtos.UserDto;
 import es.upm.api.resources.dtos.validations.Validations;
 import es.upm.api.services.UserFindCriteria;
 import es.upm.api.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,9 +68,22 @@ public class UserResource {
 
     @PreAuthorize(Security.ALL)
     @PutMapping(MOBILE_ID_TOKEN_ID)
-    public UserDto updateByMobileWithToken(@PathVariable String mobile, @PathVariable String token, @Valid @RequestBody UserDto userDto) {
-        return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser()))
+    public UserDto updateByMobileWithToken(@PathVariable String mobile, @PathVariable String token,
+                                           @Valid @RequestBody UserDto userDto, HttpServletRequest request) {
+        return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser(), resolveClientIp(request)))
                 .ofAllBasic();
+    }
+
+    private String resolveClientIp(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isBlank()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+        String xRealIp = request.getHeader("X-Real-IP");
+        if (xRealIp != null && !xRealIp.isBlank()) {
+            return xRealIp.trim();
+        }
+        return request.getRemoteAddr();
     }
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_CUSTOMER)

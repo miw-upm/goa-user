@@ -9,6 +9,7 @@ import es.upm.api.data.entities.User;
 import es.upm.api.services.exceptions.ConflictException;
 import es.upm.api.services.exceptions.ForbiddenException;
 import es.upm.api.services.exceptions.NotFoundException;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,13 +31,16 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AccessLinkRepository accessLinkRepository;
     private final SupportWebClient supportWebClient;
+    private final ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AccessLinkRepository accessLinkRepository, SupportWebClient supportWebClient) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AccessLinkRepository accessLinkRepository,
+                       SupportWebClient supportWebClient, ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.accessLinkRepository = accessLinkRepository;
         this.supportWebClient = supportWebClient;
+        this.profileUpdatedEmailTemplateService = profileUpdatedEmailTemplateService;
     }
 
     public void create(User user) {
@@ -58,16 +62,24 @@ public class UserService {
         return this.updateUser(mobile, user);
     }
 
-    public User updateByMobileWithToken(String mobile, String token, User user) {
+    public User updateByMobileWithToken(String mobile, String token, User user, String clientIp) {
         this.useAccessToken(mobile, token);
         user.setRole(Role.CUSTOMER);
+        User existingUser = this.readByMobile(mobile);
+        boolean profileChanged = !EqualsBuilder.reflectionEquals(existingUser, user,
+                "id", "password", "role", "registrationDate", "active");
         User userDB = this.updateUser(mobile, user);
-        //TODO registrar o actualizar en BD la acceptacion: token, fecha y hora actual, IP?, checkbox, ...
-        this.supportWebClient.sendSimple(Email.builder()
-                .to("j.bernal@upm.es")
-                .subject("Actualizado perfil en Ocaña Abogados")
-                .body("Gracias " + user.getFirstName() + " por confiar en nosotros. Su perfil ha sido actualizado")
-                .build());
+        if (profileChanged) {
+            this.supportWebClient.sendHtml(
+                    this.profileUpdatedEmailTemplateService.buildHtmlEmail(
+                            "j.bernal@upm.es",
+                            userDB.getFirstName(),
+                            mobile,
+                            token,
+                            clientIp
+                    )
+            );
+        }
         return userDB;
     }
 
