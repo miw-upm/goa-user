@@ -1,6 +1,7 @@
 package es.upm.api.services;
 
 import es.upm.api.services.exceptions.InternalServerException;
+import es.upm.miw.device.DeviceInfo;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +23,16 @@ public class ProfileUpdatedEmailTemplateService {
         this.htmlTemplate = readClasspathFile(HTML_TEMPLATE_PATH);
     }
 
-    public Email buildHtmlEmail(String to, String firstName, String mobile, String token, String clientIp) {
+    public Email buildHtmlEmail(String to, String firstName, String mobile, String token, DeviceInfo deviceInfo) {
         String renderedHtml = this.htmlTemplate
                 .replace("{{FIRST_NAME}}", firstName)
                 .replace("{{UPDATED_AT}}", LocalDateTime.now().format(DATE_TIME_FORMATTER))
                 .replace("{{MOBILE}}", mobile)
                 .replace("{{TOKEN}}", token)
-                .replace("{{CLIENT_IP}}", clientIp);
+                .replace("{{CLIENT_IP}}", deviceInfo.getIpAddress())
+                .replace("{{DEVICE_TYPE}}", deviceInfo.getDeviceType())
+                .replace("{{OPERATING_SYSTEM}}", deviceInfo.getOperatingSystem())
+                .replace("{{BROWSER}}", deviceInfo.getBrowser());
 
         return Email.builder()
                 .to(to)

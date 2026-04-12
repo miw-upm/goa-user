@@ -62,7 +62,19 @@
         <spring-cloud.version>2025.0.1</spring-cloud.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/miw-upm/goa-commons</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <dependency>
+            <groupId>es.upm.miw</groupId>
+            <artifactId>goa-commons</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -120,6 +132,7 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
+
         <!-- ================ TEST ================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

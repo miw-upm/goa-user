@@ -6,6 +6,8 @@ import es.upm.api.resources.dtos.UserDto;
 import es.upm.api.resources.dtos.validations.Validations;
 import es.upm.api.services.UserFindCriteria;
 import es.upm.api.services.UserService;
+import es.upm.miw.device.DeviceInfo;
+import es.upm.miw.device.DeviceInfoResolver;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
@@ -70,8 +72,15 @@ public class UserResource {
     @PutMapping(MOBILE_ID_TOKEN_ID)
     public UserDto updateByMobileWithToken(@PathVariable String mobile, @PathVariable String token,
                                            @Valid @RequestBody UserDto userDto, HttpServletRequest request) {
-        return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser(), resolveClientIp(request)))
+        return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser(),  resolveDeviceInfo(request)))
                 .ofAllBasic();
+    }
+
+    private DeviceInfo resolveDeviceInfo(HttpServletRequest request) {
+        return DeviceInfoResolver.resolve(
+                request.getHeader("User-Agent"),
+                resolveClientIp(request)
+        );
     }
 
     private String resolveClientIp(HttpServletRequest request) {

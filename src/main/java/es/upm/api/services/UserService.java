@@ -9,6 +9,7 @@ import es.upm.api.data.entities.User;
 import es.upm.api.services.exceptions.ConflictException;
 import es.upm.api.services.exceptions.ForbiddenException;
 import es.upm.api.services.exceptions.NotFoundException;
+import es.upm.miw.device.DeviceInfo;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class UserService {
         return this.updateUser(mobile, user);
     }
 
-    public User updateByMobileWithToken(String mobile, String token, User user, String clientIp) {
+    public User updateByMobileWithToken(String mobile, String token, User user, DeviceInfo deviceInfo) {
         this.useAccessToken(mobile, token);
         user.setRole(Role.CUSTOMER);
         User existingUser = this.readByMobile(mobile);
@@ -76,7 +77,7 @@ public class UserService {
                             userDB.getFirstName(),
                             userDB.getMobile(),
                             token,
-                            clientIp
+                            deviceInfo
                     )
             );
         }
