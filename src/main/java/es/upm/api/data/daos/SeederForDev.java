@@ -1,6 +1,7 @@
 package es.upm.api.data.daos;
 
 import es.upm.api.data.entities.*;
+import es.upm.miw.uuid.UUIDBase64;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
