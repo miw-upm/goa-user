@@ -60,19 +60,32 @@ jobs:
           key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY_STAGING }}
           script: |
             echo ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            docker pull ghcr.io/${{ env.REPOSITORY }}:latest            
             docker rm -f ${{ env.ARTIFACT }} || true
-            docker pull ghcr.io/${{ env.REPOSITORY }}:latest
+
             docker run -d \
               --name ${{ env.ARTIFACT }} \
               --restart always \
               --memory 512m \
               --memory-swap 1024m \
               --network goa \
+              --health-cmd="wget -qO- http://localhost:8081/actuator/health || exit 1" \
+              --health-interval=10s \
+              --health-start-period=30s \
               -e SPRING_PROFILES_ACTIVE=prod \
               -e MONGODB_URI="${{ secrets.MONGODB_URI_STAGING }}" \
               -e BASE_URL="https://goa.miwupm.es" \
               -e API_CLIENT_ID="${{ secrets.API_CLIENT_ID }}" \
               -e API_CLIENT_SECRET="${{ secrets.API_CLIENT_SECRET }}" \
               ghcr.io/${{ env.REPOSITORY }}:latest
-            sleep 20
+            
+            # Verificar arranque
+            for i in 1 2 3 4 5 6; do
+            sleep 10
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' ${{ env.ARTIFACT }} 2>/dev/null)
+            [ "$STATUS" = "healthy" ] && break
+            done
+            [ "$STATUS" != "healthy" ] && echo "Container not healthy" && exit 1
+            
             docker image prune --filter "until=12h" -f
