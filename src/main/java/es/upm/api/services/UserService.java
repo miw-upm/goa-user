@@ -4,11 +4,12 @@ import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
-import es.upm.api.data.entities.UUIDBase64;
 import es.upm.api.data.entities.User;
-import es.upm.api.services.exceptions.ConflictException;
-import es.upm.api.services.exceptions.ForbiddenException;
-import es.upm.api.services.exceptions.NotFoundException;
+import es.upm.miw.device.DeviceInfo;
+import es.upm.miw.exception.ConflictException;
+import es.upm.miw.exception.ForbiddenException;
+import es.upm.miw.exception.NotFoundException;
+import es.upm.miw.uuid.UUIDBase64;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class UserService {
         return this.updateUser(mobile, user);
     }
 
-    public User updateByMobileWithToken(String mobile, String token, User user, String clientIp) {
+    public User updateByMobileWithToken(String mobile, String token, User user, DeviceInfo deviceInfo) {
         this.useAccessToken(mobile, token);
         user.setRole(Role.CUSTOMER);
         User existingUser = this.readByMobile(mobile);
@@ -76,7 +77,7 @@ public class UserService {
                             userDB.getFirstName(),
                             userDB.getMobile(),
                             token,
-                            clientIp
+                            deviceInfo
                     )
             );
         }

@@ -1,7 +1,7 @@
 package es.upm.api.resources.httperrors;
 
 import es.upm.api.data.entities.exceptions.BadCredentialsException;
-import es.upm.api.services.exceptions.*;
+import es.upm.miw.exception.*;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;

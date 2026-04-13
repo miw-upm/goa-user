@@ -2,7 +2,7 @@ package es.upm.api.services;
 
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
-import es.upm.api.services.exceptions.ForbiddenException;
+import es.upm.miw.exception.ForbiddenException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
