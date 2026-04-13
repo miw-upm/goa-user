@@ -17,6 +17,16 @@ La seguridad esta basada en OAuth2 y OpenId Connect, desarrollando ambos proceso
 
 `Java` `Maven` `GitHub` `Spring-Boot` `Sonarcloud` `JPA` `PostgreSQL` `Docker` `OAuth2` `OpenID Connect`
 
+## Configuración de Maven para GitHub Packages
+
+```bash
+export GITHUB_READ_TOKEN=valor_del_token
+mkdir -p ~/.m2 && echo "<settings><servers><server><id>github</id><username>x</username>\
+<password>$GITHUB_READ_TOKEN</password></server></servers></settings>" > ~/.m2/settings.xml
+```
+
+> Sustituye `valor_del_token` por el token proporcionado y ejecuta ambos comandos en el terminal.
+
 ### :gear: Instalación del proyecto
 
 1. Clonar el repositorio en tu equipo, **mediante consola**:
