@@ -1,6 +1,6 @@
 package es.upm.api.data.entities;
 
-import es.upm.api.services.exceptions.ForbiddenException;
+import es.upm.miw.exception.ForbiddenException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

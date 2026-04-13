@@ -4,7 +4,7 @@ import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.CreationAccessLink;
 import es.upm.api.data.entities.User;
-import es.upm.api.services.exceptions.NotFoundException;
+import es.upm.miw.exception.NotFoundException;
 import es.upm.miw.uuid.UUIDBase64;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;

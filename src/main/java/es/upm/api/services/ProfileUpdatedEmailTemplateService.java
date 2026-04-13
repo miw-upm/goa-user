@@ -1,6 +1,7 @@
 package es.upm.api.services;
 
 import es.upm.miw.device.DeviceInfo;
+import es.upm.miw.mail.EmailTemplateRenderer;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

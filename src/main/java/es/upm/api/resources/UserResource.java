@@ -72,7 +72,7 @@ public class UserResource {
     @PutMapping(MOBILE_ID_TOKEN_ID)
     public UserDto updateByMobileWithToken(@PathVariable String mobile, @PathVariable String token,
                                            @Valid @RequestBody UserDto userDto, HttpServletRequest request) {
-        return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser(),  resolveDeviceInfo(request)))
+        return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser(), resolveDeviceInfo(request)))
                 .ofAllBasic();
     }
 
