@@ -11,7 +11,7 @@ La seguridad esta basada en OAuth2 y OpenId Connect, desarrollando ambos proceso
 ### Estado del código
 [![CI goa-user](https://github.com/miw-upm/goa-user/actions/workflows/ci.yml/badge.svg)](https://github.com/miw-upm/goa-user/actions/workflows/ci.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=miw-upm-github_goa-user&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=miw-upm-github_goa-user)
-[![AWS broken](https://gestion.ocanabogados.es/api/goa-user/system/version-badge)](https://gestion.ocanabogados.es/api/goa-user/system)
+[![AWS broken](https://goa.miwump.es/api/goa-user/system/version-badge)](https://goa.miwump.es/api/goa-user/system)
 
 ## Tecnologías necesarias
 
