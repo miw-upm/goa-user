@@ -14,14 +14,11 @@ public class ProfileUpdatedEmailTemplateService {
     private static final String HTML_TEMPLATE_PATH = "templates/email/profile-updated.html";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    public Email buildHtmlEmail(String to, String firstName, String mobile,
-                                String token, DeviceInfo deviceInfo) {
+    public Email buildHtmlEmail(String to, String firstName, String mobile, DeviceInfo deviceInfo) {
         String body = EmailTemplateRenderer.render(HTML_TEMPLATE_PATH, Map.of(
                 "FIRST_NAME", firstName,
                 "UPDATED_AT", LocalDateTime.now().format(DATE_TIME_FORMATTER),
                 "MOBILE", mobile,
-                "TOKEN", token,
-                "CLIENT_IP", deviceInfo.getIpAddress(),
                 "DEVICE_TYPE", deviceInfo.getDeviceType(),
                 "OPERATING_SYSTEM", deviceInfo.getOperatingSystem(),
                 "BROWSER", deviceInfo.getBrowser()

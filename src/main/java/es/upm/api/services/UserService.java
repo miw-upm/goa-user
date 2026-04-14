@@ -76,7 +76,6 @@ public class UserService {
                             userDB.getEmail(),
                             userDB.getFirstName(),
                             userDB.getMobile(),
-                            token,
                             deviceInfo
                     )
             );
