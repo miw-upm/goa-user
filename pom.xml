@@ -60,6 +60,8 @@
         <de.flapdoodle.embed.mongo.spring3x.version>4.20.0</de.flapdoodle.embed.mongo.spring3x.version>
         <!-- Spring cloud -->
         <spring-cloud.version>2025.0.1</spring-cloud.version>
+        <!-- GOA commons -->
+        <goa-commands.version>1.2.0</goa-commands.version>
     </properties>
 
     <repositories>
@@ -73,7 +75,7 @@
         <dependency>
             <groupId>es.upm.miw</groupId>
             <artifactId>goa-commons</artifactId>
-            <version>1.1.0</version>
+            <version>${goa-commands.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
