@@ -15,7 +15,7 @@ La seguridad esta basada en OAuth2 y OpenId Connect, desarrollando ambos proceso
 
 ## Tecnologías necesarias
 
-`Java` `Maven` `GitHub` `Spring-Boot` `Sonarcloud` `JPA` `PostgreSQL` `Docker` `OAuth2` `OpenID Connect`
+`Java` `Maven` `GitHub` `Spring-Boot` `Sonarcloud` `JPA` `MongoDB` `Docker` `OAuth2` `OpenID Connect`
 
 ## Configuración de Maven para GitHub Packages
 
@@ -47,10 +47,9 @@ mkdir -p ~/.m2 && echo "<settings><servers><server><id>github</id><username>x</u
 > docker compose up --build -d
 ```
 
-* Necesita de una bases de datos: **url:** `jdbc:postgresql://localhost:5432/goauser`, **username:**`postgres` y *
-  *password:** `postgres`. Recordar que la BD **goauser** se deben crear manualmente.
+* Necesita de una bases de datos: **url:** `mongodb://mongo:mongo@localhost:27017/goauserdb?authSource=admin`, **username:**`postgres`.
 
-* Se aporta un fichero `docker-compose-db.yml`que monta 3 motores de BD sobre Docker: Postgres, MySQL y MongoDB.
+* Se aporta un fichero `docker-compose-db.yml`que monta el motor de BD sobre Docker:  MongoDB.
 
 ```sh
 > docker compose -f docker-compose-db.yml -p databases up -d
