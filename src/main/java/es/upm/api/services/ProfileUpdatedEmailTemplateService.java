@@ -18,7 +18,7 @@ public class ProfileUpdatedEmailTemplateService {
         String body = EmailTemplateRenderer.render(HTML_TEMPLATE_PATH, Map.of(
                 "FIRST_NAME", firstName,
                 "UPDATED_AT", LocalDateTime.now().format(DATE_TIME_FORMATTER),
-                "MOBILE", mobile,
+                "MOBILE", "***" + mobile.substring(mobile.length() - 3),
                 "DEVICE_TYPE", deviceInfo.getDeviceType(),
                 "OPERATING_SYSTEM", deviceInfo.getOperatingSystem(),
                 "BROWSER", deviceInfo.getBrowser()
