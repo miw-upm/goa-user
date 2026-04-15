@@ -14,8 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Objects;
 
-import static es.upm.api.data.entities.Role.ADMIN;
-import static es.upm.api.data.entities.Role.CUSTOMER;
+import static es.upm.api.data.entities.Role.*;
 import static es.upm.api.resources.AccessLinksResource.ACCESS_LINK;
 import static es.upm.api.resources.AccessLinksResource.ID_ID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,6 +103,19 @@ class AccessLinkResourceFT {
         ResponseEntity<Void> response2 = this.httpRequestBuilder
                 .delete(ACCESS_LINK + ID_ID, link.getId()).role(ADMIN).exchange(Void.class);
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void testDeleteForbidden() {
+        CreationAccessLink creationAccessLink = CreationAccessLink.builder()
+                .mobile("666666000").scope("EDIT_PROFILE").build();
+        ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINK).body(creationAccessLink)
+                .role(MANAGER).exchange(AccessLinkDto.class);
+        AccessLinkDto link = Objects.requireNonNull(response.getBody());
+        ResponseEntity<Void> response2 = this.httpRequestBuilder
+                .delete(ACCESS_LINK + ID_ID, link.getId()).role(MANAGER).exchange(Void.class);
+        assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
     }
 
 }
