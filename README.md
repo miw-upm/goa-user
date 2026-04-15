@@ -56,4 +56,3 @@ mkdir -p ~/.m2 && echo "<settings><servers><server><id>github</id><username>x</u
 ```
 
 * Cliente Web: `http://localhost:8081/swagger-ui.html`
-

@@ -37,6 +37,7 @@ public class AccessLinksResource {
                 .toList();
     }
 
+    @PreAuthorize(Security.ADMIN)
     @DeleteMapping(ID_ID)
     public void delete(@PathVariable String id) {
         this.accessLinkService.deleteById(id);
