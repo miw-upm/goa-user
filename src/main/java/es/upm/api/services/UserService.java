@@ -69,7 +69,7 @@ public class UserService {
     public User updateByMobileWithToken(String mobile, String token, User user, DeviceInfo deviceInfo) {
         User existingUser = this.readByMobile(mobile);
         if (!CUSTOMER.equals(existingUser.getRole())) {
-            throw new ForbiddenException("Forbidden purpose");
+            throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + existingUser.getRole() + "Mobile: " + mobile);
         }
         this.useAccessToken(mobile, token, true);
         boolean profileChanged = !EqualsBuilder.reflectionEquals(existingUser, user,
@@ -104,7 +104,7 @@ public class UserService {
         } else {
             user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         }
-        BeanUtils.copyProperties(user, existing, "id", "registrationDate");
+        BeanUtils.copyProperties(user, existing, "id", "password", "role", "registrationDate", "active");
         return this.userRepository.save(existing);
     }
 
@@ -148,10 +148,10 @@ public class UserService {
         AccessLink accessLink = this.accessLinkRepository.findById(token)
                 .orElseThrow(() -> new NotFoundException("The token don't exist: " + token));
         if (!accessLink.getUser().getMobile().equals(mobile)) {
-            throw new ForbiddenException("Forbidden token");
+            throw new ForbiddenException("Forbidden token. Token is the another mobile");
         }
         if (!accessLink.getScope().equals(SCOPE_EDIT_PROFILE)) {
-            throw new ForbiddenException("Forbidden purpose");
+            throw new ForbiddenException("Forbidden purpose. Only EDIT_PROFILE allowed.");
         }
         accessLink.use();
         if (updating) {
