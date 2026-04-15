@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +28,8 @@ class UserServiceTest {
     private UserService userService;
     @Autowired
     private AccessLinkRepository accessLinkRepository;
+    @MockitoBean
+    private SupportWebClient supportWebClient;
 
     @Test
     @WithMockUser(username = "666666003", roles = {"manager"})
@@ -96,9 +99,10 @@ class UserServiceTest {
     }
 
     @Test
-    @WithMockUser(username = "66", roles = {"customer"})
+    @WithMockUser(username = "666666001", roles = {"customer"})
     void testUpdateUserLastUsedForUpdateAt() {
-        User user = this.userService.readByMobile("66");
+        String mobile = "666666001";
+        User user = this.userService.readByMobile(mobile);
         String originalCity = user.getCity();
 
         String token = UUID.randomUUID().toString();
@@ -114,13 +118,13 @@ class UserServiceTest {
 
         user.setCity("new");
         this.userService.updateByMobileWithToken(
-                "66",
+                mobile,
                 token,
                 user,
                 DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
         );
 
-        User updatedUser = this.userService.readByMobile("66");
+        User updatedUser = this.userService.readByMobile(mobile);
         AccessLink updatedAccessLink = this.accessLinkRepository.findById(token).orElseThrow();
 
         assertThat(updatedUser).isNotNull();
@@ -131,7 +135,7 @@ class UserServiceTest {
                 .isAfter(LocalDateTime.now().minusSeconds(5));
 
         updatedUser.setCity(originalCity);
-        this.userService.updateByMobile("66", updatedUser);
+        this.userService.updateByMobile(mobile, updatedUser);
         this.accessLinkRepository.deleteById(token);
     }
 
