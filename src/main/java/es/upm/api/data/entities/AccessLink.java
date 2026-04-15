@@ -23,6 +23,7 @@ public class AccessLink {
     @DBRef
     private User user;
     private LocalDateTime createdAt;
+    private LocalDateTime lastUsedForUpdateAt;
     private LocalDateTime expiresAt;
     private Integer remainingUses;
     private String scope;
