@@ -1,7 +1,10 @@
 package es.upm.api.services;
 
+import es.upm.api.data.daos.AccessLinkRepository;
+import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
+import es.upm.miw.device.DeviceInfoResolver;
 import es.upm.miw.exception.ForbiddenException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +25,8 @@ class UserServiceTest {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private AccessLinkRepository accessLinkRepository;
 
     @Test
     @WithMockUser(username = "666666003", roles = {"manager"})
@@ -87,6 +93,46 @@ class UserServiceTest {
                 .isEqualTo(oldUser.getFirstName());
         oldUser.setMobile("666666002");
         this.userService.updateByMobile("666666666", oldUser);
+    }
+
+    @Test
+    @WithMockUser(username = "66", roles = {"customer"})
+    void testUpdateUserLastUsedForUpdateAt() {
+        User user = this.userService.readByMobile("66");
+        String originalCity = user.getCity();
+
+        String token = UUID.randomUUID().toString();
+        AccessLink accessLink = AccessLink.builder()
+                .id(token)
+                .user(user)
+                .createdAt(LocalDateTime.now().minusMinutes(1))
+                .expiresAt(LocalDateTime.now().plusDays(1))
+                .remainingUses(2)
+                .scope(UserService.SCOPE_EDIT_PROFILE)
+                .build();
+        this.accessLinkRepository.save(accessLink);
+
+        user.setCity("new");
+        this.userService.updateByMobileWithToken(
+                "66",
+                token,
+                user,
+                DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
+        );
+
+        User updatedUser = this.userService.readByMobile("66");
+        AccessLink updatedAccessLink = this.accessLinkRepository.findById(token).orElseThrow();
+
+        assertThat(updatedUser).isNotNull();
+        assertThat(updatedUser.getCity()).isEqualTo("new");
+        assertThat(updatedAccessLink.getLastUsedForUpdateAt()).isNotNull();
+        assertThat(updatedAccessLink.getLastUsedForUpdateAt())
+                .isNotNull()
+                .isAfter(LocalDateTime.now().minusSeconds(5));
+
+        updatedUser.setCity(originalCity);
+        this.userService.updateByMobile("66", updatedUser);
+        this.accessLinkRepository.deleteById(token);
     }
 
 }

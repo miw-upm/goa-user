@@ -19,10 +19,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
+
+import static es.upm.api.data.entities.Role.CUSTOMER;
 
 @Service
 public class UserService {
@@ -64,9 +67,11 @@ public class UserService {
     }
 
     public User updateByMobileWithToken(String mobile, String token, User user, DeviceInfo deviceInfo) {
-        this.useAccessToken(mobile, token);
-        user.setRole(Role.CUSTOMER);
         User existingUser = this.readByMobile(mobile);
+        if (!CUSTOMER.equals(existingUser.getRole())) {
+            throw new ForbiddenException("Forbidden purpose");
+        }
+        this.useAccessToken(mobile, token, true);
         boolean profileChanged = !EqualsBuilder.reflectionEquals(existingUser, user,
                 "id", "password", "role", "registrationDate", "active");
         User userDB = this.updateUser(mobile, user);
@@ -117,9 +122,9 @@ public class UserService {
                 .map(Role::from)
                 .orElse(Role.ANONYMOUS);
         return switch (authRole) {
-            case ADMIN -> List.of(Role.ADMIN, Role.MANAGER, Role.OPERATOR, Role.CUSTOMER);
-            case MANAGER -> List.of(Role.MANAGER, Role.OPERATOR, Role.CUSTOMER);
-            case OPERATOR, CUSTOMER, URL_TOKEN -> List.of(Role.CUSTOMER);
+            case ADMIN -> List.of(Role.ADMIN, Role.MANAGER, Role.OPERATOR, CUSTOMER);
+            case MANAGER -> List.of(Role.MANAGER, Role.OPERATOR, CUSTOMER);
+            case OPERATOR, CUSTOMER, URL_TOKEN -> List.of(CUSTOMER);
             default -> List.of();
         };
     }
@@ -135,21 +140,24 @@ public class UserService {
     }
 
     public User readByMobileWithToken(String mobile, String token) {
-        if (!this.useAccessToken(mobile, token).equals(SCOPE_EDIT_PROFILE)) {
-            throw new ForbiddenException("Forbidden purpose");
-        }
+        this.useAccessToken(mobile, token, false);
         return this.readByMobile(mobile);
     }
 
-    private String useAccessToken(String mobile, String token) {
+    private void useAccessToken(String mobile, String token, boolean updating) {
         AccessLink accessLink = this.accessLinkRepository.findById(token)
                 .orElseThrow(() -> new NotFoundException("The token don't exist: " + token));
         if (!accessLink.getUser().getMobile().equals(mobile)) {
             throw new ForbiddenException("Forbidden token");
         }
+        if (!accessLink.getScope().equals(SCOPE_EDIT_PROFILE)) {
+            throw new ForbiddenException("Forbidden purpose");
+        }
         accessLink.use();
+        if (updating) {
+            accessLink.setLastUsedForUpdateAt(LocalDateTime.now());
+        }
         this.accessLinkRepository.save(accessLink);
-        return accessLink.getScope();
     }
 
     private void assertNoExistByEmail(String email) {
@@ -175,7 +183,7 @@ public class UserService {
         if (criteria.all()) {
             userDtos = this.userRepository.findByRoleIn(validRoles()).stream();
         } else if (criteria.getAttribute() != null) {
-            userDtos = this.userRepository.findByAll(criteria.getAttribute(), List.of(Role.CUSTOMER)).stream();
+            userDtos = this.userRepository.findByAll(criteria.getAttribute(), List.of(CUSTOMER)).stream();
         } else {
             userDtos = this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
                     criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(), criteria.getEmail(), criteria.getIdentity(), this.validRoles()
@@ -185,7 +193,7 @@ public class UserService {
         if (SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                 .stream()
                 .anyMatch(authority ->
-                        authority.getAuthority().equals(Role.CUSTOMER.springSecurityAuthority())
+                        authority.getAuthority().equals(CUSTOMER.springSecurityAuthority())
                 )
         ) {
             userDtos = userDtos.filter(user -> user.getMobile().equals(SecurityContextHolder.getContext().getAuthentication().getName()));
