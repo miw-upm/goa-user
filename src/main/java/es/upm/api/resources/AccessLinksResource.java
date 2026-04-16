@@ -2,6 +2,7 @@ package es.upm.api.resources;
 
 import es.upm.api.data.entities.CreationAccessLink;
 import es.upm.api.resources.dtos.AccessLinkDto;
+import es.upm.api.services.AccessLinkFindCriteria;
 import es.upm.api.services.AccessLinkService;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
@@ -31,8 +32,8 @@ public class AccessLinksResource {
     }
 
     @GetMapping
-    public List<AccessLinkDto> findAll() {
-        return this.accessLinkService.findAll()
+    public List<AccessLinkDto> findNullSafe(@ModelAttribute AccessLinkFindCriteria criteria) {
+        return this.accessLinkService.findNullSafe(criteria)
                 .map(AccessLinkDto::new)
                 .toList();
     }
