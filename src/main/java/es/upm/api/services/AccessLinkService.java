@@ -34,7 +34,7 @@ public class AccessLinkService {
         return this.accessLinkRepository.save(accessLink);
     }
 
-    public Stream<AccessLink> findAll() {
+    public Stream<AccessLink> findNullSafe(AccessLinkFindCriteria criteria) {
         return this.accessLinkRepository.findAll().stream();
     }
 
