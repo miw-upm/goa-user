@@ -1,24 +1,27 @@
 services:
   goa-user:
-    build: .
-    ports:
-      - "8081:8081"
+    build:
+      context: .
+      secrets: [github_token]
+    ports: ["8081:8081"]
     environment:
       JAVA_OPTS: "-Xms64m -Xmx384m"
       SPRING_DATA_MONGODB_URI: mongodb://mongo:mongo@mongo:27017/goauserdb?authSource=admin
       EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://host.docker.internal:8761/eureka/
-    networks:
-      - goa
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks: [goa]
+    extra_hosts: ["host.docker.internal:host-gateway"]
 
 networks:
   goa:
     external: true
 
+secrets:
+  github_token:
+    environment: GITHUB_TOKEN
+
+#> $env:GITHUB_TOKEN="xxxx"   echo $env:GITHUB_TOKEN
+#> export GITHUB_TOKEN=xxxx
+
 #> docker compose up --build -d
 
-# Para crear una basses de datos:
-#> docker exec -e PGPASSWORD='password' -it postgres-server psql -U userPostgres -d postgres -c "CREATE DATABASE goauserdb;"
-# Para ver los logs de arranque
 #> docker logs -f goa-user
