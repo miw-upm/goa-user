@@ -6,6 +6,7 @@ import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.miw.device.DeviceInfo;
+import es.upm.miw.exception.BadRequestException;
 import es.upm.miw.exception.ConflictException;
 import es.upm.miw.exception.ForbiddenException;
 import es.upm.miw.exception.NotFoundException;
@@ -76,14 +77,18 @@ public class UserService {
                 "id", "password", "role", "registrationDate", "active");
         User userDB = this.updateUser(mobile, user);
         if (profileChanged) {
-            this.supportWebClient.sendHtml(
-                    this.profileUpdatedEmailTemplateService.buildHtmlEmail(
-                            userDB.getEmail(),
-                            userDB.getFirstName(),
-                            userDB.getMobile(),
-                            deviceInfo
-                    )
-            );
+            try {
+                this.supportWebClient.sendHtml(
+                        this.profileUpdatedEmailTemplateService.buildHtmlEmail(
+                                userDB.getEmail(),
+                                userDB.getFirstName(),
+                                userDB.getMobile(),
+                                deviceInfo
+                        )
+                );
+            } catch (Exception e) {
+                throw new BadRequestException("Email incorrecto: (" + userDB.getEmail() + "). No se puede enviar notificaciones! ");
+            }
         }
         return userDB;
     }
@@ -199,6 +204,11 @@ public class UserService {
             userDtos = userDtos.filter(user -> user.getMobile().equals(SecurityContextHolder.getContext().getAuthentication().getName()));
         }
         return userDtos;
+    }
+
+    public Stream<UUID> findIdsByMobileContaining(String mobile) {
+        return this.userRepository.findByMobileContaining(mobile).stream()
+                .map(User::getId);
     }
 
 }

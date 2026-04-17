@@ -13,6 +13,6 @@ public class AccessLinkFindCriteria {
     private String scope;
 
     public boolean all() {
-        return mobile == null && scope == null && expired == false;
+        return mobile == null && scope == null && (expired == null || !expired);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,17 +18,33 @@ public class AccessLinkRepositoryCustomImpl implements AccessLinkRepositoryCusto
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public List<AccessLink> findActiveUsedAndByUserIdAndByScope(LocalDateTime now, UUID userId, String scope) {
+    public List<AccessLink> searchActiveUsedByUserIdsAndScope(List<UUID> userIds, String scope) {
         Query query = new Query();
 
-        query.addCriteria(Criteria.where("expiresAt").gte(now));
+        query.addCriteria(Criteria.where("expiresAt").gte(LocalDateTime.now()));
         query.addCriteria(Criteria.where("lastUsedForUpdateAt").ne(null));
 
-        if (userId != null) {
-            query.addCriteria(Criteria.where("user.$id").is(userId));
+        if (userIds != null && !userIds.isEmpty()) {
+            query.addCriteria(Criteria.where("user.$id").in(userIds));
         }
-        if (scope != null) {
-            query.addCriteria(Criteria.where("scope").is(scope));
+        if (StringUtils.hasText(scope)) {
+            query.addCriteria(Criteria.where("scope").regex(scope, "i"));
+        }
+        return mongoTemplate.find(query, AccessLink.class);
+    }
+
+    @Override
+    public List<AccessLink> searchExpiredUnusedByUserIdsAndScope(List<UUID> userIds, String scope) {
+        Query query = new Query();
+
+        query.addCriteria(Criteria.where("expiresAt").lt(LocalDateTime.now()));
+        query.addCriteria(Criteria.where("lastUsedForUpdateAt").is(null));
+
+        if (userIds != null && !userIds.isEmpty()) {
+            query.addCriteria(Criteria.where("user.$id").in(userIds));
+        }
+        if (StringUtils.hasText(scope)) {
+            query.addCriteria(Criteria.where("scope").regex(scope, "i"));
         }
         return mongoTemplate.find(query, AccessLink.class);
     }
