@@ -21,4 +21,6 @@ public interface UserRepository extends MongoRepository<User, UUID>, UserReposit
 
     boolean existsByIdentity(String identity);
 
+    List<User> findByMobileContaining(String mobile);
+
 }

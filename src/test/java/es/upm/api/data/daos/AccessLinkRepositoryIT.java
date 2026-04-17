@@ -20,9 +20,9 @@ class AccessLinkRepositoryIT {
     private AccessLinkRepository accessLinkRepository;
 
     @Test
-    void testFindActiveUsedAndByUserIdAndByScopeWithoutFilters() {
+    void testFindActiveUsedAndByMobileAndByScopeWithoutFilters() {
         List<AccessLink> result = this.accessLinkRepository
-                .findActiveUsedAndByUserIdAndByScope( null, null);
+                .searchActiveUsedByUserIdsAndScope(null, null);
 
         assertThat(result)
                 .isNotEmpty()
@@ -31,11 +31,11 @@ class AccessLinkRepositoryIT {
     }
 
     @Test
-    void testFindActiveUsedAndByUserIdAndByScopeWithUserId() {
+    void testFindActiveUsedAndByMobileAndByScopeWithUserId() {
         UUID userId = UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0005");
 
         List<AccessLink> result = this.accessLinkRepository
-                .findActiveUsedAndByUserIdAndByScope( userId, null);
+                .searchActiveUsedByUserIdsAndScope(List.of(userId), null);
 
         assertThat(result)
                 .isNotEmpty()
@@ -44,9 +44,9 @@ class AccessLinkRepositoryIT {
     }
 
     @Test
-    void testFindActiveUsedAndByUserIdAndByScopeWithScope() {
+    void testFindActiveUsedAndByMobileAndByScopeWithScope() {
         List<AccessLink> result = this.accessLinkRepository
-                .findActiveUsedAndByUserIdAndByScope(null, "edit-profile");
+                .searchActiveUsedByUserIdsAndScope(null, "edit-profile");
 
         assertThat(result)
                 .isNotEmpty()
@@ -55,11 +55,11 @@ class AccessLinkRepositoryIT {
     }
 
     @Test
-    void testFindActiveUsedAndByUserIdAndByScopeWithBothFilters() {
+    void testFindActiveUsedAndByMobileAndByScopeWithBothFilters() {
         UUID userId = UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0005");
 
         List<AccessLink> result = this.accessLinkRepository
-                .findActiveUsedAndByUserIdAndByScope( userId, "edit-profile");
+                .searchActiveUsedByUserIdsAndScope(List.of(userId), "edit-profile");
 
         assertThat(result)
                 .isNotEmpty()
@@ -69,11 +69,9 @@ class AccessLinkRepositoryIT {
     }
 
     @Test
-    void testFindActiveUsedAndByUserIdAndByScopeReturnsEmptyForExpiredOrUnused() {
-        UUID userId = UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0004");
-
+    void testFindActiveUsedAndByMobileAndByScopeReturnsEmptyForExpiredOrUnused() {
         List<AccessLink> result = this.accessLinkRepository
-                .findActiveUsedAndByUserIdAndByScope( userId, null);
+                .searchActiveUsedByUserIdsAndScope(List.of(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0004")), null);
 
         // users[3] tiene links pero ninguno con lastUsedForUpdateAt != null
         assertThat(result).isEmpty();

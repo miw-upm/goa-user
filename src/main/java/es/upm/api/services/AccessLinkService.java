@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Service
@@ -37,10 +39,15 @@ public class AccessLinkService {
     public Stream<AccessLink> findNullSafe(AccessLinkFindCriteria criteria) {
         if (criteria.all()) {
             return this.accessLinkRepository.findAll().stream();
-        } else {
-            return this.accessLinkRepository.findActiveUsedAndByUserIdAndByScope(
-                    this.userService.readByMobile(criteria.getMobile()).getId(), criteria.getScope()).stream();
         }
+
+        List<UUID> ids = criteria.getMobile() != null
+                ? this.userService.findIdsByMobileContaining(criteria.getMobile()).toList()
+                : List.of();
+
+        return Boolean.FALSE.equals(criteria.getExpired())
+                ? this.accessLinkRepository.searchActiveUsedByUserIdsAndScope(ids, criteria.getScope()).stream()
+                : this.accessLinkRepository.searchExpiredUnusedByUserIdsAndScope(ids, criteria.getScope()).stream();
     }
 
     public void deleteById(String idSuffix) {

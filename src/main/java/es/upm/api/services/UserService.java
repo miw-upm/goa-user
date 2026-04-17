@@ -206,4 +206,9 @@ public class UserService {
         return userDtos;
     }
 
+    public Stream<UUID> findIdsByMobileContaining(String mobile) {
+        return this.userRepository.findByMobileContaining(mobile).stream()
+                .map(User::getId);
+    }
+
 }
