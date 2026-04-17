@@ -20,10 +20,7 @@ public class AccessLinkRepositoryCustomImpl implements AccessLinkRepositoryCusto
     @Override
     public List<AccessLink> searchActiveUsedByUserIdsAndScope(List<UUID> userIds, String scope) {
         Query query = new Query();
-
         query.addCriteria(Criteria.where("expiresAt").gte(LocalDateTime.now()));
-        query.addCriteria(Criteria.where("lastUsedForUpdateAt").ne(null));
-
         if (userIds != null && !userIds.isEmpty()) {
             query.addCriteria(Criteria.where("user.$id").in(userIds));
         }
@@ -36,10 +33,8 @@ public class AccessLinkRepositoryCustomImpl implements AccessLinkRepositoryCusto
     @Override
     public List<AccessLink> searchExpiredUnusedByUserIdsAndScope(List<UUID> userIds, String scope) {
         Query query = new Query();
-
         query.addCriteria(Criteria.where("expiresAt").lt(LocalDateTime.now()));
         query.addCriteria(Criteria.where("lastUsedForUpdateAt").is(null));
-
         if (userIds != null && !userIds.isEmpty()) {
             query.addCriteria(Criteria.where("user.$id").in(userIds));
         }
