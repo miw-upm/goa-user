@@ -35,8 +35,12 @@ public class AccessLinkService {
     }
 
     public Stream<AccessLink> findNullSafe(AccessLinkFindCriteria criteria) {
-        //TODO FALTA CONECTAR CON EL REPOSITORIO SEGUN LA BÚSQUEDA
-        return this.accessLinkRepository.findAll().stream();
+        if (criteria.all()) {
+            return this.accessLinkRepository.findAll().stream();
+        } else {
+            return this.accessLinkRepository.findActiveUsedAndByUserIdAndByScope(
+                    this.userService.readByMobile(criteria.getMobile()).getId(), criteria.getScope()).stream();
+        }
     }
 
     public void deleteById(String idSuffix) {

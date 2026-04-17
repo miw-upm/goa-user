@@ -22,7 +22,7 @@ class AccessLinkRepositoryIT {
     @Test
     void testFindActiveUsedAndByUserIdAndByScopeWithoutFilters() {
         List<AccessLink> result = this.accessLinkRepository
-                .findActiveUsedAndByUserIdAndByScope(LocalDateTime.now(), null, null);
+                .findActiveUsedAndByUserIdAndByScope( null, null);
 
         assertThat(result)
                 .isNotEmpty()
@@ -35,7 +35,7 @@ class AccessLinkRepositoryIT {
         UUID userId = UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0005");
 
         List<AccessLink> result = this.accessLinkRepository
-                .findActiveUsedAndByUserIdAndByScope(LocalDateTime.now(), userId, null);
+                .findActiveUsedAndByUserIdAndByScope( userId, null);
 
         assertThat(result)
                 .isNotEmpty()
@@ -46,7 +46,7 @@ class AccessLinkRepositoryIT {
     @Test
     void testFindActiveUsedAndByUserIdAndByScopeWithScope() {
         List<AccessLink> result = this.accessLinkRepository
-                .findActiveUsedAndByUserIdAndByScope(LocalDateTime.now(), null, "edit-profile");
+                .findActiveUsedAndByUserIdAndByScope(null, "edit-profile");
 
         assertThat(result)
                 .isNotEmpty()
@@ -59,7 +59,7 @@ class AccessLinkRepositoryIT {
         UUID userId = UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0005");
 
         List<AccessLink> result = this.accessLinkRepository
-                .findActiveUsedAndByUserIdAndByScope(LocalDateTime.now(), userId, "edit-profile");
+                .findActiveUsedAndByUserIdAndByScope( userId, "edit-profile");
 
         assertThat(result)
                 .isNotEmpty()
@@ -73,7 +73,7 @@ class AccessLinkRepositoryIT {
         UUID userId = UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0004");
 
         List<AccessLink> result = this.accessLinkRepository
-                .findActiveUsedAndByUserIdAndByScope(LocalDateTime.now(), userId, null);
+                .findActiveUsedAndByUserIdAndByScope( userId, null);
 
         // users[3] tiene links pero ninguno con lastUsedForUpdateAt != null
         assertThat(result).isEmpty();

@@ -17,10 +17,10 @@ public class AccessLinkRepositoryCustomImpl implements AccessLinkRepositoryCusto
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public List<AccessLink> findActiveUsedAndByUserIdAndByScope(LocalDateTime now, UUID userId, String scope) {
+    public List<AccessLink> findActiveUsedAndByUserIdAndByScope(UUID userId, String scope) {
         Query query = new Query();
 
-        query.addCriteria(Criteria.where("expiresAt").gte(now));
+        query.addCriteria(Criteria.where("expiresAt").gte(LocalDateTime.now()));
         query.addCriteria(Criteria.where("lastUsedForUpdateAt").ne(null));
 
         if (userId != null) {
