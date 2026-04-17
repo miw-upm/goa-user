@@ -35,6 +35,7 @@ public class AccessLinkService {
     }
 
     public Stream<AccessLink> findNullSafe(AccessLinkFindCriteria criteria) {
+        //TODO FALTA CONECTAR CON EL REPOSITORIO SEGUN LA BÚSQUEDA
         return this.accessLinkRepository.findAll().stream();
     }
 
