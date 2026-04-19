@@ -68,9 +68,6 @@ jobs:
               --memory 512m \
               --memory-swap 1024m \
               --network goa \
-              --health-cmd="wget -qO- http://localhost:8081/actuator/health || exit 1" \
-              --health-interval=10s \
-              --health-start-period=30s \
               -e SPRING_PROFILES_ACTIVE=prod \
               -e MONGODB_URI="${{ secrets.MONGODB_URI_MAIN }}" \
               -e BASE_URL="https://gestion.ocanabogados.es" \
