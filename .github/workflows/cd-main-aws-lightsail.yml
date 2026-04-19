@@ -68,9 +68,6 @@ jobs:
               --memory 512m \
               --memory-swap 1024m \
               --network goa \
-              --health-cmd="wget -qO- http://localhost:8081/actuator/health || exit 1" \
-              --health-interval=10s \
-              --health-start-period=30s \
               -e SPRING_PROFILES_ACTIVE=prod \
               -e MONGODB_URI="${{ secrets.MONGODB_URI_MAIN }}" \
               -e BASE_URL="https://gestion.ocanabogados.es" \
@@ -78,12 +75,19 @@ jobs:
               -e API_CLIENT_SECRET="${{ secrets.API_CLIENT_SECRET }}" \
               ghcr.io/${{ env.REPOSITORY }}:latest
             
-            # Verificar arranque
-            for i in 1 2 3 4 5 6; do
-            sleep 10
-            STATUS=$(docker inspect --format='{{.State.Health.Status}}' ${{ env.ARTIFACT }} 2>/dev/null)
-            [ "$STATUS" = "healthy" ] && break
+            echo "⏳ Esperando a que se levante"
+            for i in $(seq 1 6); do
+              sleep 10
+              STATUS=$(docker inspect --format='{{.State.Health.Status}}' ${{ env.ARTIFACT }} 2>/dev/null)
+              echo "Intento $i: $STATUS"
+              [ "$STATUS" = "healthy" ] && break
             done
-            [ "$STATUS" != "healthy" ] && echo "Container not healthy" && exit 1
             
+            if [ "$STATUS" != "healthy" ]; then
+              echo "❌ Deploy fallido"
+              docker logs --tail 50 ${{ env.ARTIFACT }}
+              exit 1
+            fi
+            
+            echo "✅ Deploy exitoso"
             docker image prune --filter "until=12h" -f
