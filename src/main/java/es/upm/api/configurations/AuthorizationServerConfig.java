@@ -89,7 +89,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/error", "/actuator").permitAll()
+                        .requestMatchers("/login", "/error", "/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults())
