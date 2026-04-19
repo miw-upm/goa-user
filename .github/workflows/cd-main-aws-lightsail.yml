@@ -78,12 +78,17 @@ jobs:
               -e API_CLIENT_SECRET="${{ secrets.API_CLIENT_SECRET }}" \
               ghcr.io/${{ env.REPOSITORY }}:latest
             
-            # Verificar arranque
-            for i in 1 2 3 4 5 6; do
-            sleep 10
-            STATUS=$(docker inspect --format='{{.State.Health.Status}}' ${{ env.ARTIFACT }} 2>/dev/null)
-            [ "$STATUS" = "healthy" ] && break
+            for i in $(seq 1 6); do
+              sleep 10
+              STATUS=$(docker inspect --format='{{.State.Health.Status}}' ${{ env.ARTIFACT }} 2>/dev/null)
+              echo "Intento $i: $STATUS"
+              [ "$STATUS" = "healthy" ] && break
             done
-            [ "$STATUS" != "healthy" ] && echo "Container not healthy" && exit 1
+            if [ "$STATUS" != "healthy" ]; then
+              echo "❌ Deploy fallido"
+              docker logs --tail 50 ${{ env.ARTIFACT }}
+              exit 1
+            fi
             
+            echo "✅ Deploy exitoso"
             docker image prune --filter "until=12h" -f
