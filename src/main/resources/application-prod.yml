@@ -8,6 +8,7 @@ spring:
         issuer-uri: ${BASE_URL}/api/goa-user
 
 app:
+  hosting: AWS
   oauth2:
     token-uri: ${BASE_URL}/api/goa-user/oauth2/token
     spa-client-id: spaClientId
