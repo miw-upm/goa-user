@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface AccessLinkRepositoryCustom {
     List<AccessLink> searchActiveUsedByUserIdsAndScope(List<UUID> userIds, String scope);
+
     List<AccessLink> searchExpiredUnusedByUserIdsAndScope(List<UUID> userIds, String scope);
 }

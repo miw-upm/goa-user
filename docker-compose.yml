@@ -19,9 +19,10 @@ secrets:
   github_token:
     environment: GITHUB_TOKEN
 
+# Windows PowerShell
 #> $env:GITHUB_TOKEN="xxxx"   echo $env:GITHUB_TOKEN
-#> export GITHUB_TOKEN=xxxx
+# Para saber si el token esta habilitado
+#> curl.exe -H "Authorization: Bearer $env:GITHUB_TOKEN" https://api.github.com/user
 
 #> docker compose up --build -d
-
 #> docker logs -f goa-user
