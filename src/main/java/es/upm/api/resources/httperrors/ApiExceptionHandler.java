@@ -27,6 +27,7 @@ public class ApiExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({
+            org.springframework.security.oauth2.core.OAuth2AuthenticationException.class,
             org.springframework.security.access.AccessDeniedException.class,
             BadCredentialsException.class
     })

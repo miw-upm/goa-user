@@ -1,6 +1,5 @@
 package es.upm.api.configurations;
 
-import es.upm.api.data.entities.Role;
 import es.upm.api.resources.AccessLinksResource;
 import es.upm.api.resources.SystemResource;
 import es.upm.api.resources.UserResource;
@@ -26,6 +25,7 @@ import java.util.stream.Collectors;
 @EnableMethodSecurity
 public class ResourceServerConfig {
     public static final String CLAIM_NAME = "roles";
+    public static final String ROLE_PREFIX = "ROLE_";
     public static final String AWS_CLAIM_NAME = "cognito:groups";
 
     @Bean
@@ -61,7 +61,7 @@ public class ResourceServerConfig {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthorityPrefix(Role.PREFIX);
+        grantedAuthoritiesConverter.setAuthorityPrefix(ROLE_PREFIX);
         grantedAuthoritiesConverter.setAuthoritiesClaimName(CLAIM_NAME);
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
@@ -72,7 +72,7 @@ public class ResourceServerConfig {
                 return Optional.ofNullable(jwt.getClaimAsStringList(AWS_CLAIM_NAME))// AWS cognito: group as role
                         .orElse(Collections.emptyList())
                         .stream()
-                        .map(group -> new SimpleGrantedAuthority(Role.PREFIX + group))
+                        .map(group -> new SimpleGrantedAuthority(ROLE_PREFIX + group))
                         .collect(Collectors.toList());
             }
         });
