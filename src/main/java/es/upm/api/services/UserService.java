@@ -5,6 +5,7 @@ import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
+import es.upm.api.resources.dtos.DataProcessingConsentCreationDto;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.BadRequestException;
 import es.upm.miw.exception.ConflictException;
@@ -69,7 +70,7 @@ public class UserService {
         return this.updateUser(mobile, user);
     }
 
-    public User updateByMobileWithToken(String mobile, String token, User user, DataProcessingConsentCreation consentCreation, DeviceInfo deviceInfo) {
+    public User updateByMobileWithToken(String mobile, String token, User user, DataProcessingConsentCreationDto consentCreation, DeviceInfo deviceInfo) {
         User existingUser = this.readByMobile(mobile);
         if (!CUSTOMER.equals(existingUser.getRole())) {
             throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + existingUser.getRole() + "Mobile: " + mobile);

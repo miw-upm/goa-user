@@ -2,7 +2,7 @@ package es.upm.api.services;
 
 import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.entities.AccessLink;
-import es.upm.api.data.entities.CreationAccessLink;
+import es.upm.api.resources.dtos.AccessLinkCreationDto;
 import es.upm.api.data.entities.User;
 import es.upm.miw.exception.NotFoundException;
 import es.upm.miw.uuid.UUIDBase64;
@@ -27,11 +27,11 @@ public class AccessLinkService {
         this.accessLinkRepository = accessLinkRepository;
     }
 
-    public AccessLink create(@Valid CreationAccessLink creationAccessLink) {
-        User user = this.userService.readByMobile(creationAccessLink.getMobile());
+    public AccessLink create(@Valid AccessLinkCreationDto accessLinkCreationDto) {
+        User user = this.userService.readByMobile(accessLinkCreationDto.getMobile());
         AccessLink accessLink = AccessLink.builder().id(UUIDBase64.URL.encode()).user(user)
                 .createdAt(LocalDateTime.now()).expiresAt(LocalDateTime.now().plusDays(TOKEN_DURATION_DAYS))
-                .remainingUses(TOKEN_USAGE_LIMIT).scope(creationAccessLink.getScope()).build();
+                .remainingUses(TOKEN_USAGE_LIMIT).scope(accessLinkCreationDto.getScope()).build();
         return this.accessLinkRepository.save(accessLink);
     }
 

@@ -1,5 +1,8 @@
 package es.upm.api.resources.dtos;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import es.upm.api.data.entities.DocumentType;
 import es.upm.api.data.entities.Province;
 import es.upm.api.data.entities.Role;
@@ -14,6 +17,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
+
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
@@ -23,6 +27,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
+    @JsonProperty(access = Access.READ_ONLY)
     private UUID id;
     @NotNull
     @NotBlank
@@ -39,14 +44,15 @@ public class UserDto {
     private String city;
     private Province province;
     private Integer postalCode;
+    @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
     private Role role;
+    @JsonProperty(access = Access.READ_ONLY)
     private LocalDate registrationDate;
     private Boolean active;
 
     public UserDto(User user) {
         BeanUtils.copyProperties(user, this);
-        this.password = null;
     }
 
     public void doDefault() {
@@ -67,7 +73,7 @@ public class UserDto {
                 .email(this.getEmail()).build();
     }
 
-    public UserDto ofAllBasic() {
+    public UserDto ofBasic() {
         return UserDto.builder()
                 .id(this.getId())
                 .mobile(this.getMobile())

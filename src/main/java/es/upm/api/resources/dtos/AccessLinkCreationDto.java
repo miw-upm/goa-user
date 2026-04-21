@@ -1,6 +1,6 @@
-package es.upm.api.services;
+package es.upm.api.resources.dtos;
 
-import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +11,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DataProcessingConsentCreation {
+public class AccessLinkCreationDto {
     @NotNull
-    @AssertTrue
-    private Boolean dataProcessingAccepted;
-    private Boolean promotionsAccepted;
+    @NotBlank
+    private String mobile;
+    @NotNull
+    @NotBlank
+    private String scope;
 }

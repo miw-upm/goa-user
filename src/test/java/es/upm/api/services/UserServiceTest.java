@@ -4,6 +4,7 @@ import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
+import es.upm.api.resources.dtos.DataProcessingConsentCreationDto;
 import es.upm.miw.device.DeviceInfoResolver;
 import es.upm.miw.exception.ForbiddenException;
 import org.junit.jupiter.api.Test;
@@ -122,7 +123,7 @@ class UserServiceTest {
                 mobile,
                 token,
                 user,
-                null,
+                DataProcessingConsentCreationDto.builder().dataProcessingAccepted(true).build(),
                 DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
         );
 

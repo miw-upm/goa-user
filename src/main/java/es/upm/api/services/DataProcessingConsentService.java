@@ -3,6 +3,7 @@ package es.upm.api.services;
 import es.upm.api.data.daos.DataProcessingConsentRepository;
 import es.upm.api.data.entities.DataProcessingConsent;
 import es.upm.api.data.entities.User;
+import es.upm.api.resources.dtos.DataProcessingConsentCreationDto;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class DataProcessingConsentService {
         this.legalPolicyService = legalPolicyService;
     }
 
-    public void create(User signer, String signatureToken, DataProcessingConsentCreation consentCreation, DeviceInfo deviceInfo) {
+    public void create(User signer, String signatureToken, DataProcessingConsentCreationDto consentCreation, DeviceInfo deviceInfo) {
         DataProcessingConsent consent = DataProcessingConsent.builder()
                 .id(UUID.randomUUID())
                 .signatureAt(LocalDateTime.now())
@@ -49,7 +50,7 @@ public class DataProcessingConsentService {
                 .orElseThrow(() -> new NotFoundException("The id don't exist: " + id));
     }
 
-    public Stream<DataProcessingConsent> findNullSafe(DataProcessingConsentFindCriteria criteria) {
+    public Stream<DataProcessingConsent> find(DataProcessingConsentFindCriteria criteria) {
         if (Objects.isNull(criteria.getMobile()) || criteria.getMobile().isBlank()) {
             return this.dataProcessingConsentRepository.findAll().stream();
         }

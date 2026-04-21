@@ -1,6 +1,6 @@
 package es.upm.api.resources;
 
-import es.upm.api.data.entities.CreationAccessLink;
+import es.upm.api.resources.dtos.AccessLinkCreationDto;
 import es.upm.api.resources.dtos.AccessLinkDto;
 import es.upm.api.services.AccessLinkFindCriteria;
 import es.upm.api.services.AccessLinkService;
@@ -27,8 +27,8 @@ public class AccessLinksResource {
     }
 
     @PostMapping
-    public AccessLinkDto create(@Valid @RequestBody CreationAccessLink creationAccessLink) {
-        return new AccessLinkDto(accessLinkService.create(creationAccessLink));
+    public AccessLinkDto create(@Valid @RequestBody AccessLinkCreationDto accessLinkCreationDto) {
+        return new AccessLinkDto(accessLinkService.create(accessLinkCreationDto));
     }
 
     @GetMapping

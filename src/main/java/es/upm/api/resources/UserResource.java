@@ -1,6 +1,7 @@
 package es.upm.api.resources;
 
 import es.upm.api.data.entities.Province;
+import es.upm.api.data.entities.User;
 import es.upm.api.resources.dtos.ProvincesDto;
 import es.upm.api.resources.dtos.UserDto;
 import es.upm.api.resources.dtos.UserUpdateWithConsentDto;
@@ -11,8 +12,8 @@ import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.device.DeviceInfoResolver;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,20 +23,15 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 @Log4j2
+@RequiredArgsConstructor
 @PreAuthorize(Security.AUTHENTICATED)
 @RestController
 @RequestMapping(UserResource.USERS)
 public class UserResource {
     public static final String USERS = "/users";
-    public static final String ID_ID = "/{id}";
     public static final String MOBILE_ID_TOKEN_ID = "/{mobile}/{token}";
     public static final String PROVINCES = "/provinces";
     private final UserService userService;
-
-    @Autowired
-    public UserResource(UserService userService) {
-        this.userService = userService;
-    }
 
     @PreAuthorize(Security.ALL)
     @PostMapping
@@ -60,7 +56,7 @@ public class UserResource {
     @GetMapping(MOBILE_ID_TOKEN_ID)
     public UserDto readByMobileWithToken(@PathVariable String mobile, @PathVariable String token) {
         return new UserDto(this.userService.readByMobileWithToken(mobile, token))
-                .ofAllBasic();
+                .ofBasic();
     }
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
@@ -75,13 +71,9 @@ public class UserResource {
                                            @PathVariable String token,
                                            @Valid @RequestBody UserUpdateWithConsentDto body,
                                            HttpServletRequest request) {
-        return new UserDto(this.userService.updateByMobileWithToken(
-                mobile,
-                token,
-                body.getUser().toUser(),
-                body.getConsent(),
-                resolveDeviceInfo(request)
-        )).ofAllBasic();
+        User user = body.getUser().toUser();
+        return new UserDto(this.userService.updateByMobileWithToken(mobile, token, user, body.getConsent(),
+                resolveDeviceInfo(request))).ofBasic();
     }
 
     private DeviceInfo resolveDeviceInfo(HttpServletRequest request) {

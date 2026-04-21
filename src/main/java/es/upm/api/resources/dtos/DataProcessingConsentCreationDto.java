@@ -1,22 +1,19 @@
 package es.upm.api.resources.dtos;
 
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserUpdateWithConsentDto {
-    @Valid
+public class DataProcessingConsentCreationDto {
     @NotNull
-    private UserDto user;
-
-    @Valid
-    @NotNull
-    private DataProcessingConsentCreationDto consent;
+    @AssertTrue
+    private Boolean dataProcessingAccepted;
+    private Boolean promotionsAccepted;
 }
