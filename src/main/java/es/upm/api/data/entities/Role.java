@@ -1,7 +1,5 @@
 package es.upm.api.data.entities;
 
-import es.upm.api.data.entities.exceptions.BadCredentialsException;
-
 import java.util.Arrays;
 import java.util.List;
 

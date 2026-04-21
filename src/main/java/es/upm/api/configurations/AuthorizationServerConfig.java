@@ -4,11 +4,10 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import es.upm.api.data.daos.UserRepository;
+import es.upm.api.data.entities.BadCredentialsException;
 import es.upm.api.data.entities.Role;
-import es.upm.api.data.entities.exceptions.BadCredentialsException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,15 +49,10 @@ import java.util.stream.Collectors;
 @Log4j2
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class AuthorizationServerConfig {  // Generate tokens OAuth2
     private final PasswordEncoder passwordEncoder;
     private final OAuth2Properties oAuth2Properties;
-
-    @Autowired
-    public AuthorizationServerConfig(PasswordEncoder passwordEncoder, OAuth2Properties oAuth2Properties, UserRepository userRepository) {
-        this.passwordEncoder = passwordEncoder;
-        this.oAuth2Properties = oAuth2Properties;
-    }
 
     @Bean
     @Order(2)

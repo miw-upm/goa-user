@@ -4,6 +4,7 @@ import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.*;
 import es.upm.miw.uuid.UUIDBase64;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -22,6 +23,7 @@ import java.util.UUID;
 @Component
 @Profile({"dev", "test"})
 @Order(1)
+@RequiredArgsConstructor
 public class SeederForDev implements ApplicationRunner {
 
     private final UserRepository userRepository;
@@ -30,13 +32,6 @@ public class SeederForDev implements ApplicationRunner {
 
     @Value("${app.db.password}")
     private String password;
-
-    public SeederForDev(UserRepository userRepository, AccessLinkRepository accessLinkRepository,
-                        PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.accessLinkRepository = accessLinkRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public void run(ApplicationArguments args) {
