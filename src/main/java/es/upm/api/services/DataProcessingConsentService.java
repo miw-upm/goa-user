@@ -7,7 +7,7 @@ import es.upm.api.services.criteria.DataProcessingConsentFindCriteria;
 import es.upm.api.services.utils.LegalPolicyService;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,18 +15,12 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+@RequiredArgsConstructor
 @Service
 public class DataProcessingConsentService {
 
     private final DataProcessingConsentRepository dataProcessingConsentRepository;
     private final LegalPolicyService legalPolicyService;
-
-    @Autowired
-    public DataProcessingConsentService(DataProcessingConsentRepository dataProcessingConsentRepository,
-                                        LegalPolicyService legalPolicyService) {
-        this.dataProcessingConsentRepository = dataProcessingConsentRepository;
-        this.legalPolicyService = legalPolicyService;
-    }
 
     public void create(User signer, String signatureToken, boolean dataProcessingAccepted, boolean promotionsAccepted,
                        DeviceInfo deviceInfo) {

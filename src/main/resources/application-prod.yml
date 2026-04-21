@@ -8,6 +8,9 @@ spring:
         issuer-uri: ${BASE_URL}/api/goa-user
 
 app:
+  db:
+    mobile: ${DB_MOBILE}
+    password: ${DB_PASSWORD}
   hosting: AWS
   oauth2:
     token-uri: ${BASE_URL}/api/goa-user/oauth2/token

@@ -2,8 +2,8 @@ package es.upm.api.resources;
 
 import es.upm.api.resources.dtos.DataProcessingConsentDto;
 import es.upm.api.resources.dtos.validations.Validations;
-import es.upm.api.services.criteria.DataProcessingConsentFindCriteria;
 import es.upm.api.services.DataProcessingConsentService;
+import es.upm.api.services.criteria.DataProcessingConsentFindCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.prepost.PreAuthorize;

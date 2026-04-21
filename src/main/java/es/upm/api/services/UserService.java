@@ -14,9 +14,9 @@ import es.upm.miw.exception.ConflictException;
 import es.upm.miw.exception.ForbiddenException;
 import es.upm.miw.exception.NotFoundException;
 import es.upm.miw.uuid.UUIDBase64;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 
 import static es.upm.api.data.entities.Role.CUSTOMER;
 
+@RequiredArgsConstructor
 @Service
 public class UserService {
     public static final String SCOPE_EDIT_PROFILE = "edit-profile";
@@ -41,17 +42,6 @@ public class UserService {
     private final SupportWebClient supportWebClient;
     private final ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService;
     private final DataProcessingConsentService dataProcessingConsentService;
-
-    @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AccessLinkRepository accessLinkRepository,
-                       SupportWebClient supportWebClient, ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService, DataProcessingConsentService dataProcessingConsentService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.accessLinkRepository = accessLinkRepository;
-        this.supportWebClient = supportWebClient;
-        this.profileUpdatedEmailTemplateService = profileUpdatedEmailTemplateService;
-        this.dataProcessingConsentService = dataProcessingConsentService;
-    }
 
     public void create(User user) {
         this.validateAuthorizedRole(user.getRole());

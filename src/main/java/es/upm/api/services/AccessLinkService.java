@@ -6,6 +6,7 @@ import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.AccessLinkFindCriteria;
 import es.upm.miw.exception.NotFoundException;
 import es.upm.miw.uuid.UUIDBase64;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+@RequiredArgsConstructor
 @Service
 public class AccessLinkService {
     public static final int TOKEN_DURATION_DAYS = 7;
@@ -20,11 +22,6 @@ public class AccessLinkService {
 
     private final UserService userService;
     private final AccessLinkRepository accessLinkRepository;
-
-    public AccessLinkService(UserService userService, AccessLinkRepository accessLinkRepository) {
-        this.userService = userService;
-        this.accessLinkRepository = accessLinkRepository;
-    }
 
     public AccessLink create(String mobile, String scope) {
         User user = this.userService.readByMobile(mobile);
