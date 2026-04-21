@@ -100,7 +100,6 @@ class UserServiceIT {
         this.userService.updateByMobile("666666666", oldUser);
     }
 
-    //TODO
     @Test
     @WithMockUser(username = "666666001", roles = {"customer"})
     void testUpdateUserLastUsedForUpdateAt() {
