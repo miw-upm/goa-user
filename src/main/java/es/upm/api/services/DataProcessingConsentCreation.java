@@ -13,9 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DataProcessingConsentCreation {
-    private String mobile;
-    private String signatureToken;
-    private DeviceInfo deviceInfo;
     @NotNull
     @AssertTrue
     private Boolean dataProcessingAccepted;

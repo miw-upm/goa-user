@@ -37,15 +37,17 @@ public class UserService {
     private final AccessLinkRepository accessLinkRepository;
     private final SupportWebClient supportWebClient;
     private final ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService;
+    private final DataProcessingConsentService dataProcessingConsentService;
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AccessLinkRepository accessLinkRepository,
-                       SupportWebClient supportWebClient, ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService) {
+                       SupportWebClient supportWebClient, ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService, DataProcessingConsentService dataProcessingConsentService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.accessLinkRepository = accessLinkRepository;
         this.supportWebClient = supportWebClient;
         this.profileUpdatedEmailTemplateService = profileUpdatedEmailTemplateService;
+        this.dataProcessingConsentService = dataProcessingConsentService;
     }
 
     public void create(User user) {
@@ -67,7 +69,7 @@ public class UserService {
         return this.updateUser(mobile, user);
     }
 
-    public User updateByMobileWithToken(String mobile, String token, User user, DeviceInfo deviceInfo) {
+    public User updateByMobileWithToken(String mobile, String token, User user, DataProcessingConsentCreation consentCreation, DeviceInfo deviceInfo) {
         User existingUser = this.readByMobile(mobile);
         if (!CUSTOMER.equals(existingUser.getRole())) {
             throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + existingUser.getRole() + "Mobile: " + mobile);
@@ -76,6 +78,7 @@ public class UserService {
         boolean profileChanged = !EqualsBuilder.reflectionEquals(existingUser, user,
                 "id", "password", "role", "registrationDate", "active");
         User userDB = this.updateUser(mobile, user);
+        this.dataProcessingConsentService.create(mobile,token,consentCreation,deviceInfo);
         if (profileChanged) {
             try {
                 this.supportWebClient.sendHtml(

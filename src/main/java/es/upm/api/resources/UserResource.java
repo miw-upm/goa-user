@@ -3,6 +3,7 @@ package es.upm.api.resources;
 import es.upm.api.data.entities.Province;
 import es.upm.api.resources.dtos.ProvincesDto;
 import es.upm.api.resources.dtos.UserDto;
+import es.upm.api.resources.dtos.UserUpdateWithConsentDto;
 import es.upm.api.resources.dtos.validations.Validations;
 import es.upm.api.services.UserFindCriteria;
 import es.upm.api.services.UserService;
@@ -70,21 +71,17 @@ public class UserResource {
 
     @PreAuthorize(Security.ALL)
     @PutMapping(MOBILE_ID_TOKEN_ID)
-    public UserDto updateByMobileWithToken(@PathVariable String mobile, @PathVariable String token,
-                                           @Valid @RequestBody UserDto userDto, HttpServletRequest request) {
-        return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser(), resolveDeviceInfo(request)))
-                .ofAllBasic();
-        //TODO
-/*        @PreAuthorize(Security.URL_TOKEN)
-        @PostMapping(MOBILE_ID_TOKEN_ID)
-        public void createByMobileWithToken(@PathVariable String mobile, @PathVariable String token,
-                @Valid @RequestBody DataProcessingConsentCreation creationDto,
-                HttpServletRequest request) {
-            creationDto.setMobile(mobile);
-            creationDto.setSignatureToken(token);
-            creationDto.setDeviceInfo(this.resolveDeviceInfo(request));
-            this.dataProcessingConsentService.createByMobileWithToken(creationDto);
-        }*/
+    public UserDto updateByMobileWithToken(@PathVariable String mobile,
+                                           @PathVariable String token,
+                                           @Valid @RequestBody UserUpdateWithConsentDto body,
+                                           HttpServletRequest request) {
+        return new UserDto(this.userService.updateByMobileWithToken(
+                mobile,
+                token,
+                body.getUser().toUser(),
+                body.getConsent(),
+                resolveDeviceInfo(request)
+        )).ofAllBasic();
     }
 
     private DeviceInfo resolveDeviceInfo(HttpServletRequest request) {

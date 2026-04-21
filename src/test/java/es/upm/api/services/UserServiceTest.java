@@ -98,6 +98,7 @@ class UserServiceTest {
         this.userService.updateByMobile("666666666", oldUser);
     }
 
+    //TODO
     @Test
     @WithMockUser(username = "666666001", roles = {"customer"})
     void testUpdateUserLastUsedForUpdateAt() {
@@ -121,6 +122,7 @@ class UserServiceTest {
                 mobile,
                 token,
                 user,
+                null,
                 DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
         );
 
