@@ -1,5 +1,6 @@
 package es.upm.api.resources;
 
+import es.upm.api.resources.dtos.ApplicationInfoDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,7 @@ public class SystemResource {
             </svg>
             """;
     private static final int TEXT_MARGIN = 12;
-    private static final int CHARACTER_WIDTH = 6;
+
     @Value("${info.app.artifact}")
     private String artifact;
     @Value("${info.app.version}")
@@ -41,26 +42,41 @@ public class SystemResource {
     @Value("${app.hosting}")
     private String hosting;
 
-    public String generateBadge(String label, String value) {
-        int widthLabel = TEXT_MARGIN + CHARACTER_WIDTH * label.length();
-        int widthValue = TEXT_MARGIN + CHARACTER_WIDTH * value.length();
-        int textWidth = widthLabel + widthValue;
-        int middleLabel = widthLabel / 2;
-        int middleValue = widthLabel + widthValue / 2;
-        return String.format(BADGE_IMAGE_TEMPLATE, textWidth, textWidth, widthLabel, widthValue, widthLabel, textWidth,
-                middleLabel, label, middleLabel, label, middleValue, value, middleValue, value);
-    }
-
     @GetMapping
-    public String applicationInfo() {
-        return """
-                {"version":"%s::%s::%s"} (%s)
-                """.formatted(this.artifact, this.version, this.build, LocalDateTime.now());
+    public ApplicationInfoDto applicationInfo() {
+        return new ApplicationInfoDto(
+                "%s::%s::%s".formatted(artifact, version, build),
+                LocalDateTime.now()
+        );
     }
 
     @GetMapping(value = VERSION_BADGE, produces = {"image/svg+xml"})
     public byte[] generateBadge() {
         return this.generateBadge(hosting + ": " + artifact, "v" + version).getBytes();
+    }
+
+    private int measureText(String text) {
+        int width = 0;
+        for (char c : text.toCharArray()) {
+            width += switch (c) {
+                case 'i', 'l', 'I', 'j', '.', ',', ';', ':', '\'', '|' -> 3;
+                case 'f', 'r', 't', '(', ')', '[', ']', '{', '}', ' ' -> 4;
+                case 'm', 'M', 'w', 'W' -> 9;
+                default -> 6;
+            };
+        }
+        return width;
+    }
+
+    private String generateBadge(String label, String value) {
+        int widthLabel = TEXT_MARGIN + measureText(label);
+        int widthValue = TEXT_MARGIN + measureText(value);
+        int textWidth = widthLabel + widthValue;
+        int middleLabel = widthLabel / 2;
+        int middleValue = widthLabel + widthValue / 2;
+        return String.format(BADGE_IMAGE_TEMPLATE, textWidth, textWidth, widthLabel, widthValue,
+                widthLabel, textWidth,
+                middleLabel, label, middleLabel, label, middleValue, value, middleValue, value);
     }
 
 }

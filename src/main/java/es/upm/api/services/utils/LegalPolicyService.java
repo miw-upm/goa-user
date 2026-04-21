@@ -1,4 +1,4 @@
-package es.upm.api.services;
+package es.upm.api.services.utils;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;

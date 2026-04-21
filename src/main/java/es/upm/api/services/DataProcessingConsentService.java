@@ -3,7 +3,8 @@ package es.upm.api.services;
 import es.upm.api.data.daos.DataProcessingConsentRepository;
 import es.upm.api.data.entities.DataProcessingConsent;
 import es.upm.api.data.entities.User;
-import es.upm.api.resources.dtos.DataProcessingConsentCreationDto;
+import es.upm.api.services.criteria.DataProcessingConsentFindCriteria;
+import es.upm.api.services.utils.LegalPolicyService;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,8 @@ public class DataProcessingConsentService {
         this.legalPolicyService = legalPolicyService;
     }
 
-    public void create(User signer, String signatureToken, DataProcessingConsentCreationDto consentCreation, DeviceInfo deviceInfo) {
+    public void create(User signer, String signatureToken, boolean dataProcessingAccepted, boolean promotionsAccepted,
+                       DeviceInfo deviceInfo) {
         DataProcessingConsent consent = DataProcessingConsent.builder()
                 .id(UUID.randomUUID())
                 .signatureAt(LocalDateTime.now())
@@ -39,8 +41,8 @@ public class DataProcessingConsentService {
                 .signatureToken(signatureToken)
                 .deviceInfo(deviceInfo)
                 .policyVersion(this.legalPolicyService.currentPolicyVersion())
-                .dataProcessingAccepted(consentCreation.getDataProcessingAccepted())
-                .promotionsAccepted(consentCreation.getPromotionsAccepted())
+                .dataProcessingAccepted(dataProcessingAccepted)
+                .promotionsAccepted(promotionsAccepted)
                 .build();
         this.dataProcessingConsentRepository.save(consent);
     }

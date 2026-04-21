@@ -1,4 +1,4 @@
-package es.upm.api.services;
+package es.upm.api.services.criteria;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

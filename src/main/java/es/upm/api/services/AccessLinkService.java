@@ -2,11 +2,10 @@ package es.upm.api.services;
 
 import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.entities.AccessLink;
-import es.upm.api.resources.dtos.AccessLinkCreationDto;
 import es.upm.api.data.entities.User;
+import es.upm.api.services.criteria.AccessLinkFindCriteria;
 import es.upm.miw.exception.NotFoundException;
 import es.upm.miw.uuid.UUIDBase64;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,15 +26,15 @@ public class AccessLinkService {
         this.accessLinkRepository = accessLinkRepository;
     }
 
-    public AccessLink create(@Valid AccessLinkCreationDto accessLinkCreationDto) {
-        User user = this.userService.readByMobile(accessLinkCreationDto.getMobile());
+    public AccessLink create(String mobile, String scope) {
+        User user = this.userService.readByMobile(mobile);
         AccessLink accessLink = AccessLink.builder().id(UUIDBase64.URL.encode()).user(user)
                 .createdAt(LocalDateTime.now()).expiresAt(LocalDateTime.now().plusDays(TOKEN_DURATION_DAYS))
-                .remainingUses(TOKEN_USAGE_LIMIT).scope(accessLinkCreationDto.getScope()).build();
+                .remainingUses(TOKEN_USAGE_LIMIT).scope(scope).build();
         return this.accessLinkRepository.save(accessLink);
     }
 
-    public Stream<AccessLink> findNullSafe(AccessLinkFindCriteria criteria) {
+    public Stream<AccessLink> find(AccessLinkFindCriteria criteria) {
         if (criteria.all()) {
             return this.accessLinkRepository.findAll().stream();
         }

@@ -17,12 +17,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
-
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
-@Builder
+@Builder(toBuilder = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -55,6 +54,11 @@ public class UserDto {
         BeanUtils.copyProperties(user, this);
     }
 
+    public static UserDto of(User user, boolean full) {
+        UserDto dto = new UserDto(user);
+        return full ? dto : dto.ofMobileFirstNameFamilyNameEmail();
+    }
+
     public void doDefault() {
         if (Objects.isNull(role)) {
             this.role = Role.CUSTOMER;
@@ -70,16 +74,12 @@ public class UserDto {
                 .mobile(this.getMobile())
                 .firstName(this.getFirstName())
                 .familyName(this.getFamilyName())
-                .email(this.getEmail()).build();
+                .email(this.getEmail())
+                .build();
     }
 
     public UserDto ofBasic() {
-        return UserDto.builder()
-                .id(this.getId())
-                .mobile(this.getMobile())
-                .firstName(this.getFirstName())
-                .familyName(this.getFamilyName())
-                .email(this.getEmail())
+        return this.ofMobileFirstNameFamilyNameEmail().toBuilder()
                 .documentType(this.getDocumentType())
                 .identity(this.getIdentity())
                 .address(this.getAddress())
@@ -89,7 +89,7 @@ public class UserDto {
                 .build();
     }
 
-    public User toUser() {
+    public User toDomain() {
         User user = new User();
         BeanUtils.copyProperties(this, user);
         return user;

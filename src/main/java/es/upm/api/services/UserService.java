@@ -5,7 +5,9 @@ import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
-import es.upm.api.resources.dtos.DataProcessingConsentCreationDto;
+import es.upm.api.services.criteria.UserFindCriteria;
+import es.upm.api.services.feign.SupportWebClient;
+import es.upm.api.services.utils.ProfileUpdatedEmailTemplateService;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.BadRequestException;
 import es.upm.miw.exception.ConflictException;
@@ -70,7 +72,8 @@ public class UserService {
         return this.updateUser(mobile, user);
     }
 
-    public User updateByMobileWithToken(String mobile, String token, User user, DataProcessingConsentCreationDto consentCreation, DeviceInfo deviceInfo) {
+    public User updateByMobileWithToken(String mobile, String token, User user, boolean dataProcessingAccepted,
+                                        boolean promotionsAccepted, DeviceInfo deviceInfo) {
         User existingUser = this.readByMobile(mobile);
         if (!CUSTOMER.equals(existingUser.getRole())) {
             throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + existingUser.getRole() + "Mobile: " + mobile);
@@ -79,7 +82,7 @@ public class UserService {
         boolean profileChanged = !EqualsBuilder.reflectionEquals(existingUser, user,
                 "id", "password", "role", "registrationDate", "active");
         User userDB = this.updateUser(mobile, user);
-        this.dataProcessingConsentService.create(userDB, token, consentCreation, deviceInfo);
+        this.dataProcessingConsentService.create(userDB, token, dataProcessingAccepted, promotionsAccepted, deviceInfo);
         if (profileChanged) {
             try {
                 this.supportWebClient.sendHtml(
@@ -91,7 +94,7 @@ public class UserService {
                         )
                 );
             } catch (Exception e) {
-                throw new BadRequestException("Email incorrecto: (" + userDB.getEmail() + "). No se puede enviar notificaciones! ");
+                throw new BadRequestException("EmailDto incorrecto: (" + userDB.getEmail() + "). No se puede enviar notificaciones! ");
             }
         }
         return userDB;
@@ -187,7 +190,7 @@ public class UserService {
         }
     }
 
-    public Stream<User> findNullSafe(UserFindCriteria criteria) {
+    public Stream<User> find(UserFindCriteria criteria) {
         Stream<User> userDtos;
         if (criteria.all()) {
             userDtos = this.userRepository.findByRoleIn(validRoles()).stream();

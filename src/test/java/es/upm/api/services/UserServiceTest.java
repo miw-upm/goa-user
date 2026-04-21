@@ -4,7 +4,8 @@ import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
-import es.upm.api.resources.dtos.DataProcessingConsentCreationDto;
+import es.upm.api.services.criteria.UserFindCriteria;
+import es.upm.api.services.feign.SupportWebClient;
 import es.upm.miw.device.DeviceInfoResolver;
 import es.upm.miw.exception.ForbiddenException;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,7 @@ class UserServiceTest {
         UserFindCriteria criteria = new UserFindCriteria();
         criteria.setMobile("61");
         criteria.setProjection(true);
-        List<User> users = this.userService.findNullSafe(criteria).toList();
+        List<User> users = this.userService.find(criteria).toList();
         assertThat(users)
                 .isNotNull()
                 .isNotEmpty()
@@ -80,7 +81,7 @@ class UserServiceTest {
         UserFindCriteria criteria = new UserFindCriteria();
         criteria.setMobile("666666004");
         criteria.setProjection(true);
-        List<User> users = this.userService.findNullSafe(criteria).toList();
+        List<User> users = this.userService.find(criteria).toList();
         assertThat(users).isEmpty();
     }
 
@@ -123,7 +124,8 @@ class UserServiceTest {
                 mobile,
                 token,
                 user,
-                DataProcessingConsentCreationDto.builder().dataProcessingAccepted(true).build(),
+                true,false,
+
                 DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
         );
 
