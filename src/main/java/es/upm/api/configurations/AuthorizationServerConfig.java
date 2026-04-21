@@ -4,11 +4,9 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.Role;
-import es.upm.api.data.entities.exceptions.BadCredentialsException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +19,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientCredentialsAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
@@ -50,15 +49,10 @@ import java.util.stream.Collectors;
 @Log4j2
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class AuthorizationServerConfig {  // Generate tokens OAuth2
     private final PasswordEncoder passwordEncoder;
     private final OAuth2Properties oAuth2Properties;
-
-    @Autowired
-    public AuthorizationServerConfig(PasswordEncoder passwordEncoder, OAuth2Properties oAuth2Properties, UserRepository userRepository) {
-        this.passwordEncoder = passwordEncoder;
-        this.oAuth2Properties = oAuth2Properties;
-    }
 
     @Bean
     @Order(2)
@@ -199,7 +193,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
                 } else if (context.getAuthorizationGrant() instanceof OAuth2ClientCredentialsAuthenticationToken clientCredentialsToken) {
                     String roleParam = (String) clientCredentialsToken.getAdditionalParameters().get("role");
                     if (roleParam == null || roleParam.isBlank()) {
-                        throw new BadCredentialsException("Invalid token: missing role");
+                        throw new OAuth2AuthenticationException("Invalid token: missing role");
                     }
                     roles.add(Role.from(roleParam).jwtClaimValue());
                 }

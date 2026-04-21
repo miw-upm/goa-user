@@ -1,4 +1,4 @@
-package es.upm.api.services;
+package es.upm.api.services.feign;
 
 import es.upm.api.configurations.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -13,9 +13,9 @@ public interface SupportWebClient {
     String HTML = "/html";
 
     @PostMapping(EMAILS + SIMPLE)
-    void sendSimple(@RequestBody Email email);
+    void sendSimple(@RequestBody EmailDto emailDto);
 
     @PostMapping(EMAILS + HTML)
-    void sendHtml(@RequestBody Email email);
+    void sendHtml(@RequestBody EmailDto emailDto);
 
 }

@@ -1,6 +1,6 @@
 package es.upm.api.resources.httperrors;
 
-import es.upm.api.data.entities.exceptions.BadCredentialsException;
+import es.upm.api.data.entities.BadCredentialsException;
 import es.upm.miw.exception.*;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,7 @@ public class ApiExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({
+            org.springframework.security.oauth2.core.OAuth2AuthenticationException.class,
             org.springframework.security.access.AccessDeniedException.class,
             BadCredentialsException.class
     })

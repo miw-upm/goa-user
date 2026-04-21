@@ -1,5 +1,8 @@
 package es.upm.api.resources.dtos;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import es.upm.api.data.entities.DocumentType;
 import es.upm.api.data.entities.Province;
 import es.upm.api.data.entities.Role;
@@ -18,11 +21,12 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
-@Builder
+@Builder(toBuilder = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
+    @JsonProperty(access = Access.READ_ONLY)
     private UUID id;
     @NotNull
     @NotBlank
@@ -39,14 +43,20 @@ public class UserDto {
     private String city;
     private Province province;
     private Integer postalCode;
+    @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
     private Role role;
+    @JsonProperty(access = Access.READ_ONLY)
     private LocalDate registrationDate;
     private Boolean active;
 
     public UserDto(User user) {
         BeanUtils.copyProperties(user, this);
-        this.password = null;
+    }
+
+    public static UserDto of(User user, boolean full) {
+        UserDto dto = new UserDto(user);
+        return full ? dto : dto.ofMobileFirstNameFamilyNameEmail();
     }
 
     public void doDefault() {
@@ -64,16 +74,12 @@ public class UserDto {
                 .mobile(this.getMobile())
                 .firstName(this.getFirstName())
                 .familyName(this.getFamilyName())
-                .email(this.getEmail()).build();
+                .email(this.getEmail())
+                .build();
     }
 
-    public UserDto ofAllBasic() {
-        return UserDto.builder()
-                .id(this.getId())
-                .mobile(this.getMobile())
-                .firstName(this.getFirstName())
-                .familyName(this.getFamilyName())
-                .email(this.getEmail())
+    public UserDto ofBasic() {
+        return this.ofMobileFirstNameFamilyNameEmail().toBuilder()
                 .documentType(this.getDocumentType())
                 .identity(this.getIdentity())
                 .address(this.getAddress())
@@ -83,7 +89,7 @@ public class UserDto {
                 .build();
     }
 
-    public User toUser() {
+    public User toDomain() {
         User user = new User();
         BeanUtils.copyProperties(this, user);
         return user;

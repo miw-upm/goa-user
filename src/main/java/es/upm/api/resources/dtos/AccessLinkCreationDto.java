@@ -1,4 +1,4 @@
-package es.upm.api.data.entities;
+package es.upm.api.resources.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreationAccessLink {
+public class AccessLinkCreationDto {
     @NotNull
     @NotBlank
     private String mobile;

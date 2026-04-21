@@ -4,6 +4,8 @@ import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
+import es.upm.api.services.criteria.UserFindCriteria;
+import es.upm.api.services.feign.SupportWebClient;
 import es.upm.miw.device.DeviceInfoResolver;
 import es.upm.miw.exception.ForbiddenException;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class UserServiceTest {
+class UserServiceIT {
 
     @Autowired
     private UserService userService;
@@ -65,7 +67,7 @@ class UserServiceTest {
         UserFindCriteria criteria = new UserFindCriteria();
         criteria.setMobile("61");
         criteria.setProjection(true);
-        List<User> users = this.userService.findNullSafe(criteria).toList();
+        List<User> users = this.userService.find(criteria).toList();
         assertThat(users)
                 .isNotNull()
                 .isNotEmpty()
@@ -79,7 +81,7 @@ class UserServiceTest {
         UserFindCriteria criteria = new UserFindCriteria();
         criteria.setMobile("666666004");
         criteria.setProjection(true);
-        List<User> users = this.userService.findNullSafe(criteria).toList();
+        List<User> users = this.userService.find(criteria).toList();
         assertThat(users).isEmpty();
     }
 
@@ -100,7 +102,7 @@ class UserServiceTest {
 
     @Test
     @WithMockUser(username = "666666001", roles = {"customer"})
-    void testUpdateUserLastUsedForUpdateAt() {
+    void testUpdateByMobileWithTokenLastUsedForUpdateAt() {
         String mobile = "666666001";
         User user = this.userService.readByMobile(mobile);
         String originalCity = user.getCity();
@@ -121,6 +123,8 @@ class UserServiceTest {
                 mobile,
                 token,
                 user,
+                true,false,
+
                 DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
         );
 
@@ -137,6 +141,38 @@ class UserServiceTest {
         updatedUser.setCity(originalCity);
         this.userService.updateByMobile(mobile, updatedUser);
         this.accessLinkRepository.deleteById(token);
+    }
+
+    @Test
+    @WithMockUser(username = "666666001", roles = {"customer"})
+    void testUpdateByMobileWithTokenForbiddenByScope() {
+        User user = this.userService.readByMobile("66");
+        assertThrows(ForbiddenException.class, () ->
+                this.userService.updateByMobileWithToken(
+                        "66",
+                        "XWBLFua2T6GLVh5wqKHB8w",
+                        user,
+                        true,
+                        false,
+                        DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
+                )
+        );
+    }
+
+    @Test
+    @WithMockUser(username = "666666001", roles = {"customer"})
+    void testUpdateByMobileWithTokenForbiddenByAnotherMobile() {
+        User user = this.userService.readByMobile("666666001");
+        assertThrows(ForbiddenException.class, () ->
+                this.userService.updateByMobileWithToken(
+                        "666666001",
+                        "GiTBDnRkS-aNYOayM69_kA",
+                        user,
+                        true,
+                        false,
+                        DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
+                )
+        );
     }
 
 }

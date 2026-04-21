@@ -1,26 +1,29 @@
 package es.upm.api.services;
 
+import es.upm.api.configurations.CurrentUser;
 import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
+import es.upm.api.services.criteria.UserFindCriteria;
+import es.upm.api.services.feign.SupportWebClient;
+import es.upm.api.services.utils.ProfileUpdatedEmailTemplateService;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.BadRequestException;
 import es.upm.miw.exception.ConflictException;
 import es.upm.miw.exception.ForbiddenException;
 import es.upm.miw.exception.NotFoundException;
 import es.upm.miw.uuid.UUIDBase64;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -28,6 +31,7 @@ import java.util.stream.Stream;
 
 import static es.upm.api.data.entities.Role.CUSTOMER;
 
+@RequiredArgsConstructor
 @Service
 public class UserService {
     public static final String SCOPE_EDIT_PROFILE = "edit-profile";
@@ -37,16 +41,8 @@ public class UserService {
     private final AccessLinkRepository accessLinkRepository;
     private final SupportWebClient supportWebClient;
     private final ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService;
-
-    @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AccessLinkRepository accessLinkRepository,
-                       SupportWebClient supportWebClient, ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.accessLinkRepository = accessLinkRepository;
-        this.supportWebClient = supportWebClient;
-        this.profileUpdatedEmailTemplateService = profileUpdatedEmailTemplateService;
-    }
+    private final DataProcessingConsentService dataProcessingConsentService;
+    private final CurrentUser currentUser;
 
     public void create(User user) {
         this.validateAuthorizedRole(user.getRole());
@@ -67,7 +63,8 @@ public class UserService {
         return this.updateUser(mobile, user);
     }
 
-    public User updateByMobileWithToken(String mobile, String token, User user, DeviceInfo deviceInfo) {
+    public User updateByMobileWithToken(String mobile, String token, User user, boolean dataProcessingAccepted,
+                                        boolean promotionsAccepted, DeviceInfo deviceInfo) {
         User existingUser = this.readByMobile(mobile);
         if (!CUSTOMER.equals(existingUser.getRole())) {
             throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + existingUser.getRole() + "Mobile: " + mobile);
@@ -76,6 +73,7 @@ public class UserService {
         boolean profileChanged = !EqualsBuilder.reflectionEquals(existingUser, user,
                 "id", "password", "role", "registrationDate", "active");
         User userDB = this.updateUser(mobile, user);
+        this.dataProcessingConsentService.create(userDB, token, dataProcessingAccepted, promotionsAccepted, deviceInfo);
         if (profileChanged) {
             try {
                 this.supportWebClient.sendHtml(
@@ -87,7 +85,7 @@ public class UserService {
                         )
                 );
             } catch (Exception e) {
-                throw new BadRequestException("Email incorrecto: (" + userDB.getEmail() + "). No se puede enviar notificaciones! ");
+                throw new BadRequestException("EmailDto incorrecto: (" + userDB.getEmail() + "). No se puede enviar notificaciones! ");
             }
         }
         return userDB;
@@ -152,16 +150,7 @@ public class UserService {
     private void useAccessToken(String mobile, String token, boolean updating) {
         AccessLink accessLink = this.accessLinkRepository.findById(token)
                 .orElseThrow(() -> new NotFoundException("The token don't exist: " + token));
-        if (!accessLink.getUser().getMobile().equals(mobile)) {
-            throw new ForbiddenException("Forbidden token. Token is the another mobile");
-        }
-        if (!accessLink.getScope().equals(SCOPE_EDIT_PROFILE)) {
-            throw new ForbiddenException("Forbidden purpose. Only EDIT_PROFILE allowed.");
-        }
-        accessLink.use();
-        if (updating) {
-            accessLink.setLastUsedForUpdateAt(LocalDateTime.now());
-        }
+        accessLink.use(mobile, SCOPE_EDIT_PROFILE, updating);
         this.accessLinkRepository.save(accessLink);
     }
 
@@ -183,27 +172,28 @@ public class UserService {
         }
     }
 
-    public Stream<User> findNullSafe(UserFindCriteria criteria) {
-        Stream<User> userDtos;
-        if (criteria.all()) {
-            userDtos = this.userRepository.findByRoleIn(validRoles()).stream();
-        } else if (criteria.getAttribute() != null) {
-            userDtos = this.userRepository.findByAll(criteria.getAttribute(), List.of(CUSTOMER)).stream();
-        } else {
-            userDtos = this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
-                    criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(), criteria.getEmail(), criteria.getIdentity(), this.validRoles()
-            ).stream();
-        }
+    public Stream<User> find(UserFindCriteria criteria) {
+        return this.restrictToCurrentCustomer(this.query(criteria));
+    }
 
-        if (SecurityContextHolder.getContext().getAuthentication().getAuthorities()
-                .stream()
-                .anyMatch(authority ->
-                        authority.getAuthority().equals(CUSTOMER.springSecurityAuthority())
-                )
-        ) {
-            userDtos = userDtos.filter(user -> user.getMobile().equals(SecurityContextHolder.getContext().getAuthentication().getName()));
+    private Stream<User> query(UserFindCriteria criteria) {
+        if (criteria.all()) {
+            return this.userRepository.findByRoleIn(this.validRoles()).stream();
         }
-        return userDtos;
+        if (criteria.getAttribute() != null) {
+            return this.userRepository.findByAll(criteria.getAttribute(), List.of(CUSTOMER)).stream();
+        }
+        return this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
+                criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(),
+                criteria.getEmail(), criteria.getIdentity(), this.validRoles()
+        ).stream();
+    }
+
+    private Stream<User> restrictToCurrentCustomer(Stream<User> users) {
+        if (!this.currentUser.isCustomer()) {
+            return users;
+        }
+        return users.filter(user -> user.getMobile().equals(this.currentUser.mobile()));
     }
 
     public Stream<UUID> findIdsByMobileContaining(String mobile) {
