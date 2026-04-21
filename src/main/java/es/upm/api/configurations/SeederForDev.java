@@ -1,8 +1,10 @@
 package es.upm.api.configurations;
 
 import es.upm.api.data.daos.AccessLinkRepository;
+import es.upm.api.data.daos.DataProcessingConsentRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.*;
+import es.upm.miw.device.DeviceInfoResolver;
 import es.upm.miw.uuid.UUIDBase64;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,6 +30,7 @@ public class SeederForDev implements ApplicationRunner {
 
     private final UserRepository userRepository;
     private final AccessLinkRepository accessLinkRepository;
+    private final DataProcessingConsentRepository dataProcessingConsentRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.db.password}")
@@ -40,6 +43,7 @@ public class SeederForDev implements ApplicationRunner {
     }
 
     private void deleteAll() {
+        this.dataProcessingConsentRepository.deleteAll();
         this.accessLinkRepository.deleteAll();
         this.userRepository.deleteAll();
         log.warn("------- Deleted All -----------");
@@ -101,6 +105,55 @@ public class SeederForDev implements ApplicationRunner {
         );
         this.accessLinkRepository.saveAll(accessLinks);
         log.warn("        ------- accessLinks");
+
+        List<DataProcessingConsent> dataProcessingConsents = List.of(
+                DataProcessingConsent.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0100"))
+                        .signatureAt(LocalDateTime.now().minusDays(10))
+                        .signer(users.get(4)).signerFullName(users.get(4).fullName())
+                        .signerIdentity(users.get(4).getIdentity()).mobile(users.get(4).getMobile())
+                        .signerEmail(users.get(4).getEmail())
+                        .signatureToken("consent-token-0001")
+                        .deviceInfo(DeviceInfoResolver.resolve(
+                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/123.0.0.0",
+                                "83.52.10.24"))
+                        .policyVersion("2026-02-19")
+                        .dataProcessingAccepted(true).promotionsAccepted(true).build(),
+                DataProcessingConsent.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0101"))
+                        .signatureAt(LocalDateTime.now().minusDays(3))
+                        .signer(users.get(5)).signerFullName(users.get(5).fullName())
+                        .signerIdentity(users.get(5).getIdentity()).mobile(users.get(5).getMobile())
+                        .signerEmail(users.get(5).getEmail())
+                        .signatureToken("consent-token-0002")
+                        .deviceInfo(DeviceInfoResolver.resolve(
+                                "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/124.0.0.0 Mobile",
+                                "95.121.30.9"))
+                        .policyVersion("2026-04-25")
+                        .dataProcessingAccepted(true).promotionsAccepted(false).build(),
+                DataProcessingConsent.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0102"))
+                        .signatureAt(LocalDateTime.now().minusHours(6))
+                        .signer(users.get(3)).signerFullName(users.get(3).fullName())
+                        .signerIdentity(users.get(3).getIdentity()).mobile(users.get(3).getMobile())
+                        .signerEmail(users.get(3).getEmail())
+                        .signatureToken("consent-token-0003")
+                        .deviceInfo(DeviceInfoResolver.resolve(
+                                "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15",
+                                "81.44.12.90"))
+                        .policyVersion("2026-04-25")
+                        .dataProcessingAccepted(true).promotionsAccepted(false).build(),
+                DataProcessingConsent.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0103"))
+                        .signatureAt(LocalDateTime.now().minusMinutes(20))
+                        .signer(users.get(6)).signerFullName(users.get(6).fullName())
+                        .signerIdentity(users.get(6).getIdentity()).mobile(users.get(6).getMobile())
+                        .signerEmail(users.get(6).getEmail())
+                        .signatureToken("consent-token-0004")
+                        .deviceInfo(DeviceInfoResolver.resolve(
+                                "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/537.36 Safari/537.36",
+                                "88.6.200.121"))
+                        .policyVersion("2026-04-25")
+                        .dataProcessingAccepted(true).promotionsAccepted(true).build()
+        );
+        this.dataProcessingConsentRepository.saveAll(dataProcessingConsents);
+        log.warn("        ------- dataProcessingConsents");
     }
 
 }
