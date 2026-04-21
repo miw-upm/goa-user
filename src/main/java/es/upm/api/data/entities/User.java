@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.UUID;
 
 @Builder
@@ -36,4 +37,8 @@ public class User {
     private Role role;
     private LocalDate registrationDate;
     private Boolean active;
+
+    public String fullName() {
+        return (Objects.toString(this.firstName, "") + " " + Objects.toString(this.familyName, "")).trim();
+    }
 }

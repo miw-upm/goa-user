@@ -1,6 +1,5 @@
 package es.upm.api.services;
 
-import es.upm.miw.device.DeviceInfo;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

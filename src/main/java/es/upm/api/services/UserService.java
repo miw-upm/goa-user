@@ -78,7 +78,7 @@ public class UserService {
         boolean profileChanged = !EqualsBuilder.reflectionEquals(existingUser, user,
                 "id", "password", "role", "registrationDate", "active");
         User userDB = this.updateUser(mobile, user);
-        this.dataProcessingConsentService.create(mobile,token,consentCreation,deviceInfo);
+        this.dataProcessingConsentService.create(userDB, token, consentCreation, deviceInfo);
         if (profileChanged) {
             try {
                 this.supportWebClient.sendHtml(
