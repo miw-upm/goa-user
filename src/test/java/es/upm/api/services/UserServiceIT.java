@@ -102,7 +102,7 @@ class UserServiceIT {
 
     @Test
     @WithMockUser(username = "666666001", roles = {"customer"})
-    void testUpdateUserLastUsedForUpdateAt() {
+    void testUpdateByMobileWithTokenLastUsedForUpdateAt() {
         String mobile = "666666001";
         User user = this.userService.readByMobile(mobile);
         String originalCity = user.getCity();
@@ -141,6 +141,38 @@ class UserServiceIT {
         updatedUser.setCity(originalCity);
         this.userService.updateByMobile(mobile, updatedUser);
         this.accessLinkRepository.deleteById(token);
+    }
+
+    @Test
+    @WithMockUser(username = "666666001", roles = {"customer"})
+    void testUpdateByMobileWithTokenForbiddenByScope() {
+        User user = this.userService.readByMobile("66");
+        assertThrows(ForbiddenException.class, () ->
+                this.userService.updateByMobileWithToken(
+                        "66",
+                        "XWBLFua2T6GLVh5wqKHB8w",
+                        user,
+                        true,
+                        false,
+                        DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
+                )
+        );
+    }
+
+    @Test
+    @WithMockUser(username = "666666001", roles = {"customer"})
+    void testUpdateByMobileWithTokenForbiddenByAnotherMobile() {
+        User user = this.userService.readByMobile("666666001");
+        assertThrows(ForbiddenException.class, () ->
+                this.userService.updateByMobileWithToken(
+                        "666666001",
+                        "GiTBDnRkS-aNYOayM69_kA",
+                        user,
+                        true,
+                        false,
+                        DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
+                )
+        );
     }
 
 }
