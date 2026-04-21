@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Builder
@@ -29,14 +30,23 @@ public class AccessLink {
     private String scope;
     private UUID document;
 
-    public void use() {
+    public void use(String mobile, String requiredScope, boolean updating) {
         if (this.expiresAt.isBefore(LocalDateTime.now())) {
             throw new ForbiddenException("Expired token");
         }
         if (this.remainingUses <= 0) {
             throw new ForbiddenException("Used token");
         }
+        if (!Objects.equals(this.user.getMobile(), mobile)) {
+            throw new ForbiddenException("Forbidden token. Token is the another mobile");
+        }
+        if (!Objects.equals(this.scope, requiredScope)) {
+            throw new ForbiddenException("Forbidden purpose. The scope does not match the intended use.");
+        }
         this.remainingUses--;
+        if (updating) {
+            this.lastUsedForUpdateAt = LocalDateTime.now();
+        }
     }
 }
 

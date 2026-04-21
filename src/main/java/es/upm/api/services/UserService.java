@@ -1,5 +1,6 @@
 package es.upm.api.services;
 
+import es.upm.api.configurations.CurrentUser;
 import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.AccessLink;
@@ -23,7 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -42,6 +42,7 @@ public class UserService {
     private final SupportWebClient supportWebClient;
     private final ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService;
     private final DataProcessingConsentService dataProcessingConsentService;
+    private final CurrentUser currentUser;
 
     public void create(User user) {
         this.validateAuthorizedRole(user.getRole());
@@ -149,16 +150,7 @@ public class UserService {
     private void useAccessToken(String mobile, String token, boolean updating) {
         AccessLink accessLink = this.accessLinkRepository.findById(token)
                 .orElseThrow(() -> new NotFoundException("The token don't exist: " + token));
-        if (!accessLink.getUser().getMobile().equals(mobile)) {
-            throw new ForbiddenException("Forbidden token. Token is the another mobile");
-        }
-        if (!accessLink.getScope().equals(SCOPE_EDIT_PROFILE)) {
-            throw new ForbiddenException("Forbidden purpose. Only EDIT_PROFILE allowed.");
-        }
-        accessLink.use();
-        if (updating) {
-            accessLink.setLastUsedForUpdateAt(LocalDateTime.now());
-        }
+        accessLink.use(mobile, SCOPE_EDIT_PROFILE, updating);
         this.accessLinkRepository.save(accessLink);
     }
 
@@ -181,26 +173,27 @@ public class UserService {
     }
 
     public Stream<User> find(UserFindCriteria criteria) {
-        Stream<User> userDtos;
-        if (criteria.all()) {
-            userDtos = this.userRepository.findByRoleIn(validRoles()).stream();
-        } else if (criteria.getAttribute() != null) {
-            userDtos = this.userRepository.findByAll(criteria.getAttribute(), List.of(CUSTOMER)).stream();
-        } else {
-            userDtos = this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
-                    criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(), criteria.getEmail(), criteria.getIdentity(), this.validRoles()
-            ).stream();
-        }
+        return this.restrictToCurrentCustomer(this.query(criteria));
+    }
 
-        if (SecurityContextHolder.getContext().getAuthentication().getAuthorities()
-                .stream()
-                .anyMatch(authority ->
-                        authority.getAuthority().equals(CUSTOMER.springSecurityAuthority())
-                )
-        ) {
-            userDtos = userDtos.filter(user -> user.getMobile().equals(SecurityContextHolder.getContext().getAuthentication().getName()));
+    private Stream<User> query(UserFindCriteria criteria) {
+        if (criteria.all()) {
+            return this.userRepository.findByRoleIn(this.validRoles()).stream();
         }
-        return userDtos;
+        if (criteria.getAttribute() != null) {
+            return this.userRepository.findByAll(criteria.getAttribute(), List.of(CUSTOMER)).stream();
+        }
+        return this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
+                criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(),
+                criteria.getEmail(), criteria.getIdentity(), this.validRoles()
+        ).stream();
+    }
+
+    private Stream<User> restrictToCurrentCustomer(Stream<User> users) {
+        if (!this.currentUser.isCustomer()) {
+            return users;
+        }
+        return users.filter(user -> user.getMobile().equals(this.currentUser.mobile()));
     }
 
     public Stream<UUID> findIdsByMobileContaining(String mobile) {
