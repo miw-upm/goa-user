@@ -74,6 +74,17 @@ public class UserResource {
                                            @Valid @RequestBody UserDto userDto, HttpServletRequest request) {
         return new UserDto(this.userService.updateByMobileWithToken(mobile, token, userDto.toUser(), resolveDeviceInfo(request)))
                 .ofAllBasic();
+        //TODO
+/*        @PreAuthorize(Security.URL_TOKEN)
+        @PostMapping(MOBILE_ID_TOKEN_ID)
+        public void createByMobileWithToken(@PathVariable String mobile, @PathVariable String token,
+                @Valid @RequestBody DataProcessingConsentCreation creationDto,
+                HttpServletRequest request) {
+            creationDto.setMobile(mobile);
+            creationDto.setSignatureToken(token);
+            creationDto.setDeviceInfo(this.resolveDeviceInfo(request));
+            this.dataProcessingConsentService.createByMobileWithToken(creationDto);
+        }*/
     }
 
     private DeviceInfo resolveDeviceInfo(HttpServletRequest request) {

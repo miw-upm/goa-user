@@ -1,6 +1,5 @@
 package es.upm.api.services;
 
-import es.upm.miw.exception.InternalServerException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -19,6 +18,7 @@ public class LegalPolicyService {
     private static final Pattern FILE_PATTERN =
             Pattern.compile("lopd\\.(\\d{4}-\\d{2}-\\d{2})\\.html");
     private final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+
     public String currentPolicyVersion() {
         try {
             return Arrays.stream(resolver.getResources(LOCATION_PATTERN))

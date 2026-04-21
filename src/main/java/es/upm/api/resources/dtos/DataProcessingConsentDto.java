@@ -1,12 +1,12 @@
-package es.upm.api.data.entities;
+package es.upm.api.resources.dtos;
 
+import es.upm.api.data.entities.DataProcessingConsent;
 import es.upm.miw.device.DeviceInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,12 +15,9 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document
-public class DataProcessingConsent {
-    @Id
+public class DataProcessingConsentDto {
     private UUID id;
     private LocalDateTime signatureAt;
-    private User signer;
     private String signerFullName;
     private String signerIdentity;
     private String mobile;
@@ -30,4 +27,17 @@ public class DataProcessingConsent {
     private String policyVersion;
     private Boolean dataProcessingAccepted;
     private Boolean promotionsAccepted;
+
+    public DataProcessingConsentDto(DataProcessingConsent consent) {
+        BeanUtils.copyProperties(consent, this);
+    }
+
+    public DataProcessingConsentDto ofMobileFullNameSignatureAt() {
+        return DataProcessingConsentDto.builder()
+                .id(this.getId())
+                .mobile(this.getMobile())
+                .signerFullName(this.getSignerFullName())
+                .signatureAt(this.getSignatureAt())
+                .build();
+    }
 }
