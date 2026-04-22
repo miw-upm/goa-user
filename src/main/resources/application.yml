@@ -45,7 +45,7 @@ app:
     jwt:
       key-alias: goa-jwt
       key-id: goa-jwt-k1
-      key-store-base64: ${JWT_KEYSTORE_BASE64}
+      key-store-base64: ${JWT_KEYSTORE_BASE64:dev}
       key-store-password: ${JWT_STORE_PASSWORD:dev}
       key-password: ${JWT_KEY_PASSWORD:dev}
 

@@ -144,7 +144,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     }
 
     @Bean
-    @Profile({"dev", "test"})
+    @Profile({"test"})
     public JWKSource<SecurityContext> jwkSource() {
         RSAKey rsaKey = generateRsa(); // Genera el par de claves
         JWKSet jwkSet = new JWKSet(rsaKey);
@@ -168,7 +168,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     }
 
     @Bean
-    @Profile("prod")
+    @Profile({"dev", "prod"})
     public JWKSource<SecurityContext> prodJwkSource(OAuth2Properties props) {
         RSAKey rsaKey = loadFromBase64Pkcs12(props);
         JWKSet jwkSet = new JWKSet(rsaKey);
