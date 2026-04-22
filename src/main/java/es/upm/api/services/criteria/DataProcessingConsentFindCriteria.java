@@ -6,5 +6,5 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class DataProcessingConsentFindCriteria {
-    private String mobile;
+    private String attribute;
 }

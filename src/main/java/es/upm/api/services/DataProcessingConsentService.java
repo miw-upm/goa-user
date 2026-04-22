@@ -1,6 +1,7 @@
 package es.upm.api.services;
 
 import es.upm.api.data.daos.DataProcessingConsentRepository;
+import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.DataProcessingConsent;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.DataProcessingConsentFindCriteria;
@@ -11,15 +12,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
+
+import static es.upm.api.data.entities.Role.CUSTOMER;
 
 @RequiredArgsConstructor
 @Service
 public class DataProcessingConsentService {
 
     private final DataProcessingConsentRepository dataProcessingConsentRepository;
+    private final UserRepository userRepository;
     private final LegalPolicyService legalPolicyService;
 
     public void create(User signer, String signatureToken, boolean dataProcessingAccepted, boolean promotionsAccepted,
@@ -47,10 +52,12 @@ public class DataProcessingConsentService {
     }
 
     public Stream<DataProcessingConsent> find(DataProcessingConsentFindCriteria criteria) {
-        if (Objects.isNull(criteria.getMobile()) || criteria.getMobile().isBlank()) {
+        if (Objects.isNull(criteria.getAttribute()) || criteria.getAttribute().isBlank()) {
             return this.dataProcessingConsentRepository.findAll().stream();
         }
-        return this.dataProcessingConsentRepository.findByMobile(criteria.getMobile()).stream();
+        List<String> mobiles = this.userRepository.findByAll(criteria.getAttribute(), List.of(CUSTOMER)).stream()
+                .map(User::getMobile).toList();
+        return this.dataProcessingConsentRepository.findByMobileIn(mobiles).stream();
     }
 
 }
