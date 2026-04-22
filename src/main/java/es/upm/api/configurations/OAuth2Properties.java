@@ -20,5 +20,15 @@ public class OAuth2Properties {
     private String spaLogoutRedirectUri;
     private String apiClientId;
     private String apiClientSecret;
+    private Jwt jwt = new Jwt();
+
+    @Data
+    public static class Jwt {
+        private String keyStoreBase64;
+        private String keyAlias;
+        private String keyStorePassword;
+        private String keyPassword;
+        private String keyId;
+    }
 }
 

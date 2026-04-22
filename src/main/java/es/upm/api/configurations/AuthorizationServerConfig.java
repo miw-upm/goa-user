@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
@@ -36,12 +37,13 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
+import java.io.ByteArrayInputStream;
+import java.security.*;
+import java.security.cert.Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -142,6 +144,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     }
 
     @Bean
+    @Profile({"dev", "test"})
     public JWKSource<SecurityContext> jwkSource() {
         RSAKey rsaKey = generateRsa(); // Genera el par de claves
         JWKSet jwkSet = new JWKSet(rsaKey);
@@ -163,6 +166,44 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
             throw new IllegalStateException(e);
         }
     }
+
+    @Bean
+    @Profile("prod")
+    public JWKSource<SecurityContext> prodJwkSource(OAuth2Properties props) {
+        RSAKey rsaKey = loadFromBase64Pkcs12(props);
+        JWKSet jwkSet = new JWKSet(rsaKey);
+        return (selector, ctx) -> selector.select(jwkSet);
+    }
+
+
+    private RSAKey loadFromBase64Pkcs12(OAuth2Properties props) {
+        OAuth2Properties.Jwt jwt = props.getJwt();
+        try {
+            byte[] p12Bytes = Base64.getDecoder().decode(jwt.getKeyStoreBase64());
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            keyStore.load(new ByteArrayInputStream(p12Bytes), jwt.getKeyStorePassword().toCharArray());
+            String alias = jwt.getKeyAlias();
+            String keyPassword = (jwt.getKeyPassword() == null || jwt.getKeyPassword().isBlank())
+                    ? jwt.getKeyStorePassword()
+                    : jwt.getKeyPassword();
+            Key key = keyStore.getKey(alias, keyPassword.toCharArray());
+            if (!(key instanceof RSAPrivateKey privateKey)) {
+                throw new IllegalStateException("Private key is not RSA for alias: " + alias);
+            }
+            Certificate certificate = keyStore.getCertificate(alias);
+            if (certificate == null || !(certificate.getPublicKey() instanceof RSAPublicKey publicKey)) {
+                throw new IllegalStateException("Public key/certificate not found or not RSA for alias: " + alias);
+            }
+            return new RSAKey.Builder(publicKey)
+                    .privateKey(privateKey)
+                    .keyID(jwt.getKeyId())
+                    .build();
+
+        } catch (Exception e) {
+            throw new IllegalStateException("Cannot load JWT RSA key from PKCS12 (base64)", e);
+        }
+    }
+
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings(@Value("${spring.security.oauth2.authorizationserver.issuer-uri}") String issuerUri) {

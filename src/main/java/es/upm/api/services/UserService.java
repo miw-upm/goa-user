@@ -10,10 +10,7 @@ import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.api.services.feign.SupportWebClient;
 import es.upm.api.services.utils.ProfileUpdatedEmailTemplateService;
 import es.upm.miw.device.DeviceInfo;
-import es.upm.miw.exception.BadRequestException;
-import es.upm.miw.exception.ConflictException;
-import es.upm.miw.exception.ForbiddenException;
-import es.upm.miw.exception.NotFoundException;
+import es.upm.miw.exception.*;
 import es.upm.miw.uuid.UUIDBase64;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -85,7 +82,7 @@ public class UserService {
                         )
                 );
             } catch (Exception e) {
-                throw new BadRequestException("EmailDto incorrecto: (" + userDB.getEmail() + "). No se puede enviar notificaciones! ");
+                throw new BadGatewayException("No se puede enviar notificaciones!: (" + userDB.getEmail() + "). No se puede enviar notificaciones! " + e.getMessage());
             }
         }
         return userDB;
