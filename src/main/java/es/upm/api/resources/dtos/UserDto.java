@@ -7,7 +7,7 @@ import es.upm.api.data.entities.DocumentType;
 import es.upm.api.data.entities.Province;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
-import es.upm.api.resources.dtos.validations.Validations;
+import es.upm.miw.security.Validations;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

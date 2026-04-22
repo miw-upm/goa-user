@@ -4,7 +4,8 @@ Documento de referencia para entender cómo está organizado el código y qué c
 
 ## Arquitectura general
 
-Sistema de microservicios con **Eureka** (descubrimiento), **API Gateway** (Spring Cloud Gateway) y microservicios Spring Boot. Una librería **commons** compartida sin dependencias de Spring agrupa lo transversal.
+Sistema de microservicios con **Eureka** (descubrimiento), **API Gateway** (Spring Cloud Gateway) y microservicios
+Spring Boot. Una librería **commons** compartida sin dependencias de Spring agrupa lo transversal.
 
 ```
 eureka (descubrimiento)
@@ -18,20 +19,27 @@ commons (librería Java pura, sin Spring)
 
 ## Commons
 
-Contiene lo que **cualquier microservicio** puede necesitar. Regla estricta: **cero dependencias de Spring**. Solo JDK y librerías neutras.
+Contiene lo que **cualquier microservicio** puede necesitar. Regla estricta: **cero dependencias de Spring**. Solo JDK y
+librerías neutras.
 
 Paquetes:
 
-- `es.upm.miw.exception` — excepciones de dominio (`NotFoundException`, `BadRequestException`, `ConflictException`, `ForbiddenException`, `InternalServerException`, `BadGatewayException`) y `ErrorMessage` para la respuesta al cliente. Todas extienden `RuntimeException`.
-- `es.upm.miw.security.Security` — constantes SpEL para `@PreAuthorize` (`ADMIN`, `ADMIN_MANAGER_OPERATOR`, etc.). Son strings literales, sin dependencia del enum `Role`.
-- `es.upm.miw.device` — `DeviceInfo`, `DeviceInfoResolver` para extraer información del navegador/dispositivo desde headers HTTP.
+- `es.upm.miw.exception` — excepciones de dominio (`NotFoundException`, `BadRequestException`, `ConflictException`,
+  `ForbiddenException`, `InternalServerException`, `BadGatewayException`) y `ErrorMessage` para la respuesta al cliente.
+  Todas extienden `RuntimeException`.
+- `es.upm.miw.security.Security` — constantes SpEL para `@PreAuthorize` (`ADMIN`, `ADMIN_MANAGER_OPERATOR`, etc.). Son
+  strings literales, sin dependencia del enum `Role`.
+- `es.upm.miw.device` — `DeviceInfo`, `DeviceInfoResolver` para extraer información del navegador/dispositivo desde
+  headers HTTP.
 - `es.upm.miw.uuid` — `UUIDBase64` para generar IDs cortos base64 URL-safe.
-- `es.upm.miw.badge` — `VersionBadgeGenerator`, genera SVG tipo shields.io. Clase utility con constructor privado y métodos `static`.
+- `es.upm.miw.badge` — `VersionBadgeGenerator`, genera SVG tipo shields.io. Clase utility con constructor privado y
+  métodos `static`.
 - `es.upm.miw.mail` — `EmailTemplateRenderer` para renderizar templates HTML con placeholders.
 
 Regla de entrada a commons:
 
-> Si varios microservicios lo usan y es puro JDK, a commons. Si solo lo usa uno, se queda en su microservicio. Si necesita Spring, se queda en el microservicio (o crearíamos un `commons-spring` separado, cuando haga falta).
+> Si varios microservicios lo usan y es puro JDK, a commons. Si solo lo usa uno, se queda en su microservicio. Si
+> necesita Spring, se queda en el microservicio (o crearíamos un `commons-spring` separado, cuando haga falta).
 
 ## Capas del microservicio
 
@@ -55,13 +63,16 @@ es.upm.api/
 
 ### Resources (HTTP)
 
-Clases con `@RestController`, sufijo **`Resource`**. Una por entidad expuesta. Responsabilidades: deserializar entrada, validar (`@Valid`), llamar al servicio, proyectar salida con DTOs.
+Clases con `@RestController`, sufijo **`Resource`**. Una por entidad expuesta. Responsabilidades: deserializar entrada,
+validar (`@Valid`), llamar al servicio, proyectar salida con DTOs.
 
 Convenciones:
 
 - **Rutas como constantes** del propio resource: `public static final String USERS = "/users";`.
-- **`@PreAuthorize` a nivel clase** para la regla base (`Security.AUTHENTICATED`), más específico a nivel método (`Security.ADMIN_MANAGER_OPERATOR`). Se coloca *in situ* para que cada endpoint diga quién puede acceder.
-- **Patrones de path con regex** vía `Validations.ID_WITH_UUID`, `Validations.ID_WITH_MOBILE` — desambiguan rutas y rechazan IDs mal formados antes de llegar al controller.
+- **`@PreAuthorize` a nivel clase** para la regla base (`Security.AUTHENTICATED`), más específico a nivel método (
+  `Security.ADMIN_MANAGER_OPERATOR`). Se coloca *in situ* para que cada endpoint diga quién puede acceder.
+- **Patrones de path con regex** vía `Validations.ID_WITH_UUID`, `Validations.ID_WITH_MOBILE` — desambiguan rutas y
+  rechazan IDs mal formados antes de llegar al controller.
 - **Inyección por constructor** con `@RequiredArgsConstructor` de Lombok.
 - **Nada de lógica de negocio**: los resources solo traducen HTTP → parámetros del servicio.
 - **Conversión DTO ↔ entidad** aquí, nunca en el servicio.
@@ -92,14 +103,17 @@ Objetos de transporte entre capas. Sufijo **`Dto`** siempre. Las entidades nunca
 Filosofía pragmática:
 
 - **Un solo `XxxDto`** cuando entrada y salida comparten la mayoría de campos (ej. `UserDto`).
-- **`XxxCreationDto` / `XxxUpdateDto`** separados cuando la entrada diverge claramente de la salida (ej. `AccessLinkCreationDto` solo tiene 2 campos mientras `AccessLinkDto` tiene 8).
-- **Wrappers de entrada compuesta**: `XxxWithYyyDto` cuando un endpoint recibe dos conceptos (ej. `UserUpdateWithConsentDto`).
+- **`XxxCreationDto` / `XxxUpdateDto`** separados cuando la entrada diverge claramente de la salida (ej.
+  `AccessLinkCreationDto` solo tiene 2 campos mientras `AccessLinkDto` tiene 8).
+- **Wrappers de entrada compuesta**: `XxxWithYyyDto` cuando un endpoint recibe dos conceptos (ej.
+  `UserUpdateWithConsentDto`).
 
 #### Control de dirección en un DTO compartido
 
 Cuando un mismo `XxxDto` se usa en E/S, se marcan campos asimétricos con Jackson:
 
-- `@JsonProperty(access = Access.READ_ONLY)` — sale en respuestas, se ignora en peticiones (IDs generados, timestamps del servidor).
+- `@JsonProperty(access = Access.READ_ONLY)` — sale en respuestas, se ignora en peticiones (IDs generados, timestamps
+  del servidor).
 - `@JsonProperty(access = Access.WRITE_ONLY)` — entra en peticiones, nunca sale en respuestas (passwords, tokens).
 
 Regla: si más de la mitad de los campos son asimétricos, mejor separar en dos DTOs. Si son 2-3, anotaciones.
@@ -108,7 +122,8 @@ Regla: si más de la mitad de los campos son asimétricos, mejor separar en dos 
 
 - **Constructor `XxxDto(Entity entity)`** para convertir entidad → DTO, usando `BeanUtils.copyProperties`.
 - **`toEntity()`** para convertir DTO → entidad (típicamente `toUser()`, `toCreation()`, etc.).
-- **Proyecciones `ofXxx()`** para devolver un DTO reducido: `ofBasic()`, `ofMobileFirstNameFamilyNameEmail()`. El nombre describe qué campos lleva. Se construyen encadenando builders.
+- **Proyecciones `ofXxx()`** para devolver un DTO reducido: `ofBasic()`, `ofMobileFirstNameFamilyNameEmail()`. El nombre
+  describe qué campos lleva. Se construyen encadenando builders.
 
 ### Criteria
 
@@ -120,21 +135,23 @@ Clases en `services/criteria/` para agrupar parámetros de búsqueda. Sufijo **`
 
 ### Services
 
-Clases con `@Service`, sufijo **`Service`**. Contienen la lógica de negocio: orquestan repositorios, validaciones, enriquecimiento de entidades, llamadas a otros servicios.
+Clases con `@Service`, sufijo **`Service`**. Contienen la lógica de negocio: orquestan repositorios, validaciones,
+enriquecimiento de entidades, llamadas a otros servicios.
 
 Convenciones de nombres de métodos:
 
-| Método | Devuelve | Si no encuentra |
-|---|---|---|
-| `create(entity)` | void o la entidad | — |
-| `read(id)` / `readByX(x)` | entidad | `NotFoundException` |
-| `update(...)` / `updateByX(...)` | entidad actualizada | `NotFoundException` |
-| `delete(...)` / `deleteByX(...)` | void | `NotFoundException` o silencio |
-| `find(criteria)` | `Stream<Entity>` | stream vacío |
+| Método                           | Devuelve            | Si no encuentra                |
+|----------------------------------|---------------------|--------------------------------|
+| `create(entity)`                 | void o la entidad   | —                              |
+| `read(id)` / `readByX(x)`        | entidad             | `NotFoundException`            |
+| `update(...)` / `updateByX(...)` | entidad actualizada | `NotFoundException`            |
+| `delete(...)` / `deleteByX(...)` | void                | `NotFoundException` o silencio |
+| `find(criteria)`                 | `Stream<Entity>`    | stream vacío                   |
 
 Métodos privados auxiliares:
 
-- **`assertXxx(...)`**: lanza excepción si se viola una invariante (`assertNoExistByMobile`, `assertNoExistByEmail`). El prefijo `assert` deja claro que no devuelven nada y pueden lanzar.
+- **`assertXxx(...)`**: lanza excepción si se viola una invariante (`assertNoExistByMobile`, `assertNoExistByEmail`). El
+  prefijo `assert` deja claro que no devuelven nada y pueden lanzar.
 
 Los servicios **trabajan con entidades**, nunca con DTOs. La conversión DTO↔entidad ocurre en el resource.
 
@@ -177,7 +194,8 @@ integrations/
     EmailDto.java                (DTO del contrato)
 ```
 
-Los DTOs del contrato se **duplican en cada microservicio** a propósito — evita acoplar commons con contratos específicos entre dos servicios concretos.
+Los DTOs del contrato se **duplican en cada microservicio** a propósito — evita acoplar commons con contratos
+específicos entre dos servicios concretos.
 
 ### Infrastructure
 
@@ -190,7 +208,8 @@ Cuando un subgrupo crezca (ej. varios templates de email), extraer a subpaquete 
 
 ## Seguridad
 
-Flujo OAuth2 con JWT emitido por el propio `goa-user` (authorization server). Los demás microservicios son resource servers que validan el JWT.
+Flujo OAuth2 con JWT emitido por el propio `goa-user` (authorization server). Los demás microservicios son resource
+servers que validan el JWT.
 
 ### Roles
 
@@ -221,27 +240,30 @@ Ventajas del enfoque:
 
 Jerarquía en commons, todas `RuntimeException`:
 
-| Excepción | HTTP | Cuándo |
-|---|---|---|
-| `BadRequestException` | 400 | Entrada mal formada, parámetros inválidos |
-| `ForbiddenException` | 403 | Autenticado pero sin permiso |
-| `NotFoundException` | 404 | Recurso no existe |
-| `ConflictException` | 409 | Conflicto de estado (ej. unique constraint) |
-| `InternalServerException` | 500 | Fallo inesperado del servicio |
-| `BadGatewayException` | 502 | Fallo al comunicar con otro servicio |
+| Excepción                 | HTTP | Cuándo                                      |
+|---------------------------|------|---------------------------------------------|
+| `BadRequestException`     | 400  | Entrada mal formada, parámetros inválidos   |
+| `ForbiddenException`      | 403  | Autenticado pero sin permiso                |
+| `NotFoundException`       | 404  | Recurso no existe                           |
+| `ConflictException`       | 409  | Conflicto de estado (ej. unique constraint) |
+| `InternalServerException` | 500  | Fallo inesperado del servicio               |
+| `BadGatewayException`     | 502  | Fallo al comunicar con otro servicio        |
 
 Convenciones:
 
 - **Constructor con `String detail`**: el mensaje incluye el nombre de la excepción para logs.
 - **Constructor con `Throwable cause`**: cuando envolvemos otra excepción, conservamos el stack trace original.
-- **`IllegalStateException` para errores que "no deberían pasar"**: recursos del classpath que no cargan, invariantes rotas. Se propagan como 500 automáticamente.
-- **Excepciones específicas del microservicio** (ej. `BadCredentialsException` en `goa-user`) se quedan en el microservicio.
+- **`IllegalStateException` para errores que "no deberían pasar"**: recursos del classpath que no cargan, invariantes
+  rotas. Se propagan como 500 automáticamente.
+- **Excepciones específicas del microservicio** (ej. `BadCredentialsException` en `goa-user`) se quedan en el
+  microservicio.
 
 ## Inicializadores
 
 Patrón `ApplicationRunner` con `@Order`:
 
-- **`AdminUserInitializer`** — siempre activo (`@Order(2)`). Crea un admin si no existe. Usa `log.warn` al crearlo porque la ausencia de admin en un sistema maduro es anómala.
+- **`AdminUserInitializer`** — siempre activo (`@Order(2)`). Crea un admin si no existe. Usa `log.warn` al crearlo
+  porque la ausencia de admin en un sistema maduro es anómala.
 - **`SeederForDev`** — solo activo con `@Profile({"dev", "test"})` y `@Order(1)`. Borra todo y siembra datos de prueba.
 
 Convenciones:
@@ -260,14 +282,16 @@ Tres niveles:
 
 ### Integración (`SpringBootTest` + BD real)
 
-`XxxIT` o `XxxTest` según convención del módulo. Cargan contexto, usan `@ActiveProfiles("test")`, pueden mockear colaboradores externos con `@MockitoBean`.
+`XxxIT` o `XxxTest` según convención del módulo. Cargan contexto, usan `@ActiveProfiles("test")`, pueden mockear
+colaboradores externos con `@MockitoBean`.
 
 - `@WithMockUser(username="...", roles={"manager"})` para simular autenticación.
 - Los tests que modifican datos **restauran el estado al final** para no contaminar a los siguientes.
 
 ### Funcionales (end-to-end HTTP)
 
-`XxxFT` con `@SpringBootTest(webEnvironment = RANDOM_PORT)` y `TestRestTemplate`. Prueban el servicio completo vía HTTP real.
+`XxxFT` con `@SpringBootTest(webEnvironment = RANDOM_PORT)` y `TestRestTemplate`. Prueban el servicio completo vía HTTP
+real.
 
 Helper `HttpRequestBuilder` en `functionaltests/` encapsula la obtención del token OAuth2 y el builder de peticiones:
 
@@ -280,19 +304,19 @@ this.httpRequestBuilder.post(URL)
 
 ## Naming — resumen
 
-| Tipo | Sufijo | Paquete |
-|---|---|---|
-| Entidad persistencia | — (sin sufijo) | `data.entities` |
-| Repositorio | `Repository` | `data.daos` |
-| Repositorio custom | `RepositoryCustom` + `RepositoryCustomImpl` | `data.daos` (mismo que el repo) |
-| Servicio | `Service` | `services` |
-| Criteria | `FindCriteria` | `services.criteria` |
-| Resource (controller) | `Resource` | `resources` |
-| DTO E/S simétrica | `Dto` | `resources.dtos` |
-| DTO solo entrada | `CreationDto` / `UpdateDto` | `resources.dtos` |
-| Feign client | `WebClient` | `integrations` |
-| DTO Feign | `Dto` | `integrations.dtos` |
-| Excepción de dominio | `Exception` | `es.upm.miw.exception` (commons) |
+| Tipo                  | Sufijo                                      | Paquete                          |
+|-----------------------|---------------------------------------------|----------------------------------|
+| Entidad persistencia  | — (sin sufijo)                              | `data.entities`                  |
+| Repositorio           | `Repository`                                | `data.daos`                      |
+| Repositorio custom    | `RepositoryCustom` + `RepositoryCustomImpl` | `data.daos` (mismo que el repo)  |
+| Servicio              | `Service`                                   | `services`                       |
+| Criteria              | `FindCriteria`                              | `services.criteria`              |
+| Resource (controller) | `Resource`                                  | `resources`                      |
+| DTO E/S simétrica     | `Dto`                                       | `resources.dtos`                 |
+| DTO solo entrada      | `CreationDto` / `UpdateDto`                 | `resources.dtos`                 |
+| Feign client          | `WebClient`                                 | `integrations`                   |
+| DTO Feign             | `Dto`                                       | `integrations.dtos`              |
+| Excepción de dominio  | `Exception`                                 | `es.upm.miw.exception` (commons) |
 
 ## Formato
 
@@ -305,8 +329,10 @@ this.httpRequestBuilder.post(URL)
 
 ## Patrones que evitamos
 
-- **DTOs en `services`**: los DTOs viven solo en `resources`. Si un servicio agrupa parámetros, usa un tipo propio (record o clase sin anotaciones HTTP) en su propio paquete.
-- **Lógica en constructores**: rompe tests y orden de inicialización. Usar `ApplicationRunner`, `@PostConstruct` o métodos del bean.
+- **DTOs en `services`**: los DTOs viven solo en `resources`. Si un servicio agrupa parámetros, usa un tipo propio (
+  record o clase sin anotaciones HTTP) en su propio paquete.
+- **Lógica en constructores**: rompe tests y orden de inicialización. Usar `ApplicationRunner`, `@PostConstruct` o
+  métodos del bean.
 - **Entidades directamente en resources**: siempre intermediamos con DTOs.
 - **Strings SpEL literales en `@PreAuthorize`**: siempre constantes de `Security`.
 - **Commons con Spring**: rompe la filosofía de biblioteca neutra.
