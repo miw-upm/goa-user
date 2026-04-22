@@ -19,6 +19,12 @@ app:
     spa-logout-redirect-uri: ${BASE_URL}
     api-client-id: ${API_CLIENT_ID}
     api-client-secret: ${API_CLIENT_SECRET}
+    jwt:
+      key-alias: goa-jwt
+      key-id: goa-jwt-k1
+      key-store-base64: ${JWT_KEYSTORE_BASE64}
+      key-store-password: ${JWT_STORE_PASSWORD}
+      key-password: ${JWT_KEY_PASSWORD}
 
 eureka:
   client:
