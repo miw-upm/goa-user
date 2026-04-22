@@ -146,6 +146,7 @@ public class AuthorizationServerConfig {  // Generate tokens OAuth2
     @Bean
     @Profile({"dev", "test"})
     public JWKSource<SecurityContext> jwkSource() {
+        log.warn("SHAKey...Regenerating the key pair");
         RSAKey rsaKey = generateRsa(); // Genera el par de claves
         JWKSet jwkSet = new JWKSet(rsaKey);
         return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);

@@ -12,9 +12,11 @@ import es.upm.api.services.utils.ProfileUpdatedEmailTemplateService;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.*;
 import es.upm.miw.uuid.UUIDBase64;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.env.Profiles;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -81,8 +83,10 @@ public class UserService {
                                 deviceInfo
                         )
                 );
-            } catch (Exception e) {
-                throw new BadGatewayException("No se puede enviar notificaciones!: (" + userDB.getEmail() + "). No se puede enviar notificaciones! " + e.getMessage());
+            } catch (FeignException.BadRequest e) {
+                throw new BadGatewayException("No se puede enviar notificaciones por email: (" + userDB.getEmail() + ")");
+            } catch (Exception e){
+                 throw new BadGatewayException("Error de notificaciones por email: (" + userDB.getEmail() + ")" +  e.getMessage());
             }
         }
         return userDB;
