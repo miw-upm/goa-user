@@ -71,8 +71,8 @@ public class UserResource {
     public UserDto updateByMobileWithToken(@PathVariable String mobile, @PathVariable String token,
                                            @Valid @RequestBody UserUpdateWithConsentDto body,
                                            HttpServletRequest request) {
-        User user = body.getUserDto().toDomain();
-        DataProcessingConsentCreationDto consent = body.getDataProcessingConsentCreationDto();
+        User user = body.getUser().toDomain();
+        DataProcessingConsentCreationDto consent = body.getDataProcessingConsentCreation();
         return new UserDto(this.userService.updateByMobileWithToken(mobile, token, user,
                 consent.getDataProcessingAccepted(), consent.getPromotionsAccepted(),
                 resolveDeviceInfo(request))).ofBasic();

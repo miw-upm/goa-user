@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 public class UserUpdateWithConsentDto {
     @Valid
     @NotNull
-    private UserDto userDto;
+    private UserDto user;
 
     @Valid
     @NotNull
-    private DataProcessingConsentCreationDto dataProcessingConsentCreationDto;
+    private DataProcessingConsentCreationDto dataProcessingConsentCreation;
 }
