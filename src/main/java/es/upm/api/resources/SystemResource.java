@@ -65,7 +65,7 @@ public class SystemResource {
                 default -> 6;
             };
         }
-        return width;
+        return width + 12;
     }
 
     private String generateBadge(String label, String value) {

@@ -21,4 +21,11 @@ public class CurrentUser {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority);
     }
+
+    public Role getRole() {
+        return this.getAuthorities()
+                .findFirst()
+                .map(Role::from)
+                .orElse(Role.ANONYMOUS);
+    }
 }
