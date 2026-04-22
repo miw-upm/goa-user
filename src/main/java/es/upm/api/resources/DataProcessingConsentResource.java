@@ -3,6 +3,7 @@ package es.upm.api.resources;
 import es.upm.api.resources.dtos.DataProcessingConsentDto;
 import es.upm.api.services.DataProcessingConsentService;
 import es.upm.api.services.criteria.DataProcessingConsentFindCriteria;
+import es.upm.miw.security.Security;
 import es.upm.miw.security.Validations;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

@@ -10,6 +10,7 @@ import es.upm.api.services.UserService;
 import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.device.DeviceInfoResolver;
+import es.upm.miw.security.Security;
 import es.upm.miw.security.Validations;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
