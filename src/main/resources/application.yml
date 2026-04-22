@@ -42,6 +42,12 @@ app:
     spa-login-redirect-uri: http://localhost:4200/callback
     api-client-id: api-client-id
     api-client-secret: api-client-secret
+    jwt:
+      key-alias: goa-jwt
+      key-id: goa-jwt-k1
+      key-store-base64: ${JWT_KEYSTORE_BASE64}
+      key-store-password: ${JWT_STORE_PASSWORD:dev}
+      key-password: ${JWT_KEY_PASSWORD:dev}
 
 management:
   endpoints:
