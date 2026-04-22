@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface DataProcessingConsentRepository extends MongoRepository<DataProcessingConsent, UUID> {
     List<DataProcessingConsent> findByMobile(String mobile);
+
+    List<DataProcessingConsent> findByMobileIn(List<String> mobiles);
 }

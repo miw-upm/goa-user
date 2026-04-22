@@ -45,7 +45,7 @@ class DataProcessingConsentServiceIT {
     @Test
     void testFindByMobile() {
         DataProcessingConsentFindCriteria criteria = new DataProcessingConsentFindCriteria();
-        criteria.setMobile("666666001");
+        criteria.setAttribute("666666001");
         List<DataProcessingConsent> consents = this.dataProcessingConsentService.find(criteria).toList();
         assertThat(consents)
                 .isNotEmpty()
@@ -55,7 +55,7 @@ class DataProcessingConsentServiceIT {
     @Test
     void testFindWithBlankMobile() {
         DataProcessingConsentFindCriteria criteria = new DataProcessingConsentFindCriteria();
-        criteria.setMobile("  ");
+        criteria.setAttribute("  ");
         List<DataProcessingConsent> consents = this.dataProcessingConsentService.find(criteria).toList();
         assertThat(consents).hasSizeGreaterThanOrEqualTo(4);
     }

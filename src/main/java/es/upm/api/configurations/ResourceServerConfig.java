@@ -1,6 +1,7 @@
 package es.upm.api.configurations;
 
 import es.upm.api.resources.AccessLinksResource;
+import es.upm.api.resources.DataProcessingConsentResource;
 import es.upm.api.resources.SystemResource;
 import es.upm.api.resources.UserResource;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +43,11 @@ public class ResourceServerConfig {
     @Order(2)
     public SecurityFilterChain apiJwt(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher(UserResource.USERS + "/**", AccessLinksResource.ACCESS_LINK + "/**")
+                .securityMatcher(
+                        UserResource.USERS + "/**",
+                        AccessLinksResource.ACCESS_LINK + "/**",
+                        DataProcessingConsentResource.CONSENTS + "/**"
+                )
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, UserResource.USERS).permitAll()
