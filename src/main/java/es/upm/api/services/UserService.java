@@ -10,7 +10,10 @@ import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.api.services.feign.SupportWebClient;
 import es.upm.api.services.utils.ProfileUpdatedEmailTemplateService;
 import es.upm.miw.device.DeviceInfo;
-import es.upm.miw.exception.*;
+import es.upm.miw.exception.BadGatewayException;
+import es.upm.miw.exception.ConflictException;
+import es.upm.miw.exception.ForbiddenException;
+import es.upm.miw.exception.NotFoundException;
 import es.upm.miw.uuid.UUIDBase64;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -82,8 +85,8 @@ public class UserService {
                 );
             } catch (FeignException.BadRequest e) {
                 throw new BadGatewayException("No se puede enviar notificaciones por email: (" + userDB.getEmail() + ")");
-            } catch (Exception e){
-                 throw new BadGatewayException("Error de notificaciones por email: (" + userDB.getEmail() + ")" +  e.getMessage());
+            } catch (Exception e) {
+                throw new BadGatewayException("Error de notificaciones por email: (" + userDB.getEmail() + ")" + e.getMessage());
             }
         }
         return userDB;
@@ -100,10 +103,8 @@ public class UserService {
         if (!Objects.equals(existing.getIdentity(), user.getIdentity())) {
             this.assertNoExistByDni(user.getIdentity());
         }
-        if (Objects.isNull(user.getPassword())) {
-            user.setPassword(existing.getPassword());
-        } else {
-            user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        if (!Objects.isNull(user.getPassword())) {
+            existing.setPassword(this.passwordEncoder.encode(user.getPassword()));
         }
         BeanUtils.copyProperties(user, existing, "id", "password", "registrationDate", "active");
         return this.userRepository.save(existing);
