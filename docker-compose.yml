@@ -2,14 +2,14 @@ services:
   goa-user:
     build:
       context: .
-      secrets: [github_token]
-    ports: ["8081:8081"]
+      secrets: [ github_token ]
+    ports: [ "8081:8081" ]
     environment:
       JAVA_OPTS: "-Xms64m -Xmx384m"
       SPRING_DATA_MONGODB_URI: mongodb://mongo:mongo@mongo:27017/goauserdb?authSource=admin
       EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://host.docker.internal:8761/eureka/
-    networks: [goa]
-    extra_hosts: ["host.docker.internal:host-gateway"]
+    networks: [ goa ]
+    extra_hosts: [ "host.docker.internal:host-gateway" ]
 
 networks:
   goa:

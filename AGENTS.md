@@ -23,7 +23,9 @@ commons (Java puro)
 ```
 
 ## Commons
+
 `commons` contiene componentes transversales reutilizables.
+
 - DEBE no depender de Spring.
 - DEBE usar solo JDK y librerías neutrales.
 - DEBE incluir solo piezas usadas por varios microservicios.
@@ -31,11 +33,13 @@ commons (Java puro)
 - PUEDE crearse `commons-spring` en el futuro si aparece una necesidad real.
 
 Regla de inclusión:
+
 - Si lo usan varios microservicios y es Java puro -> `commons`.
 - Si lo usa un solo microservicio -> se queda en ese microservicio.
 - Si requiere Spring -> no va a `commons`.
 
 ## Estructura de un microservicio
+
 ```
 es.upm.api/
   configurations/
@@ -53,6 +57,7 @@ es.upm.api/
 ```
 
 ## Recursos (HTTP)
+
 - DEBE usar `@RestController` y sufijo `Resource`.
 - DEBE convertir DTO <-> entidad en `resources`, nunca en `services`.
 - DEBE delegar lógica de negocio al servicio.
@@ -63,6 +68,7 @@ es.upm.api/
 - DEBERÍA validar entrada con `@Valid` y regex en `Validations`.
 
 ## DTOs
+
 - DEBE usar sufijo `Dto`.
 - DEBE vivir en `resources.dtos` (o `integrations.dtos` para contratos Feign).
 - DEBERÍA usar un único `XxxDto` cuando E/S es similar.
@@ -86,11 +92,11 @@ es.upm.api/
 - DEBE contener la lógica de negocio.
 - DEBE trabajar con entidades, no con DTOs.
 - DEBERÍA usar nombres consistentes:
-  - `create(...)`
-  - `read(...)` / `readByX(...)`
-  - `update(...)` / `updateByX(...)`
-  - `delete(...)` / `deleteByX(...)`
-  - `find(criteria)`
+    - `create(...)`
+    - `read(...)` / `readByX(...)`
+    - `update(...)` / `updateByX(...)`
+    - `delete(...)` / `deleteByX(...)`
+    - `find(criteria)`
 - DEBE lanzar `NotFoundException` en `read/update/delete` cuando no exista recurso.
 - DEBERÍA usar privados `assertXxx(...)` para invariantes.
 
@@ -169,18 +175,18 @@ Reglas:
 
 ## Resumen de nombres
 
-| Tipo | Sufijo | Paquete |
-|---|---|---|
-| Entidad persistencia | sin sufijo | `data.entities` |
-| Repositorio | `Repository` | `data.daos` |
-| Repo custom | `RepositoryCustom` + `RepositoryCustomImpl` | `data.daos` |
-| Servicio | `Service` | `services` |
-| Criterio | `FindCriteria` | `services.criteria` |
-| Controlador | `Resource` | `resources` |
-| DTO HTTP | `Dto` / `CreationDto` / `UpdateDto` | `resources.dtos` |
-| Cliente Feign | `WebClient` | `integrations` |
-| DTO Feign | `Dto` | `integrations.dtos` |
-| Excepción dominio | `Exception` | `es.upm.miw.exception` |
+| Tipo                 | Sufijo                                      | Paquete                |
+|----------------------|---------------------------------------------|------------------------|
+| Entidad persistencia | sin sufijo                                  | `data.entities`        |
+| Repositorio          | `Repository`                                | `data.daos`            |
+| Repo custom          | `RepositoryCustom` + `RepositoryCustomImpl` | `data.daos`            |
+| Servicio             | `Service`                                   | `services`             |
+| Criterio             | `FindCriteria`                              | `services.criteria`    |
+| Controlador          | `Resource`                                  | `resources`            |
+| DTO HTTP             | `Dto` / `CreationDto` / `UpdateDto`         | `resources.dtos`       |
+| Cliente Feign        | `WebClient`                                 | `integrations`         |
+| DTO Feign            | `Dto`                                       | `integrations.dtos`    |
+| Excepción dominio    | `Exception`                                 | `es.upm.miw.exception` |
 
 ## Tecnología y formato
 

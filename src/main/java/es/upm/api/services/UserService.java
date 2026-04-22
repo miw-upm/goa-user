@@ -10,10 +10,7 @@ import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.api.services.feign.SupportWebClient;
 import es.upm.api.services.utils.ProfileUpdatedEmailTemplateService;
 import es.upm.miw.device.DeviceInfo;
-import es.upm.miw.exception.BadGatewayException;
-import es.upm.miw.exception.ConflictException;
-import es.upm.miw.exception.ForbiddenException;
-import es.upm.miw.exception.NotFoundException;
+import es.upm.miw.exception.*;
 import es.upm.miw.uuid.UUIDBase64;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +65,7 @@ public class UserService {
         if (!CUSTOMER.equals(existingUser.getRole())) {
             throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + existingUser.getRole() + "Mobile: " + mobile);
         }
+        user.setRole(CUSTOMER);
         this.useAccessToken(mobile, token, true);
         boolean profileChanged = !EqualsBuilder.reflectionEquals(existingUser, user,
                 "id", "password", "role", "registrationDate", "active");
@@ -84,9 +82,9 @@ public class UserService {
                         )
                 );
             } catch (FeignException.BadRequest e) {
-                throw new BadGatewayException("No se puede enviar notificaciones por email: (" + userDB.getEmail() + ")");
+                throw new BadGatewayException("Error de email: (" + userDB.getEmail() + ")", e.getCause());
             } catch (Exception e) {
-                throw new BadGatewayException("Error de notificaciones por email: (" + userDB.getEmail() + ")" + e.getMessage());
+                throw new BadGatewayException("Error del servidor de email", e.getCause());
             }
         }
         return userDB;
@@ -144,7 +142,7 @@ public class UserService {
 
     private void useAccessToken(String mobile, String token, boolean updating) {
         AccessLink accessLink = this.accessLinkRepository.findById(token)
-                .orElseThrow(() -> new NotFoundException("The token don't exist: " + token));
+                .orElseThrow(() -> new UnauthorizedException("The token don't exist: " + token));
         accessLink.use(mobile, SCOPE_EDIT_PROFILE, updating);
         this.accessLinkRepository.save(accessLink);
     }

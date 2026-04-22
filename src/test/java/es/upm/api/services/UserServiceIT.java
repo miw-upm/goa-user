@@ -123,7 +123,7 @@ class UserServiceIT {
                 mobile,
                 token,
                 user,
-                true,false,
+                true, false,
 
                 DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
         );
