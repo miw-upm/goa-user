@@ -16,9 +16,6 @@ import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.BeanUtils;
-import org.springframework.core.env.Profiles;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -108,7 +105,7 @@ public class UserService {
         } else {
             user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         }
-        BeanUtils.copyProperties(user, existing, "id", "password", "role", "registrationDate", "active");
+        BeanUtils.copyProperties(user, existing, "id", "password", "registrationDate", "active");
         return this.userRepository.save(existing);
     }
 
@@ -120,11 +117,7 @@ public class UserService {
     }
 
     private List<Role> validRoles() {
-        Role authRole = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .findFirst()
-                .map(Role::from)
-                .orElse(Role.ANONYMOUS);
+        Role authRole = this.currentUser.getRole();
         return switch (authRole) {
             case ADMIN -> List.of(Role.ADMIN, Role.MANAGER, Role.OPERATOR, CUSTOMER);
             case MANAGER -> List.of(Role.MANAGER, Role.OPERATOR, CUSTOMER);
