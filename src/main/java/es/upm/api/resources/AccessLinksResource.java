@@ -31,7 +31,7 @@ public class AccessLinksResource {
         );
     }
 
-    @GetMapping(Validations.ID_WITH_UUID)
+    @GetMapping(Validations.ID_WITH_UUID_BASE64)
     public AccessLinkDto read(@PathVariable String id) {
         return new AccessLinkDto(this.accessLinkService.read(id));
     }

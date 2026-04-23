@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AccessLinkFindCriteria {
     private Boolean expired;
-    private String mobile;
+    private String client;
     private String scope;
 
     public boolean all() {
-        return mobile == null && scope == null && (expired == null || !expired);
+        return client == null && scope == null && (expired == null || !expired);
     }
 }

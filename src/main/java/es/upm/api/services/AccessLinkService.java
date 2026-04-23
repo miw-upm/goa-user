@@ -36,8 +36,8 @@ public class AccessLinkService {
             return this.accessLinkRepository.findAll().stream();
         }
 
-        List<UUID> ids = criteria.getMobile() != null
-                ? this.userService.findIdsByMobileContaining(criteria.getMobile()).toList()
+        List<UUID> ids = criteria.getClient() != null
+                ? this.userService.findIdsByMobileContaining(criteria.getClient()).toList()
                 : List.of();
 
         return Boolean.FALSE.equals(criteria.getExpired())
