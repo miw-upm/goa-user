@@ -84,7 +84,7 @@ public class UserService {
             } catch (FeignException.BadRequest e) {
                 throw new BadGatewayException("Error de email: (" + userDB.getEmail() + ")", e.getCause());
             } catch (Exception e) {
-                throw new BadGatewayException("Error del servidor de email", e.getCause());
+                throw new BadGatewayException("Error del host de email", e.getCause());
             }
         }
         return userDB;

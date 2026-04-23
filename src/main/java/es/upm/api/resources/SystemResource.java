@@ -1,6 +1,6 @@
 package es.upm.api.resources;
 
-import es.upm.api.resources.dtos.ApplicationInfoDto;
+import es.upm.miw.badge.ApplicationInfoDto;
 import es.upm.miw.badge.VersionBadgeGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;

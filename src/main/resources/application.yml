@@ -40,8 +40,8 @@ app:
     spa-client-id: spaClientId
     spa-logout-redirect-uri: http://localhost:4200
     spa-login-redirect-uri: http://localhost:4200/callback
-    api-client-id: api-client-id
-    api-client-secret: api-client-secret
+    api-client-id: ${API_CLIENT_ID:api-client-id}
+    api-client-secret: ${API_CLIENT_SECRET:api-client-secret}
     jwt:
       key-alias: goa-jwt
       key-id: goa-jwt-k1
