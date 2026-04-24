@@ -43,19 +43,18 @@ public class ResourceServerConfig {
     @Order(2)
     public SecurityFilterChain apiJwt(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher(
-                        UserResource.USERS + "/**",
-                        AccessLinksResource.ACCESS_LINK + "/**",
-                        DataProcessingConsentResource.CONSENTS + "/**"
-                )
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, UserResource.USERS).permitAll()
                         .requestMatchers(HttpMethod.GET, UserResource.USERS + UserResource.PROVINCES).permitAll()
                         .requestMatchers(HttpMethod.GET, UserResource.USERS + "/*/*").permitAll()
                         .requestMatchers(HttpMethod.PUT, UserResource.USERS + "/*/*").permitAll()
-
                         .anyRequest().authenticated()
+                )
+                .securityMatcher(
+                        UserResource.USERS + "/**",
+                        AccessLinksResource.ACCESS_LINK + "/**",
+                        DataProcessingConsentResource.CONSENTS + "/**"
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(
                         jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())

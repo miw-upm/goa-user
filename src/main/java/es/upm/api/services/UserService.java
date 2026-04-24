@@ -7,7 +7,7 @@ import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.UserFindCriteria;
-import es.upm.api.services.feign.SupportWebClient;
+import es.upm.api.services.emailoutport.EmailPort;
 import es.upm.api.services.utils.ProfileUpdatedEmailTemplateService;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.*;
@@ -35,7 +35,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccessLinkRepository accessLinkRepository;
-    private final SupportWebClient supportWebClient;
+    private final EmailPort emailPort;
     private final ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService;
     private final DataProcessingConsentService dataProcessingConsentService;
     private final CurrentUser currentUser;
@@ -73,7 +73,7 @@ public class UserService {
         this.dataProcessingConsentService.create(userDB, token, dataProcessingAccepted, promotionsAccepted, deviceInfo);
         if (profileChanged) {
             try {
-                this.supportWebClient.sendHtml(
+                this.emailPort.sendHtml(
                         this.profileUpdatedEmailTemplateService.buildHtmlEmail(
                                 userDB.getEmail(),
                                 userDB.getFirstName(),
@@ -84,7 +84,7 @@ public class UserService {
             } catch (FeignException.BadRequest e) {
                 throw new BadGatewayException("Error de email: (" + userDB.getEmail() + ")", e.getCause());
             } catch (Exception e) {
-                throw new BadGatewayException("Error del servidor de email", e.getCause());
+                throw new BadGatewayException("Error del host de email", e.getCause());
             }
         }
         return userDB;

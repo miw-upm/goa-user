@@ -1,6 +1,6 @@
 package es.upm.api.services.utils;
 
-import es.upm.api.services.feign.EmailDto;
+import es.upm.api.services.emailoutport.EmailRequest;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.mail.EmailTemplateRenderer;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class ProfileUpdatedEmailTemplateService {
     private static final String HTML_TEMPLATE_PATH = "templates/email/profile-updated.html";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    public EmailDto buildHtmlEmail(String to, String firstName, String mobile, DeviceInfo deviceInfo) {
+    public EmailRequest buildHtmlEmail(String to, String firstName, String mobile, DeviceInfo deviceInfo) {
         String body = EmailTemplateRenderer.render(HTML_TEMPLATE_PATH, Map.of(
                 "FIRST_NAME", firstName,
                 "UPDATED_AT", LocalDateTime.now().format(DATE_TIME_FORMATTER),
@@ -24,7 +24,7 @@ public class ProfileUpdatedEmailTemplateService {
                 "OPERATING_SYSTEM", deviceInfo.getOperatingSystem(),
                 "BROWSER", deviceInfo.getBrowser()
         ));
-        return EmailDto.builder()
+        return EmailRequest.builder()
                 .to(to)
                 .subject(PROFILE_UPDATED_SUBJECT)
                 .body(body)

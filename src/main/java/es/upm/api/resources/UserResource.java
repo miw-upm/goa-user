@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.UUID;
 
 @Log4j2
-@RequiredArgsConstructor
 @PreAuthorize(Security.AUTHENTICATED)
 @RestController
 @RequestMapping(UserResource.USERS)
+@RequiredArgsConstructor
 public class UserResource {
     public static final String USERS = "/users";
     public static final String MOBILE_ID_TOKEN_ID = "/{mobile}/{token}";

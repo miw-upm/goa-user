@@ -1,4 +1,4 @@
-package es.upm.api.services.feign;
+package es.upm.api.services.emailoutport;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailDto {
+public class EmailRequest {
     @NotBlank
     public String to;
     @NotBlank
