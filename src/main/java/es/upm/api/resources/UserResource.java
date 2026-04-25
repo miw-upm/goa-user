@@ -79,7 +79,7 @@ public class UserResource {
                 resolveDeviceInfo(request))).ofBasic();
     }
 
-    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_CUSTOMER)
+    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
     @GetMapping
     public List<UserDto> find(@ModelAttribute UserFindCriteria criteria) {
         return this.userService.find(criteria)

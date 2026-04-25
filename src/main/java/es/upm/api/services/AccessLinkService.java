@@ -30,7 +30,7 @@ public class AccessLinkService {
 
     public AccessLink create(String mobile, String scope) {
         User user = this.userRepository.findByMobile(mobile)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found: " + mobile ));
         AccessLink accessLink = AccessLink.builder().id(UUIDBase64.URL.encode()).user(user)
                 .createdAt(LocalDateTime.now()).expiresAt(LocalDateTime.now().plusDays(TOKEN_DURATION_DAYS))
                 .remainingUses(TOKEN_USAGE_LIMIT).scope(scope).build();
@@ -60,7 +60,7 @@ public class AccessLinkService {
 
     public AccessLinkDto use(String id, String mobile, String scope) {
         AccessLink accessLink = this.accessLinkRepository.findById(id).orElseThrow(
-                () -> new UnauthorizedException("Unauthorized. Not Founded"));
+                () -> new UnauthorizedException("Unauthorized. Access Link Not Founded"));
         accessLink.use(mobile, scope);
         this.accessLinkRepository.save(accessLink);
         return new AccessLinkDto(accessLink);

@@ -49,6 +49,7 @@ public class AccessLinksResource {
                 .toList();
     }
 
+    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_URL_TOKEN)
     @PostMapping(Validations.ID_WITH_UUID_BASE64)
     public AccessLinkDto use(@PathVariable String id, @RequestParam String mobile, @RequestParam String scope) {
         return this.accessLinkService.use(id, mobile, scope);

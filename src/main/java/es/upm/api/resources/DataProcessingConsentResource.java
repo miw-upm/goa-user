@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Log4j2
 @RequiredArgsConstructor
-@PreAuthorize(Security.AUTHENTICATED)
+@PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
 @RestController
 @RequestMapping(DataProcessingConsentResource.CONSENTS)
 public class DataProcessingConsentResource {
@@ -23,13 +23,11 @@ public class DataProcessingConsentResource {
 
     private final DataProcessingConsentService dataProcessingConsentService;
 
-    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
     @GetMapping(Validations.ID_WITH_UUID)
     public DataProcessingConsentDto readById(@PathVariable UUID id) {
         return new DataProcessingConsentDto(this.dataProcessingConsentService.read(id));
     }
 
-    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_CUSTOMER)
     @GetMapping
     public List<DataProcessingConsentDto> find(@ModelAttribute DataProcessingConsentFindCriteria criteria) {
         return this.dataProcessingConsentService.find(criteria)
