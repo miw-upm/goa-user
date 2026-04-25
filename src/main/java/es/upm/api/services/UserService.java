@@ -32,6 +32,7 @@ import static es.upm.api.data.entities.Role.CUSTOMER;
 public class UserService {
     public static final String SCOPE_EDIT_PROFILE = "edit-profile";
 
+    private final AccessLinkService accessLinkService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccessLinkRepository accessLinkRepository;
@@ -61,12 +62,12 @@ public class UserService {
 
     public User updateByMobileWithToken(String mobile, String token, User user, boolean dataProcessingAccepted,
                                         boolean promotionsAccepted, DeviceInfo deviceInfo) {
+        this.accessLinkService.use(token,mobile,SCOPE_EDIT_PROFILE);
         User existingUser = this.readByMobile(mobile);
         if (!CUSTOMER.equals(existingUser.getRole())) {
             throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + existingUser.getRole() + "Mobile: " + mobile);
         }
         user.setRole(CUSTOMER);
-        this.useAccessToken(mobile, token, true);
         boolean profileChanged = !EqualsBuilder.reflectionEquals(existingUser, user,
                 "id", "password", "role", "registrationDate", "active");
         User userDB = this.updateUser(mobile, user);
@@ -136,15 +137,8 @@ public class UserService {
     }
 
     public User readByMobileWithToken(String mobile, String token) {
-        this.useAccessToken(mobile, token, false);
+        this.accessLinkService.use(token,mobile,SCOPE_EDIT_PROFILE);
         return this.readByMobile(mobile);
-    }
-
-    private void useAccessToken(String mobile, String token, boolean updating) {
-        AccessLink accessLink = this.accessLinkRepository.findById(token)
-                .orElseThrow(() -> new UnauthorizedException("The token don't exist: " + token));
-        accessLink.use(mobile, SCOPE_EDIT_PROFILE, updating);
-        this.accessLinkRepository.save(accessLink);
     }
 
     private void assertNoExistByEmail(String email) {
@@ -187,11 +181,6 @@ public class UserService {
             return users;
         }
         return users.filter(user -> user.getMobile().equals(this.currentUser.mobile()));
-    }
-
-    public Stream<UUID> findIdsByMobileContaining(String mobile) {
-        return this.userRepository.findByMobileContaining(mobile).stream()
-                .map(User::getId);
     }
 
 }

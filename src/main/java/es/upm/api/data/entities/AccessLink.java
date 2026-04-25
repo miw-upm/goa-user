@@ -1,6 +1,7 @@
 package es.upm.api.data.entities;
 
 import es.upm.miw.exception.ForbiddenException;
+import es.upm.miw.exception.UnauthorizedException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,18 +25,18 @@ public class AccessLink {
     @DBRef
     private User user;
     private LocalDateTime createdAt;
-    private LocalDateTime lastUsedForUpdateAt;
+    private LocalDateTime lastUsedAt;
     private LocalDateTime expiresAt;
     private Integer remainingUses;
     private String scope;
     private UUID document;
 
-    public void use(String mobile, String requiredScope, boolean updating) {
+    public void use(String mobile, String requiredScope) {
         if (this.expiresAt.isBefore(LocalDateTime.now())) {
-            throw new ForbiddenException("Expired token");
+            throw new UnauthorizedException("Expired token");
         }
         if (this.remainingUses <= 0) {
-            throw new ForbiddenException("Used token");
+            throw new UnauthorizedException("Used token");
         }
         if (!Objects.equals(this.user.getMobile(), mobile)) {
             throw new ForbiddenException("Forbidden token. Token is the another mobile");
@@ -44,9 +45,8 @@ public class AccessLink {
             throw new ForbiddenException("Forbidden purpose. The scope does not match the intended use.");
         }
         this.remainingUses--;
-        if (updating) {
-            this.lastUsedForUpdateAt = LocalDateTime.now();
-        }
+        this.lastUsedAt = LocalDateTime.now();
     }
 }
+
 

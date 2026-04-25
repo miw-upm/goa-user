@@ -18,7 +18,7 @@ public class AccessLinkDto {
     private String id;
     private String mobile;
     private LocalDateTime createdAt;
-    private LocalDateTime lastUsedForUpdateAt;
+    private LocalDateTime lastUsedAt;
     private LocalDateTime expiresAt;
     private Integer remainingUses;
     private String scope;

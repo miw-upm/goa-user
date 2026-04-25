@@ -133,8 +133,8 @@ class UserServiceIT {
 
         assertThat(updatedUser).isNotNull();
         assertThat(updatedUser.getCity()).isEqualTo("new");
-        assertThat(updatedAccessLink.getLastUsedForUpdateAt()).isNotNull();
-        assertThat(updatedAccessLink.getLastUsedForUpdateAt())
+        assertThat(updatedAccessLink.getLastUsedAt()).isNotNull();
+        assertThat(updatedAccessLink.getLastUsedAt())
                 .isNotNull()
                 .isAfter(LocalDateTime.now().minusSeconds(5));
 
