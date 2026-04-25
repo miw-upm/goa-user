@@ -49,8 +49,8 @@ public class AccessLinksResource {
                 .toList();
     }
 
-    @PatchMapping(Validations.ID_WITH_UUID_BASE64)
-    public AccessLinkDto use(@PathVariable String id, String mobile, String scope) {
+    @PostMapping(Validations.ID_WITH_UUID_BASE64)
+    public AccessLinkDto use(@PathVariable String id, @RequestParam String mobile, @RequestParam String scope) {
         return this.accessLinkService.use(id, mobile, scope);
     }
 }
