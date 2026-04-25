@@ -27,7 +27,7 @@ public class AccessLinksResource {
     @PostMapping
     public AccessLinkDto create(@Valid @RequestBody AccessLinkCreationDto accessLinkCreationDto) {
         return new AccessLinkDto(
-                accessLinkService.create(accessLinkCreationDto.getMobile(), accessLinkCreationDto.getScope())
+                accessLinkService.create(accessLinkCreationDto.getMobile(), accessLinkCreationDto.getScope(), accessLinkCreationDto.getDocument())
         );
     }
 

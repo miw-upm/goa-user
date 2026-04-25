@@ -28,12 +28,12 @@ public class AccessLinkService {
     private final UserRepository userRepository;
     private final AccessLinkRepository accessLinkRepository;
 
-    public AccessLink create(String mobile, String scope) {
+    public AccessLink create(String mobile, String scope, UUID document) {
         User user = this.userRepository.findByMobile(mobile)
                 .orElseThrow(() -> new NotFoundException("User not found: " + mobile ));
         AccessLink accessLink = AccessLink.builder().id(UUIDBase64.URL.encode()).user(user)
                 .createdAt(LocalDateTime.now()).expiresAt(LocalDateTime.now().plusDays(TOKEN_DURATION_DAYS))
-                .remainingUses(TOKEN_USAGE_LIMIT).scope(scope).build();
+                .remainingUses(TOKEN_USAGE_LIMIT).scope(scope).document(document).build();
         return this.accessLinkRepository.save(accessLink);
     }
 
