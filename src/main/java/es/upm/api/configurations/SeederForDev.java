@@ -93,7 +93,7 @@ public class SeederForDev implements ApplicationRunner {
 
         List<AccessLink> accessLinks = List.of(
                 AccessLink.builder().id("GiTBDnRkS-aNYOayM69_kA").user(c2).createdAt(LocalDateTime.now())
-                        .lastUsedForUpdateAt(LocalDateTime.now())
+                        .lastUsedAt(LocalDateTime.now())
                         .expiresAt(LocalDateTime.now().plusDays(5)).remainingUses(4).scope("edit-profile").build(),
                 AccessLink.builder().id("XWBLFua2T6GLVh5wqKHB8w").createdAt(LocalDateTime.now())
                         .expiresAt(LocalDateTime.now().plusDays(10)).user(c1).remainingUses(2).scope("accept-engagement")
