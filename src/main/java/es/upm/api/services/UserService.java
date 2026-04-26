@@ -1,16 +1,17 @@
 package es.upm.api.services;
 
 import es.upm.api.configurations.CurrentUser;
-import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.daos.UserRepository;
-import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.api.services.emailoutport.EmailPort;
 import es.upm.api.services.utils.ProfileUpdatedEmailTemplateService;
 import es.upm.miw.device.DeviceInfo;
-import es.upm.miw.exception.*;
+import es.upm.miw.exception.BadGatewayException;
+import es.upm.miw.exception.ConflictException;
+import es.upm.miw.exception.ForbiddenException;
+import es.upm.miw.exception.NotFoundException;
 import es.upm.miw.uuid.UUIDBase64;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,6 @@ public class UserService {
     private final AccessLinkService accessLinkService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AccessLinkRepository accessLinkRepository;
     private final EmailPort emailPort;
     private final ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService;
     private final DataProcessingConsentService dataProcessingConsentService;
@@ -55,40 +55,40 @@ public class UserService {
         this.userRepository.save(user);
     }
 
-    public User updateByMobile(String mobile, User user) {
+    public User update(String mobile, User user) {
         this.validateAuthorizedRole(user.getRole());
         return this.updateUser(mobile, user);
     }
 
-    public User updateByMobileWithToken(String mobile, String token, User user, boolean dataProcessingAccepted,
-                                        boolean promotionsAccepted, DeviceInfo deviceInfo) {
-        this.accessLinkService.use(token,mobile,SCOPE_EDIT_PROFILE);
-        User existingUser = this.readByMobile(mobile);
-        if (!CUSTOMER.equals(existingUser.getRole())) {
-            throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + existingUser.getRole() + "Mobile: " + mobile);
+    public User updateWithToken(String mobile, String token, User user, boolean dataProcessingAccepted,
+                                boolean promotionsAccepted, DeviceInfo deviceInfo) {
+        this.accessLinkService.use(token, mobile, SCOPE_EDIT_PROFILE);
+        User retrieverUser = this.readByMobile(mobile);
+        if (!CUSTOMER.equals(retrieverUser.getRole())) {
+            throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + retrieverUser.getRole() + "Mobile: " + mobile);
         }
         user.setRole(CUSTOMER);
-        boolean profileChanged = !EqualsBuilder.reflectionEquals(existingUser, user,
+        boolean profileChanged = !EqualsBuilder.reflectionEquals(retrieverUser, user,
                 "id", "password", "role", "registrationDate", "active");
-        User userDB = this.updateUser(mobile, user);
-        this.dataProcessingConsentService.create(userDB, token, dataProcessingAccepted, promotionsAccepted, deviceInfo);
+        User dbUser = this.updateUser(mobile, user);
+        this.dataProcessingConsentService.create(dbUser, token, dataProcessingAccepted, promotionsAccepted, deviceInfo);
         if (profileChanged) {
             try {
                 this.emailPort.sendHtml(
                         this.profileUpdatedEmailTemplateService.buildHtmlEmail(
-                                userDB.getEmail(),
-                                userDB.getFirstName(),
-                                userDB.getMobile(),
+                                dbUser.getEmail(),
+                                dbUser.getFirstName(),
+                                dbUser.getMobile(),
                                 deviceInfo
                         )
                 );
             } catch (FeignException.BadRequest e) {
-                throw new BadGatewayException("Error de email: (" + userDB.getEmail() + ")", e.getCause());
+                throw new BadGatewayException("Error de email: (" + dbUser.getEmail() + ")", e.getCause());
             } catch (Exception e) {
                 throw new BadGatewayException("Error del host de email", e.getCause());
             }
         }
-        return userDB;
+        return dbUser;
     }
 
     private User updateUser(String mobile, User user) {
@@ -126,7 +126,7 @@ public class UserService {
         };
     }
 
-    public User read(UUID id) {
+    public User readById(UUID id) {
         return this.userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("The id don't exist: " + id));
     }
@@ -137,7 +137,7 @@ public class UserService {
     }
 
     public User readByMobileWithToken(String mobile, String token) {
-        this.accessLinkService.use(token,mobile,SCOPE_EDIT_PROFILE);
+        this.accessLinkService.use(token, mobile, SCOPE_EDIT_PROFILE);
         return this.readByMobile(mobile);
     }
 

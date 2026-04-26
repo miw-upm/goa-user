@@ -6,7 +6,7 @@ import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.api.services.emailoutport.EmailPort;
-import es.upm.miw.device.DeviceInfoResolver;
+import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.ForbiddenException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ class UserServiceIT {
 
     @Test
     @WithMockUser(username = "61", roles = {"manager"})
-    void testReadOwnerUser() {
+    void testReadByIdOwnerUser() {
         UserFindCriteria criteria = new UserFindCriteria();
         criteria.setMobile("61");
         criteria.setProjection(true);
@@ -77,7 +77,7 @@ class UserServiceIT {
 
     @Test
     @WithMockUser(username = "666666003", roles = {"customer"})
-    void testReadOtherUser() {
+    void testReadByIdOtherUser() {
         UserFindCriteria criteria = new UserFindCriteria();
         criteria.setMobile("666666004");
         criteria.setProjection(true);
@@ -90,14 +90,14 @@ class UserServiceIT {
     void testUpdateUser() {
         User oldUser = userService.readByMobile("666666002");
         oldUser.setMobile("666666666");
-        this.userService.updateByMobile("666666002", oldUser);
+        this.userService.update("666666002", oldUser);
         User user = userService.readByMobile("666666666");
         assertThat(user)
                 .isNotNull()
                 .extracting(User::getFirstName)
                 .isEqualTo(oldUser.getFirstName());
         oldUser.setMobile("666666002");
-        this.userService.updateByMobile("666666666", oldUser);
+        this.userService.update("666666666", oldUser);
     }
 
     @Test
@@ -119,13 +119,13 @@ class UserServiceIT {
         this.accessLinkRepository.save(accessLink);
 
         user.setCity("new");
-        this.userService.updateByMobileWithToken(
+        this.userService.updateWithToken(
                 mobile,
                 token,
                 user,
                 true, false,
-
-                DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
+                DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
+                        .operatingSystem("Windows").deviceType("Desktop").build()
         );
 
         User updatedUser = this.userService.readByMobile(mobile);
@@ -139,7 +139,7 @@ class UserServiceIT {
                 .isAfter(LocalDateTime.now().minusSeconds(5));
 
         updatedUser.setCity(originalCity);
-        this.userService.updateByMobile(mobile, updatedUser);
+        this.userService.update(mobile, updatedUser);
         this.accessLinkRepository.deleteById(token);
     }
 
@@ -148,29 +148,31 @@ class UserServiceIT {
     void testUpdateByMobileWithTokenForbiddenByScope() {
         User user = this.userService.readByMobile("66");
         assertThrows(ForbiddenException.class, () ->
-                this.userService.updateByMobileWithToken(
+                this.userService.updateWithToken(
                         "66",
                         "XWBLFua2T6GLVh5wqKHB8w",
                         user,
                         true,
                         false,
-                        DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
+                        DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
+                                .operatingSystem("Windows").deviceType("Desktop").build()
                 )
         );
     }
 
     @Test
     @WithMockUser(username = "666666001", roles = {"customer"})
-    void testUpdateByMobileWithTokenForbiddenByAnotherMobile() {
+    void testUpdateWithTokenForbidden() {
         User user = this.userService.readByMobile("666666001");
         assertThrows(ForbiddenException.class, () ->
-                this.userService.updateByMobileWithToken(
+                this.userService.updateWithToken(
                         "666666001",
                         "GiTBDnRkS-aNYOayM69_kA",
                         user,
                         true,
                         false,
-                        DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
+                        DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
+                                .operatingSystem("Windows").deviceType("Desktop").build()
                 )
         );
     }

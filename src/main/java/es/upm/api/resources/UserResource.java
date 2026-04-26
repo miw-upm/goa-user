@@ -8,7 +8,6 @@ import es.upm.api.resources.dtos.UserDto;
 import es.upm.api.resources.dtos.UserUpdateWithConsentDto;
 import es.upm.api.services.UserService;
 import es.upm.api.services.criteria.UserFindCriteria;
-import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.device.DeviceInfoResolver;
 import es.upm.miw.security.Security;
 import es.upm.miw.security.Validations;
@@ -23,11 +22,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-@Log4j2
 @PreAuthorize(Security.AUTHENTICATED)
 @RestController
 @RequestMapping(UserResource.USERS)
 @RequiredArgsConstructor
+@Log4j2
 public class UserResource {
     public static final String USERS = "/users";
     public static final String MOBILE_ID_TOKEN_ID = "/{mobile}/{token}";
@@ -45,7 +44,7 @@ public class UserResource {
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_URL_TOKEN)
     @GetMapping(Validations.ID_WITH_UUID)
     public UserDto readById(@PathVariable UUID id) {
-        return new UserDto(this.userService.read(id));
+        return new UserDto(this.userService.readById(id));
     }
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_URL_TOKEN)
@@ -54,32 +53,13 @@ public class UserResource {
         return new UserDto(this.userService.readByMobile(mobile));
     }
 
-    @PreAuthorize(Security.ALL)
-    @GetMapping(MOBILE_ID_TOKEN_ID)
-    public UserDto readByMobileWithToken(@PathVariable String mobile, @PathVariable String token) {
-        return new UserDto(this.userService.readByMobileWithToken(mobile, token))
-                .ofBasic();
+    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
+    @PutMapping(Validations.ID_WITH_MOBILE)
+    public UserDto update(@PathVariable("id") String mobile, @Valid @RequestBody UserDto userDto) {
+        return new UserDto(this.userService.update(mobile, userDto.toDomain()));
     }
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
-    @PutMapping(Validations.ID_WITH_MOBILE)
-    public UserDto updateByMobile(@PathVariable("id") String mobile, @Valid @RequestBody UserDto userDto) {
-        return new UserDto(this.userService.updateByMobile(mobile, userDto.toDomain()));
-    }
-
-    @PreAuthorize(Security.ALL)
-    @PutMapping(MOBILE_ID_TOKEN_ID)
-    public UserDto updateByMobileWithToken(@PathVariable String mobile, @PathVariable String token,
-                                           @Valid @RequestBody UserUpdateWithConsentDto body,
-                                           HttpServletRequest request) {
-        User user = body.getUser().toDomain();
-        DataProcessingConsentCreationDto consent = body.getDataProcessingConsentCreation();
-        return new UserDto(this.userService.updateByMobileWithToken(mobile, token, user,
-                consent.getDataProcessingAccepted(), consent.getPromotionsAccepted(),
-                resolveDeviceInfo(request))).ofBasic();
-    }
-
-    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_CUSTOMER)
     @GetMapping
     public List<UserDto> find(@ModelAttribute UserFindCriteria criteria) {
         return this.userService.find(criteria)
@@ -95,18 +75,24 @@ public class UserResource {
                 .toList());
     }
 
-    private DeviceInfo resolveDeviceInfo(HttpServletRequest request) {
-        String xForwardedFor = request.getHeader("X-Forwarded-For");
-        String xRealIp = request.getHeader("X-Real-IP");
-        String ip;
-        if (xForwardedFor != null && !xForwardedFor.isBlank()) {
-            ip = xForwardedFor.split(",")[0].trim();
-        } else if (xRealIp != null && !xRealIp.isBlank()) {
-            ip = xRealIp.trim();
-        } else {
-            ip = request.getRemoteAddr();
-        }
-        return DeviceInfoResolver.resolve(request.getHeader("User-Agent"), ip);
+    @PreAuthorize(Security.ALL)
+    @GetMapping(MOBILE_ID_TOKEN_ID)
+    public UserDto readByMobileWithToken(@PathVariable String mobile, @PathVariable String token) {
+        return new UserDto(this.userService.readByMobileWithToken(mobile, token))
+                .ofBasic();
     }
+
+    @PreAuthorize(Security.ALL)
+    @PutMapping(MOBILE_ID_TOKEN_ID)
+    public UserDto updateWithToken(@PathVariable String mobile, @PathVariable String token,
+                                   @Valid @RequestBody UserUpdateWithConsentDto body,
+                                   HttpServletRequest request) {
+        User user = body.getUser().toDomain();
+        DataProcessingConsentCreationDto consent = body.getDataProcessingConsentCreation();
+        return new UserDto(this.userService.updateWithToken(mobile, token, user,
+                consent.getDataProcessingAccepted(), consent.getPromotionsAccepted(),
+                DeviceInfoResolver.resolve(request))).ofBasic();
+    }
+
 
 }

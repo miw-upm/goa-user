@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @Data
 @NoArgsConstructor
@@ -18,4 +20,5 @@ public class AccessLinkCreationDto {
     @NotNull
     @NotBlank
     private String scope;
+    private UUID document;
 }
