@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@Log4j2
-@RequiredArgsConstructor
 @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
 @RestController
 @RequestMapping(DataProcessingConsentResource.CONSENTS)
+@RequiredArgsConstructor
+@Log4j2
 public class DataProcessingConsentResource {
     public static final String CONSENTS = "/consents";
 

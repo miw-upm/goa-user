@@ -5,7 +5,6 @@ import es.upm.api.data.daos.DataProcessingConsentRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.*;
 import es.upm.miw.device.DeviceInfo;
-import es.upm.miw.device.DeviceInfoResolver;
 import es.upm.miw.uuid.UUIDBase64;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -54,6 +53,8 @@ public class SeederForDev implements ApplicationRunner {
         log.warn("------- Initial Load from JAVA -----------");
         String pass = this.passwordEncoder.encode(this.password);
         String noPass = this.passwordEncoder.encode(UUIDBase64.URL.encode());
+        DeviceInfo deviceInfo = DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
+                .operatingSystem("Windows").deviceType("Desktop").build();
 
         List<User> users = List.of(
                 User.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0666"))
@@ -124,8 +125,7 @@ public class SeederForDev implements ApplicationRunner {
                         .signerIdentity(users.get(5).getIdentity()).mobile(users.get(5).getMobile())
                         .signerEmail(users.get(5).getEmail())
                         .signatureToken("consent-token-0002")
-                        .deviceInfo(DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
-                                .operatingSystem("Windows").deviceType("Desktop").build())
+                        .deviceInfo(deviceInfo)
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true).promotionsAccepted(false).build(),
                 DataProcessingConsent.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0102"))
@@ -134,8 +134,7 @@ public class SeederForDev implements ApplicationRunner {
                         .signerIdentity(users.get(3).getIdentity()).mobile(users.get(3).getMobile())
                         .signerEmail(users.get(3).getEmail())
                         .signatureToken("consent-token-0003")
-                        .deviceInfo(DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
-                                .operatingSystem("Windows").deviceType("Desktop").build())
+                        .deviceInfo(deviceInfo)
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true).promotionsAccepted(false).build(),
                 DataProcessingConsent.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0103"))
@@ -144,8 +143,7 @@ public class SeederForDev implements ApplicationRunner {
                         .signerIdentity(users.get(6).getIdentity()).mobile(users.get(6).getMobile())
                         .signerEmail(users.get(6).getEmail())
                         .signatureToken("consent-token-0004")
-                        .deviceInfo(DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
-                                .operatingSystem("Windows").deviceType("Desktop").build())
+                        .deviceInfo(deviceInfo)
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true).promotionsAccepted(true).build()
         );

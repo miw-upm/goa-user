@@ -146,7 +146,7 @@ class UserResourceFT {
     }
 
     @Test
-    void testUpdateByMobile() {
+    void testUpdate() {
         ResponseEntity<UserDto> readResponse = this.httpRequestBuilder
                 .get(UserResource.USERS + MOBILE_PATH, SEEDED_USER_MOBILE)
                 .role(ADMIN)
@@ -177,7 +177,7 @@ class UserResourceFT {
     }
 
     @Test
-    void testUpdateByMobileUnauthorized() {
+    void testUpdateUnauthorized() {
         UserDto userDto = UserDto.builder()
                 .mobile(SEEDED_USER_MOBILE)
                 .firstName("ft-updated")

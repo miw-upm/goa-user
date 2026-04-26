@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Log4j2
-@RequiredArgsConstructor
 @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
 @RestController
 @RequestMapping(AccessLinksResource.ACCESS_LINK)
+@RequiredArgsConstructor
+@Log4j2
 public class AccessLinksResource {
     public static final String ACCESS_LINK = "/access-link";
 
