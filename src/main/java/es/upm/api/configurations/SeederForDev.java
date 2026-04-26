@@ -4,6 +4,7 @@ import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.daos.DataProcessingConsentRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.*;
+import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.device.DeviceInfoResolver;
 import es.upm.miw.uuid.UUIDBase64;
 import lombok.RequiredArgsConstructor;
@@ -113,9 +114,8 @@ public class SeederForDev implements ApplicationRunner {
                         .signerIdentity(users.get(4).getIdentity()).mobile(users.get(4).getMobile())
                         .signerEmail(users.get(4).getEmail())
                         .signatureToken("consent-token-0001")
-                        .deviceInfo(DeviceInfoResolver.resolve(
-                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/123.0.0.0",
-                                "83.52.10.24"))
+                        .deviceInfo(DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
+                                .operatingSystem("Windows").deviceType("Desktop").build())
                         .policyVersion("2026-02-19")
                         .dataProcessingAccepted(true).promotionsAccepted(true).build(),
                 DataProcessingConsent.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0101"))
@@ -124,9 +124,8 @@ public class SeederForDev implements ApplicationRunner {
                         .signerIdentity(users.get(5).getIdentity()).mobile(users.get(5).getMobile())
                         .signerEmail(users.get(5).getEmail())
                         .signatureToken("consent-token-0002")
-                        .deviceInfo(DeviceInfoResolver.resolve(
-                                "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/124.0.0.0 Mobile",
-                                "95.121.30.9"))
+                        .deviceInfo(DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
+                                .operatingSystem("Windows").deviceType("Desktop").build())
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true).promotionsAccepted(false).build(),
                 DataProcessingConsent.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0102"))
@@ -135,9 +134,8 @@ public class SeederForDev implements ApplicationRunner {
                         .signerIdentity(users.get(3).getIdentity()).mobile(users.get(3).getMobile())
                         .signerEmail(users.get(3).getEmail())
                         .signatureToken("consent-token-0003")
-                        .deviceInfo(DeviceInfoResolver.resolve(
-                                "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15",
-                                "81.44.12.90"))
+                        .deviceInfo(DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
+                                .operatingSystem("Windows").deviceType("Desktop").build())
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true).promotionsAccepted(false).build(),
                 DataProcessingConsent.builder().id(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0103"))
@@ -146,9 +144,8 @@ public class SeederForDev implements ApplicationRunner {
                         .signerIdentity(users.get(6).getIdentity()).mobile(users.get(6).getMobile())
                         .signerEmail(users.get(6).getEmail())
                         .signatureToken("consent-token-0004")
-                        .deviceInfo(DeviceInfoResolver.resolve(
-                                "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/537.36 Safari/537.36",
-                                "88.6.200.121"))
+                        .deviceInfo(DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
+                                .operatingSystem("Windows").deviceType("Desktop").build())
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true).promotionsAccepted(true).build()
         );

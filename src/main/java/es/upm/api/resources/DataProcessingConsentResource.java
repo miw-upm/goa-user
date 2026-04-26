@@ -24,7 +24,7 @@ public class DataProcessingConsentResource {
     private final DataProcessingConsentService dataProcessingConsentService;
 
     @GetMapping(Validations.ID_WITH_UUID)
-    public DataProcessingConsentDto readById(@PathVariable UUID id) {
+    public DataProcessingConsentDto read(@PathVariable UUID id) {
         return new DataProcessingConsentDto(this.dataProcessingConsentService.read(id));
     }
 

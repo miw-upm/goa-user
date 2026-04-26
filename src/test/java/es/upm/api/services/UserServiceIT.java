@@ -6,6 +6,7 @@ import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.api.services.emailoutport.EmailPort;
+import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.device.DeviceInfoResolver;
 import es.upm.miw.exception.ForbiddenException;
 import org.junit.jupiter.api.Test;
@@ -124,8 +125,8 @@ class UserServiceIT {
                 token,
                 user,
                 true, false,
-
-                DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
+                DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
+                        .operatingSystem("Windows").deviceType("Desktop").build()
         );
 
         User updatedUser = this.userService.readByMobile(mobile);
@@ -154,7 +155,8 @@ class UserServiceIT {
                         user,
                         true,
                         false,
-                        DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
+                        DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
+                                .operatingSystem("Windows").deviceType("Desktop").build()
                 )
         );
     }
@@ -170,7 +172,8 @@ class UserServiceIT {
                         user,
                         true,
                         false,
-                        DeviceInfoResolver.resolve("Mozilla/5.0", "127.0.0.1")
+                        DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
+                                .operatingSystem("Windows").deviceType("Desktop").build()
                 )
         );
     }

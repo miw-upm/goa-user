@@ -76,7 +76,7 @@ public class UserResource {
         DataProcessingConsentCreationDto consent = body.getDataProcessingConsentCreation();
         return new UserDto(this.userService.updateByMobileWithToken(mobile, token, user,
                 consent.getDataProcessingAccepted(), consent.getPromotionsAccepted(),
-                resolveDeviceInfo(request))).ofBasic();
+                DeviceInfoResolver.resolve(request))).ofBasic();
     }
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
@@ -93,20 +93,6 @@ public class UserResource {
         return new ProvincesDto(Arrays.stream(Province.values())
                 .map(Province::name)
                 .toList());
-    }
-
-    private DeviceInfo resolveDeviceInfo(HttpServletRequest request) {
-        String xForwardedFor = request.getHeader("X-Forwarded-For");
-        String xRealIp = request.getHeader("X-Real-IP");
-        String ip;
-        if (xForwardedFor != null && !xForwardedFor.isBlank()) {
-            ip = xForwardedFor.split(",")[0].trim();
-        } else if (xRealIp != null && !xRealIp.isBlank()) {
-            ip = xRealIp.trim();
-        } else {
-            ip = request.getRemoteAddr();
-        }
-        return DeviceInfoResolver.resolve(request.getHeader("User-Agent"), ip);
     }
 
 }
