@@ -32,6 +32,7 @@ import static es.upm.api.data.entities.Role.CUSTOMER;
 @Service
 public class UserService {
     public static final String SCOPE_EDIT_PROFILE = "edit-profile";
+    public static final String SCOPE_ALL = "";
 
     private final AccessLinkService accessLinkService;
     private final UserRepository userRepository;
@@ -137,7 +138,7 @@ public class UserService {
     }
 
     public User readByMobileWithToken(String mobile, String token) {
-        this.accessLinkService.use(token, mobile, SCOPE_EDIT_PROFILE);
+        this.accessLinkService.use(token, mobile, SCOPE_ALL);
         return this.readByMobile(mobile);
     }
 
