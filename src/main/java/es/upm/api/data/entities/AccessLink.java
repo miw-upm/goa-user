@@ -41,7 +41,7 @@ public class AccessLink {
         if (!Objects.equals(this.user.getMobile(), mobile)) {
             throw new ForbiddenException("Forbidden token. Token is the another mobile");
         }
-        if (!Objects.equals(this.scope, requiredScope)) {
+        if (!requiredScope.isEmpty() && !Objects.equals(this.scope, requiredScope)) {
             throw new ForbiddenException("Forbidden purpose. The scope does not match the intended use.");
         }
         this.remainingUses--;
