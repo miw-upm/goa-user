@@ -3,7 +3,6 @@ package es.upm.api.resources.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import es.upm.api.data.entities.DocumentType;
 import es.upm.api.data.entities.Province;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
@@ -37,7 +36,6 @@ public class UserDto {
     private String firstName;
     private String familyName;
     private String email;
-    private DocumentType documentType;
     private String identity;
     private String address;
     private String city;
@@ -80,7 +78,6 @@ public class UserDto {
 
     public UserDto ofBasic() {
         return this.ofMobileFirstNameFamilyNameEmail().toBuilder()
-                .documentType(this.getDocumentType())
                 .identity(this.getIdentity())
                 .address(this.getAddress())
                 .city(this.getCity())

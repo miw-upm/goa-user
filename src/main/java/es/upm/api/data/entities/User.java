@@ -26,7 +26,6 @@ public class User {
     private String familyName;
     @Indexed(unique = true)
     private String email;
-    private DocumentType documentType;
     @Indexed(unique = true)
     private String identity;
     private String address;
