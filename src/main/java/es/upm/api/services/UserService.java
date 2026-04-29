@@ -4,10 +4,10 @@ import es.upm.api.configurations.CurrentUser;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
-import es.upm.api.infrastructure.AddressEncryptionService;
 import es.upm.api.services.criteria.UserFindCriteria;
+import es.upm.api.services.infrastructure.EncryptionService;
 import es.upm.api.services.outemailfeign.EmailWriter;
-import es.upm.api.services.utils.ProfileUpdatedEmailTemplateService;
+import es.upm.api.services.infrastructure.ProfileUpdatedEmailTemplateService;
 import es.upm.miw.base64url.Base64UrlGenerator;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.BadGatewayException;
@@ -29,8 +29,9 @@ import java.util.stream.Stream;
 
 import static es.upm.api.data.entities.Role.CUSTOMER;
 
-@RequiredArgsConstructor
+
 @Service
+@RequiredArgsConstructor
 public class UserService {
     public static final String SCOPE_EDIT_PROFILE = "edit-profile";
     public static final String SCOPE_ALL = "";
@@ -42,7 +43,7 @@ public class UserService {
     private final ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService;
     private final DataProcessingConsentService dataProcessingConsentService;
     private final CurrentUser currentUser;
-    private final AddressEncryptionService addressEncryptionService;
+    private final EncryptionService encryptionService;
 
     public void create(User user) {
         this.validateAuthorizedRole(user.getRole());
@@ -55,7 +56,7 @@ public class UserService {
         }
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         user.setRegistrationDate(LocalDate.now());
-        this.encryptAddress(user);
+        user.setAddress(this.encryptionService.encrypt(user.getAddress()));
         this.userRepository.save(user);
     }
 
@@ -109,7 +110,7 @@ public class UserService {
             existing.setPassword(this.passwordEncoder.encode(user.getPassword()));
         }
         BeanUtils.copyProperties(user, existing, "id", "password", "registrationDate", "active");
-        this.encryptAddress(existing);
+        existing.setAddress(this.encryptionService.encrypt(existing.getAddress()));
         return this.decryptAddress(this.userRepository.save(existing));
     }
 
@@ -189,12 +190,9 @@ public class UserService {
         return users.filter(user -> user.getMobile().equals(this.currentUser.mobile()));
     }
 
-    private void encryptAddress(User user) {
-        user.setAddress(this.addressEncryptionService.encrypt(user.getAddress()));
-    }
 
     private User decryptAddress(User user) {
-        user.setAddress(this.addressEncryptionService.decrypt(user.getAddress()));
+        user.setAddress(this.encryptionService.decrypt(user.getAddress()));
         return user;
     }
 

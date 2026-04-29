@@ -1,4 +1,4 @@
-package es.upm.api.services.utils;
+package es.upm.api.services.infrastructure;
 
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.mail.Email;

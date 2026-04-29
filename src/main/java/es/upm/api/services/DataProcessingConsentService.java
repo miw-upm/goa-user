@@ -5,7 +5,7 @@ import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.DataProcessingConsent;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.DataProcessingConsentFindCriteria;
-import es.upm.api.services.utils.LegalPolicyService;
+import es.upm.api.services.infrastructure.LegalPolicyService;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;

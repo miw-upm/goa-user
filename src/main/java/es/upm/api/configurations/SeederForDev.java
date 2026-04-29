@@ -4,6 +4,8 @@ import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.daos.DataProcessingConsentRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.*;
+import es.upm.api.services.UserService;
+import es.upm.api.services.infrastructure.EncryptionService;
 import es.upm.miw.device.DeviceInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -238,9 +240,11 @@ public class SeederForDev implements ApplicationRunner {
     public static final String URL_3 = "aaaaaaaaaaaaaaaaaaaaa3";
 
     private final UserRepository userRepository;
+    private final UserService userService;
     private final AccessLinkRepository accessLinkRepository;
     private final DataProcessingConsentRepository dataProcessingConsentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EncryptionService  encryptionService;
 
     @Value("${app.db.password}")
     private String password;
@@ -279,6 +283,7 @@ public class SeederForDev implements ApplicationRunner {
                 withEncodedPassword(MANAGER, pass),
                 withEncodedPassword(OPERATOR, pass)
         );
+        users.forEach(user -> user.setAddress(this.encryptionService.encrypt(user.getAddress())));
         this.userRepository.saveAll(users);
         log.warn("        ------- users");
 
