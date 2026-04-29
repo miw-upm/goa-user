@@ -283,7 +283,11 @@ public class SeederForDev implements ApplicationRunner {
                 withEncodedPassword(MANAGER, pass),
                 withEncodedPassword(OPERATOR, pass)
         );
-        users.forEach(user -> user.setAddress(this.encryptionService.encrypt(user.getAddress())));
+        users.forEach(user -> {
+            user.setAddress(this.encryptionService.encrypt(user.getAddress()));
+            user.setEmail(this.encryptionService.encrypt(user.getEmail()));
+            user.setIdentity(this.encryptionService.encrypt(user.getIdentity()));
+        });
         this.userRepository.saveAll(users);
         log.warn("        ------- users");
 
@@ -346,12 +350,12 @@ public class SeederForDev implements ApplicationRunner {
                         .signatureAt(LocalDateTime.now().minusDays(10))
                         .signer(C_0)
                         .signerFullName(C_0.fullName())
-                        .signerIdentity(C_0.getIdentity())
+                        .signerIdentity(this.passwordEncoder.encode(C_0.getIdentity()))
                         .mobile(C_0.getMobile())
-                        .signerEmail(C_0.getEmail())
-                        .signatureToken("consent-token-0001")
+                        .signerEmail(this.passwordEncoder.encode(C_0.getEmail()))
+                        .signatureToken(this.passwordEncoder.encode("consent-token-0001"))
                         .deviceInfo(DeviceInfo.builder()
-                                .ipAddress("83.52.10.24")
+                                .ipAddress(this.passwordEncoder.encode("83.52.10.24"))
                                 .browser("Chrome")
                                 .operatingSystem("Windows")
                                 .deviceType("Desktop")
@@ -366,11 +370,11 @@ public class SeederForDev implements ApplicationRunner {
                         .signatureAt(LocalDateTime.now().minusDays(3))
                         .signer(C_1)
                         .signerFullName(C_1.fullName())
-                        .signerIdentity(C_1.getIdentity())
+                        .signerIdentity(this.passwordEncoder.encode(C_1.getIdentity()))
                         .mobile(C_1.getMobile())
-                        .signerEmail(C_1.getEmail())
-                        .signatureToken("consent-token-0002")
-                        .deviceInfo(deviceInfo)
+                        .signerEmail(this.passwordEncoder.encode(C_1.getEmail()))
+                        .signatureToken(this.passwordEncoder.encode("consent-token-0002"))
+                        .deviceInfo(this.hashIpAddress(deviceInfo))
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true)
                         .promotionsAccepted(false)
@@ -381,11 +385,11 @@ public class SeederForDev implements ApplicationRunner {
                         .signatureAt(LocalDateTime.now().minusHours(6))
                         .signer(C_2)
                         .signerFullName(C_2.fullName())
-                        .signerIdentity(C_2.getIdentity())
+                        .signerIdentity(this.passwordEncoder.encode(C_2.getIdentity()))
                         .mobile(C_2.getMobile())
-                        .signerEmail(C_2.getEmail())
-                        .signatureToken("consent-token-0003")
-                        .deviceInfo(deviceInfo)
+                        .signerEmail(this.passwordEncoder.encode(C_2.getEmail()))
+                        .signatureToken(this.passwordEncoder.encode("consent-token-0003"))
+                        .deviceInfo(this.hashIpAddress(deviceInfo))
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true)
                         .promotionsAccepted(false)
@@ -396,11 +400,11 @@ public class SeederForDev implements ApplicationRunner {
                         .signatureAt(LocalDateTime.now().minusMinutes(20))
                         .signer(C_3)
                         .signerFullName(C_3.fullName())
-                        .signerIdentity(C_3.getIdentity())
+                        .signerIdentity(this.passwordEncoder.encode(C_3.getIdentity()))
                         .mobile(C_3.getMobile())
-                        .signerEmail(C_3.getEmail())
-                        .signatureToken("consent-token-0004")
-                        .deviceInfo(deviceInfo)
+                        .signerEmail(this.passwordEncoder.encode(C_3.getEmail()))
+                        .signatureToken(this.passwordEncoder.encode("consent-token-0004"))
+                        .deviceInfo(this.hashIpAddress(deviceInfo))
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true)
                         .promotionsAccepted(true)
@@ -411,8 +415,34 @@ public class SeederForDev implements ApplicationRunner {
     }
 
     private User withEncodedPassword(User user, String pass) {
-        user.setPassword(pass);
-        return user;
+        return User.builder()
+                .id(user.getId())
+                .mobile(user.getMobile())
+                .firstName(user.getFirstName())
+                .familyName(user.getFamilyName())
+                .email(user.getEmail())
+                .identity(user.getIdentity())
+                .address(user.getAddress())
+                .city(user.getCity())
+                .province(user.getProvince())
+                .postalCode(user.getPostalCode())
+                .password(pass)
+                .role(user.getRole())
+                .registrationDate(user.getRegistrationDate())
+                .active(user.getActive())
+                .build();
+    }
+
+    private DeviceInfo hashIpAddress(DeviceInfo deviceInfo) {
+        if (deviceInfo == null) {
+            return null;
+        }
+        return DeviceInfo.builder()
+                .ipAddress(this.passwordEncoder.encode(deviceInfo.getIpAddress()))
+                .browser(deviceInfo.getBrowser())
+                .operatingSystem(deviceInfo.getOperatingSystem())
+                .deviceType(deviceInfo.getDeviceType())
+                .build();
     }
 
 }

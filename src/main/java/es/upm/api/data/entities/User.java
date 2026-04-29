@@ -24,9 +24,7 @@ public class User {
     private String mobile;
     private String firstName;
     private String familyName;
-    @Indexed(unique = true)
     private String email;
-    @Indexed(unique = true)
     private String identity;
     private String address;
     private String city;

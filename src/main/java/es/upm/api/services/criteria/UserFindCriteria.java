@@ -11,13 +11,10 @@ public class UserFindCriteria {
     private String mobile;
     private String firstName;
     private String familyName;
-    private String email;
-    private String identity;
     private String attribute;
     private boolean projection = false;
 
     public boolean all() {
-        return mobile == null && firstName == null && familyName == null && email == null && identity == null
-                && attribute == null;
+        return mobile == null && firstName == null && familyName == null && attribute == null;
     }
 }

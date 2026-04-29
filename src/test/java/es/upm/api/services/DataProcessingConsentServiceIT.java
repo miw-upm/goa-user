@@ -36,11 +36,10 @@ class DataProcessingConsentServiceIT {
                 .isNotNull()
                 .extracting(
                         DataProcessingConsent::getMobile,
-                        DataProcessingConsent::getSignatureToken,
                         DataProcessingConsent::getDataProcessingAccepted,
                         DataProcessingConsent::getPromotionsAccepted
                 )
-                .containsExactly("600000100", "consent-token-0001", true, true);
+                .containsExactly("600000100", true, true);
     }
 
     @Test

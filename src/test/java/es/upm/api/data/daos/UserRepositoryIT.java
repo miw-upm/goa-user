@@ -32,18 +32,18 @@ class UserRepositoryIT {
     }
 
     @Test
-    void testFindByMobileAndFirstNameAndFamilyNameAndEmailAndDniNullSafeWithMobile() {
+    void testFindByMobileAndFirstNameAndFamilyNameNullSafeWithMobile() {
         System.out.println(this.userRepository.findAll());
-        assertThat(this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
-                "1", null, null, ".com", null, List.of(CUSTOMER)))
+        assertThat(this.userRepository.findByMobileAndFirstNameAndFamilyNameContainingNullSafe(
+                "1", null, null, List.of(CUSTOMER)))
                 .anyMatch(user -> "600000101".equals(user.getMobile()));
     }
 
     @Test
-    void testFindByMobileAndFirstNameAndFamilyNameAndEmailAndDniNullSafeWithDni() {
-        assertThat(this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
-                null, null, null, null, "kk", List.of(ADMIN, MANAGER, OPERATOR, CUSTOMER)))
-                .isEmpty();
+    void testFindByMobileAndFirstNameAndFamilyNameNullSafeWithFamilyName() {
+        assertThat(this.userRepository.findByMobileAndFirstNameAndFamilyNameContainingNullSafe(
+                null, null, "ruiz", List.of(ADMIN, MANAGER, OPERATOR, CUSTOMER)))
+                .isNotEmpty();
     }
 
     @Test

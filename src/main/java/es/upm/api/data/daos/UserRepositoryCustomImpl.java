@@ -19,8 +19,8 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public List<User> findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(String mobile, String firstName, String familyName,
-                                                                                            String email, String identity, Collection<Role> roles) {
+    public List<User> findByMobileAndFirstNameAndFamilyNameContainingNullSafe(String mobile, String firstName, String familyName,
+                                                                               Collection<Role> roles) {
         Criteria criteria = new Criteria();
 
         if (StringUtils.hasText(mobile))
@@ -29,10 +29,6 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
             criteria.and("firstName").regex(firstName, "i");
         if (StringUtils.hasText(familyName))
             criteria.and("familyName").regex(familyName, "i");
-        if (StringUtils.hasText(email))
-            criteria.and("email").regex(email, "i");
-        if (StringUtils.hasText(identity))
-            criteria.and("identity").regex(identity, "i");
 
         criteria.and("role").in(roles);
 
@@ -47,9 +43,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
             criteria.orOperator(
                     Criteria.where("mobile").regex(attribute, "i"),
                     Criteria.where("firstName").regex(attribute, "i"),
-                    Criteria.where("familyName").regex(attribute, "i"),
-                    Criteria.where("email").regex(attribute, "i"),
-                    Criteria.where("identity").regex(attribute, "i")
+                    Criteria.where("familyName").regex(attribute, "i")
             );
         }
 

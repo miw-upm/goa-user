@@ -1,7 +1,6 @@
 package es.upm.api.resources.dtos;
 
 import es.upm.api.data.entities.DataProcessingConsent;
-import es.upm.miw.device.DeviceInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,11 +18,7 @@ public class DataProcessingConsentDto {
     private UUID id;
     private LocalDateTime signatureAt;
     private String signerFullName;
-    private String signerIdentity;
     private String mobile;
-    private String signerEmail;
-    private String signatureToken;
-    private DeviceInfo deviceInfo;
     private String policyVersion;
     private Boolean dataProcessingAccepted;
     private Boolean promotionsAccepted;

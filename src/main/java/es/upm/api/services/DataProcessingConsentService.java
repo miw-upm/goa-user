@@ -9,6 +9,7 @@ import es.upm.api.services.infrastructure.LegalPolicyService;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class DataProcessingConsentService {
     private final DataProcessingConsentRepository dataProcessingConsentRepository;
     private final UserRepository userRepository;
     private final LegalPolicyService legalPolicyService;
+    private final PasswordEncoder passwordEncoder;
 
     public void create(User signer, String signatureToken, boolean dataProcessingAccepted, boolean promotionsAccepted,
                        DeviceInfo deviceInfo) {
@@ -34,11 +36,11 @@ public class DataProcessingConsentService {
                 .signatureAt(LocalDateTime.now())
                 .signer(signer)
                 .signerFullName(signer.fullName())
-                .signerIdentity(signer.getIdentity())
+                .signerIdentity(this.hash(signer.getIdentity()))
                 .mobile(signer.getMobile())
-                .signerEmail(signer.getEmail())
-                .signatureToken(signatureToken)
-                .deviceInfo(deviceInfo)
+                .signerEmail(this.hash(signer.getEmail()))
+                .signatureToken(this.hash(signatureToken))
+                .deviceInfo(this.hashIpAddress(deviceInfo))
                 .policyVersion(this.legalPolicyService.currentPolicyVersion())
                 .dataProcessingAccepted(dataProcessingAccepted)
                 .promotionsAccepted(promotionsAccepted)
@@ -58,6 +60,22 @@ public class DataProcessingConsentService {
         List<String> mobiles = this.userRepository.findByAll(criteria.getAttribute(), List.of(CUSTOMER)).stream()
                 .map(User::getMobile).toList();
         return this.dataProcessingConsentRepository.findByMobileIn(mobiles).stream();
+    }
+
+    private String hash(String value) {
+        return value == null ? null : this.passwordEncoder.encode(value);
+    }
+
+    private DeviceInfo hashIpAddress(DeviceInfo deviceInfo) {
+        if (deviceInfo == null) {
+            return null;
+        }
+        return DeviceInfo.builder()
+                .ipAddress(this.hash(deviceInfo.getIpAddress()))
+                .browser(deviceInfo.getBrowser())
+                .operatingSystem(deviceInfo.getOperatingSystem())
+                .deviceType(deviceInfo.getDeviceType())
+                .build();
     }
 
 }

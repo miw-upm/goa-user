@@ -48,15 +48,13 @@ public class UserService {
     public void create(User user) {
         this.validateAuthorizedRole(user.getRole());
         this.assertNoExistByMobile(user.getMobile());
-        this.assertNoExistByEmail(user.getEmail());
-        this.assertNoExistByDni(user.getIdentity());
         user.setId(UUID.randomUUID());
         if (Objects.isNull(user.getPassword())) {
             user.setPassword(Base64UrlGenerator.encode());
         }
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         user.setRegistrationDate(LocalDate.now());
-        user.setAddress(this.encryptionService.encrypt(user.getAddress()));
+        this.encryptSensitiveFields(user);
         this.userRepository.save(user);
     }
 
@@ -67,7 +65,7 @@ public class UserService {
 
     public User updateByUrlIdWithToken(String scope, String urlId, String token, User user, boolean dataProcessingAccepted,
                                        boolean promotionsAccepted, DeviceInfo deviceInfo) {
-        User retrieverUser = this.decryptAddress(this.accessLinkService.consumeToken(scope, urlId, token).getUser());
+        User retrieverUser = this.decryptSensitiveFields(this.accessLinkService.consumeToken(scope, urlId, token).getUser());
         if (!CUSTOMER.equals(retrieverUser.getRole())) {
             throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + retrieverUser.getRole());
         }
@@ -100,18 +98,12 @@ public class UserService {
         if (!existing.getMobile().equals(user.getMobile())) {
             this.assertNoExistByMobile(user.getMobile());
         }
-        if (!Objects.equals(existing.getEmail(), user.getEmail())) {
-            this.assertNoExistByEmail(user.getEmail());
-        }
-        if (!Objects.equals(existing.getIdentity(), user.getIdentity())) {
-            this.assertNoExistByDni(user.getIdentity());
-        }
         if (!Objects.isNull(user.getPassword())) {
             existing.setPassword(this.passwordEncoder.encode(user.getPassword()));
         }
         BeanUtils.copyProperties(user, existing, "id", "password", "registrationDate", "active");
-        existing.setAddress(this.encryptionService.encrypt(existing.getAddress()));
-        return this.decryptAddress(this.userRepository.save(existing));
+        this.encryptSensitiveFields(existing);
+        return this.decryptSensitiveFields(this.userRepository.save(existing));
     }
 
     private void validateAuthorizedRole(Role role) {
@@ -134,23 +126,17 @@ public class UserService {
     public User readById(UUID id) {
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("The id don't exist: " + id));
-        return this.decryptAddress(user);
+        return this.decryptSensitiveFields(user);
     }
 
     public User readByMobile(String mobile) {
         User user = this.userRepository.findByMobile(mobile)
                 .orElseThrow(() -> new NotFoundException("The mobile don't exists: " + mobile));
-        return this.decryptAddress(user);
+        return this.decryptSensitiveFields(user);
     }
 
     public User readByMobileWithToken(String scope, String urlId, String token) {
-        return this.decryptAddress(this.accessLinkService.consumeToken(scope, urlId, token).getUser());
-    }
-
-    private void assertNoExistByEmail(String email) {
-        if (email != null && this.userRepository.existsByEmail(email)) {
-            throw new ConflictException("The email already exists: " + email);
-        }
+        return this.decryptSensitiveFields(this.accessLinkService.consumeToken(scope, urlId, token).getUser());
     }
 
     private void assertNoExistByMobile(String mobile) {
@@ -159,15 +145,9 @@ public class UserService {
         }
     }
 
-    private void assertNoExistByDni(String dni) {
-        if (dni != null && this.userRepository.existsByIdentity(dni)) {
-            throw new ConflictException("The dni already exists: " + dni);
-        }
-    }
-
     public Stream<User> find(UserFindCriteria criteria) {
         return this.restrictToCurrentCustomer(this.query(criteria))
-                .map(this::decryptAddress);
+                .map(this::decryptSensitiveFields);
     }
 
     private Stream<User> query(UserFindCriteria criteria) {
@@ -177,9 +157,8 @@ public class UserService {
         if (criteria.getAttribute() != null) {
             return this.userRepository.findByAll(criteria.getAttribute(), List.of(CUSTOMER)).stream();
         }
-        return this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
-                criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(),
-                criteria.getEmail(), criteria.getIdentity(), this.validRoles()
+        return this.userRepository.findByMobileAndFirstNameAndFamilyNameContainingNullSafe(
+                criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(), this.validRoles()
         ).stream();
     }
 
@@ -191,9 +170,17 @@ public class UserService {
     }
 
 
-    private User decryptAddress(User user) {
+    private User decryptSensitiveFields(User user) {
         user.setAddress(this.encryptionService.decrypt(user.getAddress()));
+        user.setEmail(this.encryptionService.decrypt(user.getEmail()));
+        user.setIdentity(this.encryptionService.decrypt(user.getIdentity()));
         return user;
+    }
+
+    private void encryptSensitiveFields(User user) {
+        user.setAddress(this.encryptionService.encrypt(user.getAddress()));
+        user.setEmail(this.encryptionService.encrypt(user.getEmail()));
+        user.setIdentity(this.encryptionService.encrypt(user.getIdentity()));
     }
 
 }

@@ -7,8 +7,8 @@ import java.util.Collection;
 import java.util.List;
 
 public interface UserRepositoryCustom {
-    List<User> findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(String mobile, String firstName, String familyName,
-                                                                                     String email, String identity, Collection<Role> roles);
+    List<User> findByMobileAndFirstNameAndFamilyNameContainingNullSafe(String mobile, String firstName, String familyName,
+                                                                        Collection<Role> roles);
 
     List<User> findByAll(String attribute, Collection<Role> roles);
 }
