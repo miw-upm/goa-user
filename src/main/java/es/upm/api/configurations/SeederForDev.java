@@ -4,7 +4,6 @@ import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.daos.DataProcessingConsentRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.*;
-import es.upm.miw.base64url.Base64UrlGenerator;
 import es.upm.miw.device.DeviceInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -228,16 +227,15 @@ public class SeederForDev implements ApplicationRunner {
             .active(true)
             .build();
 
-    private static final String TOKEN_0 = "fffffffffffffffffffffffffffffffffffffffff0";
-    private static final String TOKEN_1 = "fffffffffffffffffffffffffffffffffffffffff1";
-    private static final String TOKEN_2 = "fffffffffffffffffffffffffffffffffffffffff2";
-    private static final String TOKEN_3 = "fffffffffffffffffffffffffffffffffffffffff3";
-    private static final String TOKEN_4 = "fffffffffffffffffffffffffffffffffffffffff4";
+    public static final String TOKEN_0 = "fffffffffffffffffffffffffffffffffffffffff0";
+    public static final String TOKEN_1 = "fffffffffffffffffffffffffffffffffffffffff1";
+    public static final String TOKEN_2 = "fffffffffffffffffffffffffffffffffffffffff2";
+    public static final String TOKEN_3 = "fffffffffffffffffffffffffffffffffffffffff3";
 
-    private static final String URL_0 = "aaaaaaaaaaaaaaaaaaaaa0";
-    private static final String URL_1 = "aaaaaaaaaaaaaaaaaaaaa1";
-    private static final String URL_2 = "aaaaaaaaaaaaaaaaaaaaa2";
-    private static final String URL_3 = "aaaaaaaaaaaaaaaaaaaaa3";
+    public static final String URL_0 = "aaaaaaaaaaaaaaaaaaaaa0";
+    public static final String URL_1 = "aaaaaaaaaaaaaaaaaaaaa1";
+    public static final String URL_2 = "aaaaaaaaaaaaaaaaaaaaa2";
+    public static final String URL_3 = "aaaaaaaaaaaaaaaaaaaaa3";
 
     private final UserRepository userRepository;
     private final AccessLinkRepository accessLinkRepository;
@@ -402,7 +400,8 @@ public class SeederForDev implements ApplicationRunner {
                         .dataProcessingAccepted(true)
                         .promotionsAccepted(true)
                         .build()
-        );        this.dataProcessingConsentRepository.saveAll(dataProcessingConsents);
+        );
+        this.dataProcessingConsentRepository.saveAll(dataProcessingConsents);
         log.warn("        ------- dataProcessingConsents");
     }
 

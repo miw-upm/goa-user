@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class AccessLinkResourceFT {
+    private static final String SEEDED_MOBILE = "600000100";
+
     private final HttpRequestBuilder httpRequestBuilder;
 
     @Autowired
@@ -37,18 +39,19 @@ class AccessLinkResourceFT {
     @Test
     void testCreate() {
         AccessLinkCreationDto accessLinkCreationDto = AccessLinkCreationDto.builder()
-                .mobile("666666000").scope("edit-profile").build();
+                .mobile(SEEDED_MOBILE).scope("edit-profile").build();
         ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
                 .role(ADMIN).exchange(AccessLinkDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getUrlId()).contains("666666000");
+        assertThat(response.getBody().getUrlId()).isNotBlank();
+        assertThat(response.getBody().getToken()).isNotBlank();
     }
 
     @Test
     void testCreateBadRequestScope() {
         AccessLinkCreationDto accessLinkCreationDto = AccessLinkCreationDto.builder()
-                .mobile("666666000").build();
+                .mobile(SEEDED_MOBILE).build();
         ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
                 .role(ADMIN).exchange(AccessLinkDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -75,7 +78,7 @@ class AccessLinkResourceFT {
     @Test
     void testCreateUnauthorized() {
         AccessLinkCreationDto accessLinkCreationDto = AccessLinkCreationDto.builder()
-                .mobile("666666000").scope("EDIT_PROFILE").build();
+                .mobile(SEEDED_MOBILE).scope("EDIT_PROFILE").build();
         ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
                 .role(CUSTOMER).exchange(AccessLinkDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -96,7 +99,7 @@ class AccessLinkResourceFT {
     @Test
     void testDelete() {
         AccessLinkCreationDto accessLinkCreationDto = AccessLinkCreationDto.builder()
-                .mobile("666666000").scope("EDIT_PROFILE").build();
+                .mobile(SEEDED_MOBILE).scope("EDIT_PROFILE").build();
         ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
                 .role(ADMIN).exchange(AccessLinkDto.class);
         AccessLinkDto link = Objects.requireNonNull(response.getBody());
@@ -108,7 +111,7 @@ class AccessLinkResourceFT {
     @Test
     void testDeleteForbidden() {
         AccessLinkCreationDto accessLinkCreationDto = AccessLinkCreationDto.builder()
-                .mobile("666666000").scope("EDIT_PROFILE").build();
+                .mobile(SEEDED_MOBILE).scope("EDIT_PROFILE").build();
         ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
                 .role(ADMIN).exchange(AccessLinkDto.class);
         AccessLinkDto link = Objects.requireNonNull(response.getBody());

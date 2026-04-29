@@ -31,9 +31,7 @@ public class AccessLinksResource {
     public AccessLinkDto create(@Valid @RequestBody AccessLinkCreationDto accessLinkCreationDto) {
         AccessLinkCreationResult result = accessLinkService.create(accessLinkCreationDto.getMobile(),
                 accessLinkCreationDto.getScope(), accessLinkCreationDto.getDocumentId());
-        AccessLinkDto accessLinkDto = new AccessLinkDto(result.accessLink());
-        accessLinkDto.setToken(result.token());
-        return accessLinkDto;
+        return new AccessLinkDto(result);
     }
 
     @GetMapping(Validations.ID_WITH_UUID)

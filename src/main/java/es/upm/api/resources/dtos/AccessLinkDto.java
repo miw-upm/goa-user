@@ -1,6 +1,7 @@
 package es.upm.api.resources.dtos;
 
 import es.upm.api.data.entities.AccessLink;
+import es.upm.api.services.AccessLinkCreationResult;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +30,11 @@ public class AccessLinkDto {
     public AccessLinkDto(AccessLink accessLink) {
         BeanUtils.copyProperties(accessLink, this);
         this.setFullName(accessLink.getUser().fullName());
+    }
+
+    public AccessLinkDto(AccessLinkCreationResult creationResult) {
+        this(creationResult.accessLink());
+        this.setToken(creationResult.token());
     }
 
 }

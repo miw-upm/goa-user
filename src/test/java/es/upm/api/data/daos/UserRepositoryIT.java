@@ -20,7 +20,7 @@ class UserRepositoryIT {
 
     @Test
     void testFindByMobile() {
-        assertThat(this.userRepository.findByMobile("6")).isPresent();
+        assertThat(this.userRepository.findByMobile("600000110")).isPresent();
     }
 
     @Test
@@ -36,7 +36,7 @@ class UserRepositoryIT {
         System.out.println(this.userRepository.findAll());
         assertThat(this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
                 "1", null, null, ".com", null, List.of(CUSTOMER)))
-                .anyMatch(user -> "666666001".equals(user.getMobile()));
+                .anyMatch(user -> "600000101".equals(user.getMobile()));
     }
 
     @Test

@@ -19,7 +19,7 @@ class DataProcessingConsentRepositoryIT {
 
     @Test
     void testFindByMobileIn() {
-        List<String> mobiles = List.of("666666000", "666666001");
+        List<String> mobiles = List.of("600000100", "600000101");
         List<DataProcessingConsent> consents = this.dataProcessingConsentRepository.findByMobileIn(mobiles);
 
         assertThat(consents)
