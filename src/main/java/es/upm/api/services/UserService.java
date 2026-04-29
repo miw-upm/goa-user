@@ -6,8 +6,8 @@ import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.api.services.infrastructure.EncryptionService;
-import es.upm.api.services.outemailfeign.EmailWriter;
 import es.upm.api.services.infrastructure.ProfileUpdatedEmailTemplateService;
+import es.upm.api.services.outemailfeign.EmailWriter;
 import es.upm.miw.base64url.Base64UrlGenerator;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.BadGatewayException;
@@ -28,7 +28,6 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static es.upm.api.data.entities.Role.CUSTOMER;
-
 
 @Service
 @RequiredArgsConstructor
@@ -75,22 +74,26 @@ public class UserService {
         User dbUser = this.updateUser(retrieverUser.getId(), user);
         this.dataProcessingConsentService.create(dbUser, token, dataProcessingAccepted, promotionsAccepted, deviceInfo);
         if (profileChanged) {
-            try {
-                this.emailWriter.sendHtml(
-                        this.profileUpdatedEmailTemplateService.buildHtmlEmail(
-                                dbUser.getEmail(),
-                                dbUser.getFirstName(),
-                                dbUser.getMobile(),
-                                deviceInfo
-                        )
-                );
-            } catch (FeignException.BadRequest e) {
-                throw new BadGatewayException("Error de email: (" + dbUser.getEmail() + ")", e.getCause());
-            } catch (Exception e) {
-                throw new BadGatewayException("Error del host de email", e.getCause());
-            }
+            this.sendEmail(deviceInfo, dbUser);
         }
         return dbUser;
+    }
+
+    private void sendEmail(DeviceInfo deviceInfo, User dbUser) {
+        try {
+            this.emailWriter.sendHtml(
+                    this.profileUpdatedEmailTemplateService.buildHtmlEmail(
+                            dbUser.getEmail(),
+                            dbUser.getFirstName(),
+                            dbUser.getMobile(),
+                            deviceInfo
+                    )
+            );
+        } catch (FeignException.BadRequest e) {
+            throw new BadGatewayException("Error de email: (" + dbUser.getEmail() + ")", e.getCause());
+        } catch (Exception e) {
+            throw new BadGatewayException("Error del host de email", e.getCause());
+        }
     }
 
     private User updateUser(UUID id, User user) {
@@ -154,10 +157,10 @@ public class UserService {
         if (criteria.all()) {
             return this.userRepository.findByRoleIn(this.validRoles()).stream();
         }
-        if (criteria.getAttribute() != null) {
-            return this.userRepository.findByAll(criteria.getAttribute(), List.of(CUSTOMER)).stream();
+        if (criteria.getCustomer() != null) {
+            return this.userRepository.findCustomersByText(criteria.getCustomer(), List.of(CUSTOMER)).stream();
         }
-        return this.userRepository.findByMobileAndFirstNameAndFamilyNameContainingNullSafe(
+        return this.userRepository.findCustomers(
                 criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(), this.validRoles()
         ).stream();
     }
@@ -168,7 +171,6 @@ public class UserService {
         }
         return users.filter(user -> user.getMobile().equals(this.currentUser.mobile()));
     }
-
 
     private User decryptSensitiveFields(User user) {
         user.setAddress(this.encryptionService.decrypt(user.getAddress()));

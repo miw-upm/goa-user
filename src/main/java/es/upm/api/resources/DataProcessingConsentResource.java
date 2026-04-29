@@ -1,6 +1,6 @@
 package es.upm.api.resources;
 
-import es.upm.api.resources.dtos.DataProcessingConsentDto;
+import es.upm.api.resources.dtos.DataProcessingConsentResponseDto;
 import es.upm.api.services.DataProcessingConsentService;
 import es.upm.api.services.criteria.DataProcessingConsentFindCriteria;
 import es.upm.miw.security.Security;
@@ -24,15 +24,15 @@ public class DataProcessingConsentResource {
     private final DataProcessingConsentService dataProcessingConsentService;
 
     @GetMapping(Validations.ID_WITH_UUID)
-    public DataProcessingConsentDto read(@PathVariable UUID id) {
-        return new DataProcessingConsentDto(this.dataProcessingConsentService.read(id));
+    public DataProcessingConsentResponseDto read(@PathVariable UUID id) {
+        return new DataProcessingConsentResponseDto(this.dataProcessingConsentService.read(id));
     }
 
     @GetMapping
-    public List<DataProcessingConsentDto> find(@ModelAttribute DataProcessingConsentFindCriteria criteria) {
+    public List<DataProcessingConsentResponseDto> find(@ModelAttribute DataProcessingConsentFindCriteria criteria) {
         return this.dataProcessingConsentService.find(criteria)
-                .map(DataProcessingConsentDto::new)
-                .map(DataProcessingConsentDto::ofMobileFullNameSignatureAt)
+                .map(DataProcessingConsentResponseDto::new)
+                .map(DataProcessingConsentResponseDto::ofMobileFullNameSignatureAt)
                 .toList();
     }
 

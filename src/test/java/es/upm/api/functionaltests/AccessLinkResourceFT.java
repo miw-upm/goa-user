@@ -2,7 +2,7 @@ package es.upm.api.functionaltests;
 
 import es.upm.api.configurations.OAuth2Properties;
 import es.upm.api.resources.dtos.AccessLinkCreationDto;
-import es.upm.api.resources.dtos.AccessLinkDto;
+import es.upm.api.resources.dtos.AccessLinkResponseDto;
 import es.upm.miw.security.Validations;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
@@ -40,8 +40,8 @@ class AccessLinkResourceFT {
     void testCreate() {
         AccessLinkCreationDto accessLinkCreationDto = AccessLinkCreationDto.builder()
                 .mobile(SEEDED_MOBILE).scope("edit-profile").build();
-        ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
-                .role(ADMIN).exchange(AccessLinkDto.class);
+        ResponseEntity<AccessLinkResponseDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
+                .role(ADMIN).exchange(AccessLinkResponseDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getUrlId()).isNotBlank();
@@ -52,8 +52,8 @@ class AccessLinkResourceFT {
     void testCreateBadRequestScope() {
         AccessLinkCreationDto accessLinkCreationDto = AccessLinkCreationDto.builder()
                 .mobile(SEEDED_MOBILE).build();
-        ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
-                .role(ADMIN).exchange(AccessLinkDto.class);
+        ResponseEntity<AccessLinkResponseDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
+                .role(ADMIN).exchange(AccessLinkResponseDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -61,8 +61,8 @@ class AccessLinkResourceFT {
     void testCreateBadRequestMobile() {
         AccessLinkCreationDto accessLinkCreationDto = AccessLinkCreationDto.builder()
                 .scope("EDIT_PROFILE").build();
-        ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
-                .role(ADMIN).exchange(AccessLinkDto.class);
+        ResponseEntity<AccessLinkResponseDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
+                .role(ADMIN).exchange(AccessLinkResponseDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -70,8 +70,8 @@ class AccessLinkResourceFT {
     void testCreateNotFoundMobile() {
         AccessLinkCreationDto accessLinkCreationDto = AccessLinkCreationDto.builder()
                 .mobile("123000123").scope("EDIT_PROFILE").build();
-        ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
-                .role(ADMIN).exchange(AccessLinkDto.class);
+        ResponseEntity<AccessLinkResponseDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
+                .role(ADMIN).exchange(AccessLinkResponseDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
@@ -79,15 +79,15 @@ class AccessLinkResourceFT {
     void testCreateUnauthorized() {
         AccessLinkCreationDto accessLinkCreationDto = AccessLinkCreationDto.builder()
                 .mobile(SEEDED_MOBILE).scope("EDIT_PROFILE").build();
-        ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
-                .role(CUSTOMER).exchange(AccessLinkDto.class);
+        ResponseEntity<AccessLinkResponseDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
+                .role(CUSTOMER).exchange(AccessLinkResponseDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
     void testFindAll() {
-        ResponseEntity<AccessLinkDto[]> response = this.httpRequestBuilder.get(ACCESS_LINKS)
-                .role(ADMIN).exchange(AccessLinkDto[].class);
+        ResponseEntity<AccessLinkResponseDto[]> response = this.httpRequestBuilder.get(ACCESS_LINKS)
+                .role(ADMIN).exchange(AccessLinkResponseDto[].class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody())
                 .isNotEmpty()
@@ -100,9 +100,9 @@ class AccessLinkResourceFT {
     void testDelete() {
         AccessLinkCreationDto accessLinkCreationDto = AccessLinkCreationDto.builder()
                 .mobile(SEEDED_MOBILE).scope("EDIT_PROFILE").build();
-        ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
-                .role(ADMIN).exchange(AccessLinkDto.class);
-        AccessLinkDto link = Objects.requireNonNull(response.getBody());
+        ResponseEntity<AccessLinkResponseDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
+                .role(ADMIN).exchange(AccessLinkResponseDto.class);
+        AccessLinkResponseDto link = Objects.requireNonNull(response.getBody());
         ResponseEntity<Void> response2 = this.httpRequestBuilder
                 .delete(ACCESS_LINKS + Validations.ID_WITH_UUID, link.getId()).role(ADMIN).exchange(Void.class);
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -112,9 +112,9 @@ class AccessLinkResourceFT {
     void testDeleteForbidden() {
         AccessLinkCreationDto accessLinkCreationDto = AccessLinkCreationDto.builder()
                 .mobile(SEEDED_MOBILE).scope("EDIT_PROFILE").build();
-        ResponseEntity<AccessLinkDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
-                .role(ADMIN).exchange(AccessLinkDto.class);
-        AccessLinkDto link = Objects.requireNonNull(response.getBody());
+        ResponseEntity<AccessLinkResponseDto> response = this.httpRequestBuilder.post(ACCESS_LINKS).body(accessLinkCreationDto)
+                .role(ADMIN).exchange(AccessLinkResponseDto.class);
+        AccessLinkResponseDto link = Objects.requireNonNull(response.getBody());
         ResponseEntity<Void> response2 = this.httpRequestBuilder
                 .delete(ACCESS_LINKS + Validations.ID_WITH_UUID, link.getId()).role(MANAGER).exchange(Void.class);
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);

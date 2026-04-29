@@ -34,21 +34,21 @@ class UserRepositoryIT {
     @Test
     void testFindByMobileAndFirstNameAndFamilyNameNullSafeWithMobile() {
         System.out.println(this.userRepository.findAll());
-        assertThat(this.userRepository.findByMobileAndFirstNameAndFamilyNameContainingNullSafe(
+        assertThat(this.userRepository.findCustomers(
                 "1", null, null, List.of(CUSTOMER)))
                 .anyMatch(user -> "600000101".equals(user.getMobile()));
     }
 
     @Test
     void testFindByMobileAndFirstNameAndFamilyNameNullSafeWithFamilyName() {
-        assertThat(this.userRepository.findByMobileAndFirstNameAndFamilyNameContainingNullSafe(
+        assertThat(this.userRepository.findCustomers(
                 null, null, "ruiz", List.of(ADMIN, MANAGER, OPERATOR, CUSTOMER)))
                 .isNotEmpty();
     }
 
     @Test
     void testFindByAll() {
-        assertThat(this.userRepository.findByAll("1", List.of(CUSTOMER)))
+        assertThat(this.userRepository.findCustomersByText("1", List.of(CUSTOMER)))
                 .allMatch(user -> user.getRole().equals(CUSTOMER));
     }
 }

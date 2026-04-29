@@ -30,29 +30,11 @@ import java.util.UUID;
 public class SeederForDev implements ApplicationRunner {
     public static final String PREFIX = "aaaaaaaa-bbbb-cccc-dddd-eeeeffff";
     public static final UUID ID_0 = UUID.fromString(PREFIX + "0000");
-    public static final UUID ID_1 = UUID.fromString(PREFIX + "0001");
-    public static final UUID ID_2 = UUID.fromString(PREFIX + "0002");
-    public static final UUID ID_3 = UUID.fromString(PREFIX + "0003");
-    public static final UUID ID_4 = UUID.fromString(PREFIX + "0004");
-    public static final UUID ID_5 = UUID.fromString(PREFIX + "0005");
-    public static final UUID ID_6 = UUID.fromString(PREFIX + "0006");
-    public static final UUID ID_7 = UUID.fromString(PREFIX + "0007");
-    public static final UUID ID_8 = UUID.fromString(PREFIX + "0008");
-    public static final UUID ID_9 = UUID.fromString(PREFIX + "0009");
-    public static final UUID ID_A = UUID.fromString(PREFIX + "000a");
-    public static final UUID ID_B = UUID.fromString(PREFIX + "000b");
-    public static final UUID ID_C = UUID.fromString(PREFIX + "000c");
-    public static final UUID ID_D = UUID.fromString(PREFIX + "000d");
-    public static final UUID ID_E = UUID.fromString(PREFIX + "000e");
-    public static final UUID ID_F = UUID.fromString(PREFIX + "000f");
-    public static final String PASSWORD = "6";
-
     public static final User C_0 = User.builder()
             .id(ID_0)
             .mobile("600000100")
             .firstName("cliente0")
             .familyName("García López")
-            .password(PASSWORD)
             .role(Role.CUSTOMER)
             .identity("00000000T")
             .address("C/ Alcalá, 100")
@@ -63,13 +45,12 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2024, 1, 1))
             .active(true)
             .build();
-
+    public static final UUID ID_1 = UUID.fromString(PREFIX + "0001");
     public static final User C_1 = User.builder()
             .id(ID_1)
             .mobile("600000101")
             .firstName("cliente1")
             .familyName("Martínez Ruiz")
-            .password(PASSWORD)
             .role(Role.CUSTOMER)
             .identity("00000001R")
             .address("C/ Sierpes, 101")
@@ -80,7 +61,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 2, 1))
             .active(true)
             .build();
-
+    public static final UUID ID_2 = UUID.fromString(PREFIX + "0002");
     public static final User C_2 = User.builder()
             .id(ID_2)
             .mobile("600000102")
@@ -96,7 +77,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 3, 1))
             .active(true)
             .build();
-
+    public static final UUID ID_3 = UUID.fromString(PREFIX + "0003");
     public static final User C_3 = User.builder()
             .id(ID_3)
             .mobile("600000103")
@@ -112,7 +93,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 4, 1))
             .active(true)
             .build();
-
+    public static final UUID ID_4 = UUID.fromString(PREFIX + "0004");
     public static final User C_4 = User.builder()
             .id(ID_4)
             .mobile("600000104")
@@ -128,7 +109,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 5, 1))
             .active(true)
             .build();
-
+    public static final UUID ID_5 = UUID.fromString(PREFIX + "0005");
     public static final User C_5 = User.builder()
             .id(ID_5)
             .mobile("600000105")
@@ -144,7 +125,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 6, 1))
             .active(true)
             .build();
-
+    public static final UUID ID_6 = UUID.fromString(PREFIX + "0006");
     public static final User C_6 = User.builder()
             .id(ID_6)
             .mobile("600000106")
@@ -153,7 +134,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 6, 7))
             .active(true)
             .build();
-
+    public static final UUID ID_7 = UUID.fromString(PREFIX + "0007");
     public static final User C_7 = User.builder()
             .id(ID_7)
             .mobile("600000107")
@@ -162,7 +143,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 7, 7))
             .active(true)
             .build();
-
+    public static final UUID ID_8 = UUID.fromString(PREFIX + "0008");
     public static final User C_8 = User.builder()
             .id(ID_8)
             .mobile("600000108")
@@ -171,7 +152,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 8, 7))
             .active(true)
             .build();
-
+    public static final UUID ID_9 = UUID.fromString(PREFIX + "0009");
     public static final User C_9 = User.builder()
             .id(ID_9)
             .mobile("600000109")
@@ -180,7 +161,18 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 9, 7))
             .active(true)
             .build();
-
+    public static final UUID ID_A = UUID.fromString(PREFIX + "000a");
+    public static final UUID ID_B = UUID.fromString(PREFIX + "000b");
+    public static final UUID ID_C = UUID.fromString(PREFIX + "000c");
+    public static final User ADMIN_6 = User.builder()
+            .id(ID_C)
+            .mobile("6")
+            .firstName("Admin6")
+            .role(Role.ADMIN)
+            .registrationDate(LocalDate.of(2025, 10, 1))
+            .active(true)
+            .build();
+    public static final UUID ID_D = UUID.fromString(PREFIX + "000d");
     public static final User ADMIN = User.builder()
             .id(ID_D)
             .mobile("600000110")
@@ -196,7 +188,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 10, 1))
             .active(true)
             .build();
-
+    public static final UUID ID_E = UUID.fromString(PREFIX + "000e");
     public static final User MANAGER = User.builder()
             .id(ID_E)
             .mobile("600000111")
@@ -212,7 +204,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 11, 1))
             .active(true)
             .build();
-
+    public static final UUID ID_F = UUID.fromString(PREFIX + "000f");
     public static final User OPERATOR = User.builder()
             .id(ID_F)
             .mobile("600000112")
@@ -228,7 +220,6 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 12, 1))
             .active(true)
             .build();
-
     public static final String TOKEN_0 = "fffffffffffffffffffffffffffffffffffffffff0";
     public static final String TOKEN_1 = "fffffffffffffffffffffffffffffffffffffffff1";
     public static final String TOKEN_2 = "fffffffffffffffffffffffffffffffffffffffff2";
@@ -244,7 +235,7 @@ public class SeederForDev implements ApplicationRunner {
     private final AccessLinkRepository accessLinkRepository;
     private final DataProcessingConsentRepository dataProcessingConsentRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EncryptionService  encryptionService;
+    private final EncryptionService encryptionService;
 
     @Value("${app.db.password}")
     private String password;
@@ -281,7 +272,8 @@ public class SeederForDev implements ApplicationRunner {
                 withEncodedPassword(C_9, pass),
                 withEncodedPassword(ADMIN, pass),
                 withEncodedPassword(MANAGER, pass),
-                withEncodedPassword(OPERATOR, pass)
+                withEncodedPassword(OPERATOR, pass),
+                withEncodedPassword(ADMIN_6, pass)
         );
         users.forEach(user -> {
             user.setAddress(this.encryptionService.encrypt(user.getAddress()));

@@ -63,7 +63,7 @@ public class AccessLinkService {
             return this.accessLinkRepository.findAll().stream();
         }
         List<UUID> ids = criteria.getClient() != null
-                ? this.userRepository.findByAll(criteria.getClient(), List.of(CUSTOMER)).stream().map(User::getId).toList()
+                ? this.userRepository.findCustomersByText(criteria.getClient(), List.of(CUSTOMER)).stream().map(User::getId).toList()
                 : List.of();
         return Boolean.FALSE.equals(criteria.getExpired())
                 ? this.accessLinkRepository.findActiveUsedByUserIdsAndScope(ids, criteria.getScope()).stream()

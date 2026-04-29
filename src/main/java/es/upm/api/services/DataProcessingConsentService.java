@@ -57,7 +57,7 @@ public class DataProcessingConsentService {
         if (Objects.isNull(criteria.getAttribute()) || criteria.getAttribute().isBlank()) {
             return this.dataProcessingConsentRepository.findAll().stream();
         }
-        List<String> mobiles = this.userRepository.findByAll(criteria.getAttribute(), List.of(CUSTOMER)).stream()
+        List<String> mobiles = this.userRepository.findCustomersByText(criteria.getAttribute(), List.of(CUSTOMER)).stream()
                 .map(User::getMobile).toList();
         return this.dataProcessingConsentRepository.findByMobileIn(mobiles).stream();
     }

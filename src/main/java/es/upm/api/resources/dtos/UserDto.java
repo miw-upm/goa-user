@@ -54,7 +54,7 @@ public class UserDto {
 
     public static UserDto of(User user, boolean full) {
         UserDto dto = new UserDto(user);
-        return full ? dto : dto.ofMobileFirstNameFamilyNameEmail();
+        return full ? dto : dto.ofSummary();
     }
 
     public void doDefault() {
@@ -66,7 +66,7 @@ public class UserDto {
         }
     }
 
-    public UserDto ofMobileFirstNameFamilyNameEmail() {
+    public UserDto ofSummary() {
         return UserDto.builder()
                 .id(this.getId())
                 .mobile(this.getMobile())
@@ -77,7 +77,7 @@ public class UserDto {
     }
 
     public UserDto ofBasic() {
-        return this.ofMobileFirstNameFamilyNameEmail().toBuilder()
+        return this.ofSummary().toBuilder()
                 .identity(this.getIdentity())
                 .address(this.getAddress())
                 .city(this.getCity())

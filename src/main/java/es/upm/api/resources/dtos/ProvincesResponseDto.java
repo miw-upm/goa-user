@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProvincesDto {
+public class ProvincesResponseDto {
     private List<String> provinces;
 }

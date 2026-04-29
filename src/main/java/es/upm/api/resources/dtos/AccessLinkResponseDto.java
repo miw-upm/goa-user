@@ -15,7 +15,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccessLinkDto {
+public class AccessLinkResponseDto {
     private UUID id;
     private String urlId;
     private String token;
@@ -27,15 +27,27 @@ public class AccessLinkDto {
     private String scope;
     private UUID documentId;
 
-    public AccessLinkDto(AccessLink accessLink) {
+    public AccessLinkResponseDto(AccessLink accessLink) {
         BeanUtils.copyProperties(accessLink, this);
         this.setFullName(accessLink.getUser().fullName());
     }
 
-    public AccessLinkDto(AccessLinkCreationResult creationResult) {
+    public AccessLinkResponseDto(AccessLinkCreationResult creationResult) {
         this(creationResult.accessLink());
         this.setToken(creationResult.token());
     }
+
+    public AccessLinkResponseDto ofSummary() {
+        return AccessLinkResponseDto.builder()
+                .id(this.getId())
+                .fullName(this.getFullName())
+                .lastUsedAt(this.getLastUsedAt())
+                .expiresAt(this.getExpiresAt())
+                .scope(this.getScope())
+                .urlId(this.getUrlId())
+                .build();
+    }
+
 
 }
 

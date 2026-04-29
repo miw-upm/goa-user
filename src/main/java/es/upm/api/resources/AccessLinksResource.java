@@ -1,7 +1,7 @@
 package es.upm.api.resources;
 
 import es.upm.api.resources.dtos.AccessLinkCreationDto;
-import es.upm.api.resources.dtos.AccessLinkDto;
+import es.upm.api.resources.dtos.AccessLinkResponseDto;
 import es.upm.api.services.AccessLinkCreationResult;
 import es.upm.api.services.AccessLinkService;
 import es.upm.api.services.criteria.AccessLinkFindCriteria;
@@ -28,15 +28,15 @@ public class AccessLinksResource {
     private final AccessLinkService accessLinkService;
 
     @PostMapping
-    public AccessLinkDto create(@Valid @RequestBody AccessLinkCreationDto accessLinkCreationDto) {
+    public AccessLinkResponseDto create(@Valid @RequestBody AccessLinkCreationDto accessLinkCreationDto) {
         AccessLinkCreationResult result = accessLinkService.create(accessLinkCreationDto.getMobile(),
                 accessLinkCreationDto.getScope(), accessLinkCreationDto.getDocumentId());
-        return new AccessLinkDto(result);
+        return new AccessLinkResponseDto(result);
     }
 
     @GetMapping(Validations.ID_WITH_UUID)
-    public AccessLinkDto read(@PathVariable UUID id) {
-        return new AccessLinkDto(this.accessLinkService.read(id));
+    public AccessLinkResponseDto read(@PathVariable UUID id) {
+        return new AccessLinkResponseDto(this.accessLinkService.read(id));
     }
 
     @PreAuthorize(Security.ADMIN)
@@ -46,15 +46,16 @@ public class AccessLinksResource {
     }
 
     @GetMapping
-    public List<AccessLinkDto> find(@ModelAttribute AccessLinkFindCriteria criteria) {
+    public List<AccessLinkResponseDto> find(@ModelAttribute AccessLinkFindCriteria criteria) {
         return this.accessLinkService.find(criteria)
-                .map(AccessLinkDto::new)
+                .map(AccessLinkResponseDto::new)
+                .map(AccessLinkResponseDto::ofSummary)
                 .toList();
     }
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_URL_TOKEN)
     @PostMapping(SCOPE_ID + Validations.ID_WITH_UUID_BASE64 + CONSUME)
-    public AccessLinkDto consumeToken(@PathVariable String scope, @PathVariable String id, @RequestBody String token) {
-        return new AccessLinkDto(this.accessLinkService.consumeToken(scope, id, token));
+    public AccessLinkResponseDto consumeToken(@PathVariable String scope, @PathVariable String id, @RequestBody String token) {
+        return new AccessLinkResponseDto(this.accessLinkService.consumeToken(scope, id, token));
     }
 }

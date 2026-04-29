@@ -1,6 +1,7 @@
 package es.upm.api.resources.dtos;
 
 import es.upm.api.data.entities.DataProcessingConsent;
+import es.upm.miw.device.DeviceInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,21 +15,25 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DataProcessingConsentDto {
+public class DataProcessingConsentResponseDto {
     private UUID id;
     private LocalDateTime signatureAt;
     private String signerFullName;
+    private String signerIdentity;
     private String mobile;
     private String policyVersion;
+    private String signerEmail;
+    private String signatureToken;
+    private DeviceInfo deviceInfo;
     private Boolean dataProcessingAccepted;
     private Boolean promotionsAccepted;
 
-    public DataProcessingConsentDto(DataProcessingConsent consent) {
+    public DataProcessingConsentResponseDto(DataProcessingConsent consent) {
         BeanUtils.copyProperties(consent, this);
     }
 
-    public DataProcessingConsentDto ofMobileFullNameSignatureAt() {
-        return DataProcessingConsentDto.builder()
+    public DataProcessingConsentResponseDto ofMobileFullNameSignatureAt() {
+        return DataProcessingConsentResponseDto.builder()
                 .id(this.getId())
                 .mobile(this.getMobile())
                 .signerFullName(this.getSignerFullName())

@@ -3,7 +3,7 @@ package es.upm.api.functionaltests;
 import es.upm.api.configurations.OAuth2Properties;
 import es.upm.api.configurations.SeederForDev;
 import es.upm.api.resources.UserResource;
-import es.upm.api.resources.dtos.ProvincesDto;
+import es.upm.api.resources.dtos.ProvincesResponseDto;
 import es.upm.api.resources.dtos.UserDto;
 import es.upm.miw.security.Validations;
 import lombok.extern.log4j.Log4j2;
@@ -211,9 +211,9 @@ class UserResourceFT {
 
     @Test
     void testFindProvinces() {
-        ResponseEntity<ProvincesDto> response = this.httpRequestBuilder
+        ResponseEntity<ProvincesResponseDto> response = this.httpRequestBuilder
                 .get(UserResource.USERS + UserResource.PROVINCES)
-                .exchange(ProvincesDto.class);
+                .exchange(ProvincesResponseDto.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();

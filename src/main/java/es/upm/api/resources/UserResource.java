@@ -3,9 +3,9 @@ package es.upm.api.resources;
 import es.upm.api.data.entities.Province;
 import es.upm.api.data.entities.User;
 import es.upm.api.resources.dtos.DataProcessingConsentCreationDto;
-import es.upm.api.resources.dtos.ProvincesDto;
+import es.upm.api.resources.dtos.ProvincesResponseDto;
 import es.upm.api.resources.dtos.UserDto;
-import es.upm.api.resources.dtos.UserUpdateWithConsentDto;
+import es.upm.api.resources.dtos.UserUpdateWithConsentUpdatingDto;
 import es.upm.api.services.UserService;
 import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.miw.device.DeviceInfoResolver;
@@ -69,8 +69,8 @@ public class UserResource {
 
     @PreAuthorize(Security.ALL)
     @GetMapping(PROVINCES)
-    public ProvincesDto findProvinces() {
-        return new ProvincesDto(Arrays.stream(Province.values())
+    public ProvincesResponseDto findProvinces() {
+        return new ProvincesResponseDto(Arrays.stream(Province.values())
                 .map(Province::name)
                 .toList());
     }
@@ -85,7 +85,7 @@ public class UserResource {
     @PreAuthorize(Security.ALL)
     @PutMapping(SCOPE_ID_ID_ID_TOKEN_ID)
     public UserDto updateByUrlIdWithToken(@PathVariable String scope, @PathVariable String id, @PathVariable String token,
-                                          @Valid @RequestBody UserUpdateWithConsentDto body,
+                                          @Valid @RequestBody UserUpdateWithConsentUpdatingDto body,
                                           HttpServletRequest request) {
         User user = body.getUser().toDomain();
         DataProcessingConsentCreationDto consent = body.getDataProcessingConsentCreation();

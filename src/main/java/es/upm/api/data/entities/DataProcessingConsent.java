@@ -26,10 +26,10 @@ public class DataProcessingConsent {
     private String signerFullName;
     private String signerIdentity;
     private String mobile;
+    private String policyVersion;
     private String signerEmail;
     private String signatureToken;
     private DeviceInfo deviceInfo;
-    private String policyVersion;
     private Boolean dataProcessingAccepted;
     private Boolean promotionsAccepted;
 }
