@@ -34,7 +34,7 @@ public class AccessLinkRepositoryCustomImpl implements AccessLinkRepositoryCusto
     public List<AccessLink> findExpiredUnusedByUserIdsAndScope(List<UUID> userIds, String scope) {
         Query query = new Query();
         query.addCriteria(Criteria.where("expiresAt").lt(LocalDateTime.now()));
-        query.addCriteria(Criteria.where("lastUsedForUpdateAt").is(null));
+        query.addCriteria(Criteria.where("lastUsedAt").is(null));
         if (userIds != null && !userIds.isEmpty()) {
             query.addCriteria(Criteria.where("user.$id").in(userIds));
         }

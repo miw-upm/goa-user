@@ -4,8 +4,8 @@ import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.daos.DataProcessingConsentRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.*;
+import es.upm.miw.base64url.Base64UrlGenerator;
 import es.upm.miw.device.DeviceInfo;
-import es.upm.miw.uuid.UUIDBase64;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,7 +52,7 @@ public class SeederForDev implements ApplicationRunner {
     private void seed() {
         log.warn("------- Initial Load from JAVA -----------");
         String pass = this.passwordEncoder.encode(this.password);
-        String noPass = this.passwordEncoder.encode(UUIDBase64.URL.encode());
+        String noPass = this.passwordEncoder.encode(Base64UrlGenerator.encode());
         DeviceInfo deviceInfo = DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
                 .operatingSystem("Windows").deviceType("Desktop").build();
 
@@ -94,15 +94,15 @@ public class SeederForDev implements ApplicationRunner {
         User c2 = users.get(4);
 
         List<AccessLink> accessLinks = List.of(
-                AccessLink.builder().id("GiTBDnRkS-aNYOayM69_kA").user(c2).createdAt(LocalDateTime.now())
+                AccessLink.builder().urlId("GiTBDnRkS-aNYOayM69_kA").user(c2).createdAt(LocalDateTime.now())
                         .lastUsedAt(LocalDateTime.now())
                         .expiresAt(LocalDateTime.now().plusDays(5)).remainingUses(4).scope("edit-profile").build(),
-                AccessLink.builder().id("XWBLFua2T6GLVh5wqKHB8w").createdAt(LocalDateTime.now())
+                AccessLink.builder().urlId("XWBLFua2T6GLVh5wqKHB8w").createdAt(LocalDateTime.now())
                         .expiresAt(LocalDateTime.now().plusDays(10)).user(c1).remainingUses(2).scope("accept-engagement")
-                        .document(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0007")).build(),
-                AccessLink.builder().id("hNSvhWOmQH6-NNo3gXnyow").createdAt(LocalDateTime.now().minusDays(10))
+                        .documentId(UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0007")).build(),
+                AccessLink.builder().urlId("hNSvhWOmQH6-NNo3gXnyow").createdAt(LocalDateTime.now().minusDays(10))
                         .expiresAt(LocalDateTime.now().minusDays(5)).user(c1).remainingUses(4).scope("edit-profile").build(),
-                AccessLink.builder().id("6JuwxpWVSiuv90nxgfwKmA").createdAt(LocalDateTime.now())
+                AccessLink.builder().urlId("6JuwxpWVSiuv90nxgfwKmA").createdAt(LocalDateTime.now())
                         .expiresAt(LocalDateTime.now().plusDays(5)).user(c1).remainingUses(0).scope("edit-profile").build()
         );
         this.accessLinkRepository.saveAll(accessLinks);

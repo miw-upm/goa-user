@@ -7,12 +7,12 @@ import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.api.services.outemailfeign.EmailWriter;
 import es.upm.api.services.utils.ProfileUpdatedEmailTemplateService;
+import es.upm.miw.base64url.Base64UrlGenerator;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.BadGatewayException;
 import es.upm.miw.exception.ConflictException;
 import es.upm.miw.exception.ForbiddenException;
 import es.upm.miw.exception.NotFoundException;
-import es.upm.miw.uuid.UUIDBase64;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -49,29 +49,28 @@ public class UserService {
         this.assertNoExistByDni(user.getIdentity());
         user.setId(UUID.randomUUID());
         if (Objects.isNull(user.getPassword())) {
-            user.setPassword(UUIDBase64.BASIC.encode());
+            user.setPassword(Base64UrlGenerator.encode());
         }
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         user.setRegistrationDate(LocalDate.now());
         this.userRepository.save(user);
     }
 
-    public User update(String mobile, User user) {
+    public User update(UUID id, User user) {
         this.validateAuthorizedRole(user.getRole());
-        return this.updateUser(mobile, user);
+        return this.updateUser(id, user);
     }
 
-    public User updateWithToken(String mobile, String token, User user, boolean dataProcessingAccepted,
-                                boolean promotionsAccepted, DeviceInfo deviceInfo) {
-        this.accessLinkService.use(token, mobile, SCOPE_EDIT_PROFILE);
-        User retrieverUser = this.readByMobile(mobile);
+    public User updateByUrlIdWithToken(String scope, String urlId, String token, User user, boolean dataProcessingAccepted,
+                                       boolean promotionsAccepted, DeviceInfo deviceInfo) {
+        User retrieverUser = this.accessLinkService.consumeToken(scope, urlId, token).getUser();
         if (!CUSTOMER.equals(retrieverUser.getRole())) {
-            throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + retrieverUser.getRole() + "Mobile: " + mobile);
+            throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + retrieverUser.getRole());
         }
         user.setRole(CUSTOMER);
         boolean profileChanged = !EqualsBuilder.reflectionEquals(retrieverUser, user,
                 "id", "password", "role", "registrationDate", "active");
-        User dbUser = this.updateUser(mobile, user);
+        User dbUser = this.updateUser(retrieverUser.getId(), user);
         this.dataProcessingConsentService.create(dbUser, token, dataProcessingAccepted, promotionsAccepted, deviceInfo);
         if (profileChanged) {
             try {
@@ -92,9 +91,9 @@ public class UserService {
         return dbUser;
     }
 
-    private User updateUser(String mobile, User user) {
-        User existing = this.readByMobile(mobile);
-        if (!mobile.equals(user.getMobile())) {
+    private User updateUser(UUID id, User user) {
+        User existing = this.readById(id);
+        if (!existing.getMobile().equals(user.getMobile())) {
             this.assertNoExistByMobile(user.getMobile());
         }
         if (!Objects.equals(existing.getEmail(), user.getEmail())) {
@@ -137,9 +136,8 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("The mobile don't exists: " + mobile));
     }
 
-    public User readByMobileWithToken(String mobile, String token) {
-        this.accessLinkService.use(token, mobile, SCOPE_ALL);
-        return this.readByMobile(mobile);
+    public User readByMobileWithToken(String scope, String urlId, String token) {
+        return this.accessLinkService.consumeToken(scope, urlId, token).getUser();
     }
 
     private void assertNoExistByEmail(String email) {

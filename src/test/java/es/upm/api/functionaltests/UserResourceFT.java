@@ -135,9 +135,9 @@ class UserResourceFT {
     }
 
     @Test
-    void testReadByMobileWithToken() {
+    void testReadByUrlIdWithToken() {
         ResponseEntity<UserDto> response = this.httpRequestBuilder
-                .get(UserResource.USERS + UserResource.MOBILE_ID_TOKEN_ID, SEEDED_USER_MOBILE, SEEDED_USER_TOKEN)
+                .get(UserResource.USERS + UserResource.SCOPE_ID_ID_ID_TOKEN_ID, SEEDED_USER_MOBILE, SEEDED_USER_TOKEN)
                 .exchange(UserDto.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

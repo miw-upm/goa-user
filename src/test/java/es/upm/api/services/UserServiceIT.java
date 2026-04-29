@@ -109,7 +109,7 @@ class UserServiceIT {
 
         String token = UUID.randomUUID().toString();
         AccessLink accessLink = AccessLink.builder()
-                .id(token)
+                .urlId(token)
                 .user(user)
                 .createdAt(LocalDateTime.now().minusMinutes(1))
                 .expiresAt(LocalDateTime.now().plusDays(1))
@@ -119,7 +119,7 @@ class UserServiceIT {
         this.accessLinkRepository.save(accessLink);
 
         user.setCity("new");
-        this.userService.updateWithToken(
+        this.userService.updateByUrlIdWithToken(
                 mobile,
                 token,
                 user,
@@ -148,7 +148,7 @@ class UserServiceIT {
     void testUpdateByMobileWithTokenForbiddenByScope() {
         User user = this.userService.readByMobile("66");
         assertThrows(ForbiddenException.class, () ->
-                this.userService.updateWithToken(
+                this.userService.updateByUrlIdWithToken(
                         "66",
                         "XWBLFua2T6GLVh5wqKHB8w",
                         user,
@@ -162,10 +162,10 @@ class UserServiceIT {
 
     @Test
     @WithMockUser(username = "666666001", roles = {"customer"})
-    void testUpdateWithTokenForbidden() {
+    void testUpdateByUrlIdWithTokenForbidden() {
         User user = this.userService.readByMobile("666666001");
         assertThrows(ForbiddenException.class, () ->
-                this.userService.updateWithToken(
+                this.userService.updateByUrlIdWithToken(
                         "666666001",
                         "GiTBDnRkS-aNYOayM69_kA",
                         user,

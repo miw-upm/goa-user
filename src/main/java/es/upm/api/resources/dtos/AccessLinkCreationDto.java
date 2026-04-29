@@ -20,5 +20,5 @@ public class AccessLinkCreationDto {
     @NotNull
     @NotBlank
     private String scope;
-    private UUID document;
+    private UUID documentId;
 }

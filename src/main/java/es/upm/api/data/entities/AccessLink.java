@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -21,27 +22,27 @@ import java.util.UUID;
 @Document
 public class AccessLink {
     @Id
-    private String id;
+    private UUID id;
+    @Indexed(unique = true)
+    private String urlId;
     @DBRef
     private User user;
+    private String tokenHash;
     private LocalDateTime createdAt;
     private LocalDateTime lastUsedAt;
     private LocalDateTime expiresAt;
     private Integer remainingUses;
     private String scope;
-    private UUID document;
+    private UUID documentId;
 
-    public void use(String mobile, String requiredScope) {
+    public void use(String requiredScope) {
         if (this.expiresAt.isBefore(LocalDateTime.now())) {
             throw new UnauthorizedException("Expired token");
         }
         if (this.remainingUses <= 0) {
             throw new UnauthorizedException("Used token");
         }
-        if (!Objects.equals(this.user.getMobile(), mobile)) {
-            throw new ForbiddenException("Forbidden token. Token is the another mobile");
-        }
-        if (!requiredScope.isEmpty() && !Objects.equals(this.scope, requiredScope)) {
+        if (!requiredScope.isBlank() && !Objects.equals(this.scope, requiredScope)) {
             throw new ForbiddenException("Forbidden purpose. The scope does not match the intended use.");
         }
         this.remainingUses--;
