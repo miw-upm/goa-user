@@ -16,8 +16,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AccessLinkDto {
     private UUID id;
-    private String fullName;
+    private String urlId;
     private String token;
+    private String fullName;
     private LocalDateTime createdAt;
     private LocalDateTime lastUsedAt;
     private LocalDateTime expiresAt;
