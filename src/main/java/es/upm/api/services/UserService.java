@@ -4,6 +4,7 @@ import es.upm.api.configurations.CurrentUser;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
+import es.upm.api.infrastructure.AddressEncryptionService;
 import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.api.services.outemailfeign.EmailWriter;
 import es.upm.api.services.utils.ProfileUpdatedEmailTemplateService;
@@ -41,6 +42,7 @@ public class UserService {
     private final ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService;
     private final DataProcessingConsentService dataProcessingConsentService;
     private final CurrentUser currentUser;
+    private final AddressEncryptionService addressEncryptionService;
 
     public void create(User user) {
         this.validateAuthorizedRole(user.getRole());
@@ -53,6 +55,7 @@ public class UserService {
         }
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         user.setRegistrationDate(LocalDate.now());
+        this.encryptAddress(user);
         this.userRepository.save(user);
     }
 
@@ -63,7 +66,7 @@ public class UserService {
 
     public User updateByUrlIdWithToken(String scope, String urlId, String token, User user, boolean dataProcessingAccepted,
                                        boolean promotionsAccepted, DeviceInfo deviceInfo) {
-        User retrieverUser = this.accessLinkService.consumeToken(scope, urlId, token).getUser();
+        User retrieverUser = this.decryptAddress(this.accessLinkService.consumeToken(scope, urlId, token).getUser());
         if (!CUSTOMER.equals(retrieverUser.getRole())) {
             throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + retrieverUser.getRole());
         }
@@ -106,7 +109,8 @@ public class UserService {
             existing.setPassword(this.passwordEncoder.encode(user.getPassword()));
         }
         BeanUtils.copyProperties(user, existing, "id", "password", "registrationDate", "active");
-        return this.userRepository.save(existing);
+        this.encryptAddress(existing);
+        return this.decryptAddress(this.userRepository.save(existing));
     }
 
     private void validateAuthorizedRole(Role role) {
@@ -127,17 +131,19 @@ public class UserService {
     }
 
     public User readById(UUID id) {
-        return this.userRepository.findById(id)
+        User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("The id don't exist: " + id));
+        return this.decryptAddress(user);
     }
 
     public User readByMobile(String mobile) {
-        return this.userRepository.findByMobile(mobile)
+        User user = this.userRepository.findByMobile(mobile)
                 .orElseThrow(() -> new NotFoundException("The mobile don't exists: " + mobile));
+        return this.decryptAddress(user);
     }
 
     public User readByMobileWithToken(String scope, String urlId, String token) {
-        return this.accessLinkService.consumeToken(scope, urlId, token).getUser();
+        return this.decryptAddress(this.accessLinkService.consumeToken(scope, urlId, token).getUser());
     }
 
     private void assertNoExistByEmail(String email) {
@@ -159,7 +165,8 @@ public class UserService {
     }
 
     public Stream<User> find(UserFindCriteria criteria) {
-        return this.restrictToCurrentCustomer(this.query(criteria));
+        return this.restrictToCurrentCustomer(this.query(criteria))
+                .map(this::decryptAddress);
     }
 
     private Stream<User> query(UserFindCriteria criteria) {
@@ -180,6 +187,15 @@ public class UserService {
             return users;
         }
         return users.filter(user -> user.getMobile().equals(this.currentUser.mobile()));
+    }
+
+    private void encryptAddress(User user) {
+        user.setAddress(this.addressEncryptionService.encrypt(user.getAddress()));
+    }
+
+    private User decryptAddress(User user) {
+        user.setAddress(this.addressEncryptionService.decrypt(user.getAddress()));
+        return user;
     }
 
 }
