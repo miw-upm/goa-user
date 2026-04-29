@@ -5,7 +5,7 @@ import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.UserFindCriteria;
-import es.upm.api.services.emailoutport.EmailPort;
+import es.upm.api.services.outemailfeign.EmailWriter;
 import es.upm.api.services.utils.ProfileUpdatedEmailTemplateService;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.BadGatewayException;
@@ -37,7 +37,7 @@ public class UserService {
     private final AccessLinkService accessLinkService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailPort emailPort;
+    private final EmailWriter emailWriter;
     private final ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService;
     private final DataProcessingConsentService dataProcessingConsentService;
     private final CurrentUser currentUser;
@@ -75,7 +75,7 @@ public class UserService {
         this.dataProcessingConsentService.create(dbUser, token, dataProcessingAccepted, promotionsAccepted, deviceInfo);
         if (profileChanged) {
             try {
-                this.emailPort.sendHtml(
+                this.emailWriter.sendHtml(
                         this.profileUpdatedEmailTemplateService.buildHtmlEmail(
                                 dbUser.getEmail(),
                                 dbUser.getFirstName(),
