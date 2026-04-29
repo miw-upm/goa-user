@@ -5,7 +5,7 @@ import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.UserFindCriteria;
-import es.upm.api.services.emailoutport.EmailPort;
+import es.upm.api.services.outemailfeign.EmailWriter;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.ForbiddenException;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class UserServiceIT {
     @Autowired
     private AccessLinkRepository accessLinkRepository;
     @MockitoBean
-    private EmailPort emailPort;
+    private EmailWriter emailWriter;
 
     @Test
     @WithMockUser(username = "666666003", roles = {"manager"})
