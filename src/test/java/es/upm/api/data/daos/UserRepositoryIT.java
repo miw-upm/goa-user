@@ -20,7 +20,7 @@ class UserRepositoryIT {
 
     @Test
     void testFindByMobile() {
-        assertThat(this.userRepository.findByMobile("6")).isPresent();
+        assertThat(this.userRepository.findByMobile("600000110")).isPresent();
     }
 
     @Test
@@ -32,23 +32,23 @@ class UserRepositoryIT {
     }
 
     @Test
-    void testFindByMobileAndFirstNameAndFamilyNameAndEmailAndDniNullSafeWithMobile() {
+    void testFindByMobileAndFirstNameAndFamilyNameNullSafeWithMobile() {
         System.out.println(this.userRepository.findAll());
-        assertThat(this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
-                "1", null, null, ".com", null, List.of(CUSTOMER)))
-                .anyMatch(user -> "666666001".equals(user.getMobile()));
+        assertThat(this.userRepository.findCustomers(
+                "1", null, null, List.of(CUSTOMER)))
+                .anyMatch(user -> "600000101".equals(user.getMobile()));
     }
 
     @Test
-    void testFindByMobileAndFirstNameAndFamilyNameAndEmailAndDniNullSafeWithDni() {
-        assertThat(this.userRepository.findByMobileAndFirstNameAndFamilyNameAndEmailAndDniContainingNullSafe(
-                null, null, null, null, "kk", List.of(ADMIN, MANAGER, OPERATOR, CUSTOMER)))
-                .isEmpty();
+    void testFindByMobileAndFirstNameAndFamilyNameNullSafeWithFamilyName() {
+        assertThat(this.userRepository.findCustomers(
+                null, null, "ruiz", List.of(ADMIN, MANAGER, OPERATOR, CUSTOMER)))
+                .isNotEmpty();
     }
 
     @Test
     void testFindByAll() {
-        assertThat(this.userRepository.findByAll("1", List.of(CUSTOMER)))
+        assertThat(this.userRepository.findCustomersByText("1", List.of(CUSTOMER)))
                 .allMatch(user -> user.getRole().equals(CUSTOMER));
     }
 }

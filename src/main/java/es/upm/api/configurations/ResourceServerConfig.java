@@ -47,13 +47,13 @@ public class ResourceServerConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, UserResource.USERS).permitAll()
                         .requestMatchers(HttpMethod.GET, UserResource.USERS + UserResource.PROVINCES).permitAll()
-                        .requestMatchers(HttpMethod.GET, UserResource.USERS + "/*/*").permitAll()
-                        .requestMatchers(HttpMethod.PUT, UserResource.USERS + "/*/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, UserResource.USERS + "/*/*/*").permitAll()
+                        .requestMatchers(HttpMethod.PUT, UserResource.USERS + "/*/*/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .securityMatcher(
                         UserResource.USERS + "/**",
-                        AccessLinksResource.ACCESS_LINK + "/**",
+                        AccessLinksResource.ACCESS_LINKS + "/**",
                         DataProcessingConsentResource.CONSENTS + "/**"
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(

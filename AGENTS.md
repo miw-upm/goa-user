@@ -1,207 +1,187 @@
-# Guía de estilo y arquitectura - GOA (v2)
+# Guia de estilo y arquitectura - GOA User (v4)
 
-Documento normativo para contribuir en GOA. Define arquitectura, convenciones y límites de cada capa.
+Documento normativo para contribuir en `goa-user`.
+Esta version refleja el estado real del codigo (auditoria: 2026-04-30).
 
 ## Niveles de regla
 
 - `DEBE`: obligatorio.
-- `DEBERÍA`: recomendado, salvo razón técnica explícita.
+- `DEBERIA`: recomendado, salvo razon tecnica explicita.
 - `PUEDE`: opcional.
 
 ## Arquitectura general
 
 Sistema de microservicios con Eureka + API Gateway + servicios Spring Boot.
 
-```
+```text
 eureka
   ->
 gateway
   ->
 microservicios (goa-user, goa-support, ...)
   <-
-commons (Java puro)
+commons (goa-commons)
 ```
 
-## Commons
+## Estructura real del microservicio
 
-`commons` contiene componentes transversales reutilizables.
-
-- DEBE no depender de Spring.
-- DEBE usar solo JDK y librerías neutrales.
-- DEBE incluir solo piezas usadas por varios microservicios.
-- DEBERÍA mantener contratos estables y pequeños.
-- PUEDE crearse `commons-spring` en el futuro si aparece una necesidad real.
-
-Regla de inclusión:
-
-- Si lo usan varios microservicios y es Java puro -> `commons`.
-- Si lo usa un solo microservicio -> se queda en ese microservicio.
-- Si requiere Spring -> no va a `commons`.
-
-## Estructura de un microservicio
-
-```
+```text
 es.upm.api/
   configurations/
   data/
     daos/
     entities/
+  exceptions/
+  infrastructure/
+    support/
+    clients/
+      email/
   resources/
     dtos/
-      validations/
+    httperrors/
   services/
     criteria/
-  integrations/
-    dtos/
-  infrastructure/
 ```
+
+Notas:
+- No existe paquete `integrations/`; los clientes externos se ubican en `infrastructure.clients`.
+- `infrastructure.support` contiene utilidades tecnicas reutilizables por servicios.
 
 ## Recursos (HTTP)
 
 - DEBE usar `@RestController` y sufijo `Resource`.
-- DEBE convertir DTO <-> entidad en `resources`, nunca en `services`.
-- DEBE delegar lógica de negocio al servicio.
-- DEBE definir rutas base como constantes (`public static final String ...`).
-- DEBE usar inyección por constructor (`@RequiredArgsConstructor`).
-- DEBE aplicar seguridad con `@PreAuthorize`.
-- DEBERÍA definir una regla base en clase y reglas específicas en métodos.
-- DEBERÍA validar entrada con `@Valid` y regex en `Validations`.
+- DEBE delegar logica de negocio al servicio.
+- DEBE usar rutas base como constantes (`public static final String ...`).
+- DEBE usar inyeccion por constructor (`@RequiredArgsConstructor`).
+- DEBE proteger metodos con `@PreAuthorize` usando constantes de `es.upm.miw.security.Security`.
+- NO DEBE usar SpEL literal en `@PreAuthorize`.
+- DEBERIA validar entrada con `@Valid` y regex de `Validations`.
 
 ## DTOs
 
-- DEBE usar sufijo `Dto`.
-- DEBE vivir en `resources.dtos` (o `integrations.dtos` para contratos Feign).
-- DEBERÍA usar un único `XxxDto` cuando E/S es similar.
-- DEBERÍA separar en `XxxCreationDto` y `XxxUpdateDto` cuando E/S diverge claramente.
-- DEBERÍA usar `@JsonProperty(access = READ_ONLY/WRITE_ONLY)` para asimetrías pequeñas.
-- DEBERÍA separar DTOs si más de la mitad de los campos son asimétricos.
-- PUEDE incluir constructor `XxxDto(Entity)` y métodos `toEntity()` / `ofXxx()`.
+- DEBE ubicarse en `resources.dtos`.
+- DEBE seguir esta convencion:
+  - `XxxResponseDto`: solo salida.
+  - `XxxCreationDto`: solo entrada de creacion.
+  - `XxxUpdatingDto`: solo entrada de actualizacion.
+  - `XxxDto`: entrada/salida, marcando asimetrias con
+    `@JsonProperty(access = Access.READ_ONLY)` y
+    `@JsonProperty(access = Access.WRITE_ONLY)`.
+- DEBE mantener conversion DTO <-> entidad en capa `resources.dtos` (constructores y `toDomain()`).
+- NO DEBE mover DTOs a capa `services`.
+
+DTOs actuales:
+- `UserDto`
+- `UserAndConsentUpdatingDto`
+- `DataProcessingConsentCreationDto`
+- `DataProcessingConsentResponseDto`
+- `AccessLinkCreationDto`
+- `AccessLinkResponseDto`
+- `ProvincesResponseDto`
 
 ## Criterios
 
 - DEBE vivir en `services.criteria`.
 - DEBE usar sufijo `FindCriteria`.
-- DEBE representar parámetros estructurados de búsqueda.
-- NO DEBE incluir anotaciones Jackson o validaciones HTTP.
-- DEBERÍA construirse en resource con `@ModelAttribute`.
-- PUEDE incluir `all()` para detectar ausencia de filtros.
+- DEBERIA recibirse en resources via `@ModelAttribute`.
+- NO DEBE contener anotaciones de serializacion HTTP.
 
 ## Servicios
 
 - DEBE usar `@Service` y sufijo `Service`.
-- DEBE contener la lógica de negocio.
-- DEBE trabajar con entidades, no con DTOs.
-- DEBERÍA usar nombres consistentes:
-    - `create(...)`
-    - `read(...)` / `readByX(...)`
-    - `update(...)` / `updateByX(...)`
-    - `delete(...)` / `deleteByX(...)`
-    - `find(criteria)`
+- DEBE trabajar con entidades (no con DTOs).
+- DEBERIA mantener nombres consistentes: `create`, `read`, `update`, `delete`, `find`.
 - DEBE lanzar `NotFoundException` en `read/update/delete` cuando no exista recurso.
-- DEBERÍA usar privados `assertXxx(...)` para invariantes.
+- DEBERIA encapsular invariantes en metodos privados (`assertXxx`, `validateXxx`, etc.).
 
-## Persistencia (Data)
+## Persistencia (Mongo)
 
-- DEBE usar convenciones Spring Data: `findByX`, `existsByX`, `countByX`.
-- DEBE ubicar `Repository`, `RepositoryCustom` y `RepositoryCustomImpl` en el mismo paquete.
-- DEBERÍA usar `MongoTemplate` + `Criteria` para queries complejas.
-- PUEDE usar `@Query` para consultas puntuales.
+- DEBE usar `MongoRepository` + `RepositoryCustom` + `RepositoryCustomImpl` en el mismo paquete.
+- DEBERIA usar `MongoTemplate` + `Criteria` para consultas complejas.
+- DEBE usar convenciones Spring Data en metodos simples (`findByX`, `existsByX`, etc.).
 
 ## Entidades
 
-- DEBE ser clases `@Document` sin sufijo.
-- DEBERÍA contener solo datos y lógica de dominio mínima.
+- DEBE ser `@Document` sin sufijo.
 - DEBE marcar id con `@Id`.
-- DEBERÍA usar `@Indexed(unique = true)` en campos únicos.
-- PUEDE usar `@DBRef` cuando la relación lo justifique.
+- DEBERIA usar `@Indexed(unique = true)` en campos unicos.
+- PUEDE usar `@DBRef` si la relacion lo requiere.
 
-## Integraciones (Feign)
+Entidades de coleccion actuales:
+- `User`
+- `AccessLink`
+- `DataProcessingConsent`
 
-- DEBE usar `@FeignClient` para llamadas entre microservicios.
-- DEBE duplicar DTOs de contrato por microservicio para evitar acoplamiento en `commons`.
+Enums de dominio:
+- `Role`
+- `Province`
 
-## Infraestructura
+## Infrastructure support
 
-- DEBE contener utilidades técnicas específicas del microservicio.
-- NO DEBE contener lógica de negocio.
-- DEBERÍA separarse en subpaquetes cuando crezca (por ejemplo `infrastructure/email`).
+- DEBE contener utilidades tecnicas internas reutilizables.
+- NO DEBE contener logica de negocio.
+- Servicios actuales:
+  - `EncryptionService`
+  - `LegalPolicyService`
+  - `ProfileUpdatedEmailTemplateService`
+
+## Infrastructure clients
+
+- DEBE contener clientes/adaptadores de salida a otros microservicios.
+- DEBE aislar detalles de protocolo/integracion (Feign, headers, etc.).
+- Cliente actual:
+  - `infrastructure.clients.email.GoaSupportClient`
 
 ## Seguridad
 
 - DEBE proteger endpoints con `@PreAuthorize`.
-- DEBE usar constantes SpEL de `es.upm.miw.security.Security`.
-- NO DEBE escribir expresiones SpEL literales en anotaciones.
-- DEBERÍA mantener la regla visible en el propio método para facilitar revisión de PR.
+- DEBE usar constantes de `Security`.
+- DEBE mantener visible la regla de autorizacion en cada metodo sensible.
+- DEBERIA mantener coherencia entre:
+  - reglas de `@PreAuthorize` en resources
+  - reglas de permitidos en `ResourceServerConfig`.
 
 ## Excepciones y errores
 
-Excepciones de dominio en `commons` (todas `RuntimeException`):
+- DEBE usar excepciones de dominio de `es.upm.miw.exception` y excepciones locales de `es.upm.api.exceptions` cuando aplique.
+- DEBE centralizar mapeo HTTP en `resources.httperrors.ApiExceptionHandler`.
+- NO DEBE declarar excepciones en paquetes de entidades.
 
-- `BadRequestException` -> 400
-- `ForbiddenException` -> 403
-- `NotFoundException` -> 404
-- `ConflictException` -> 409
-- `InternalServerException` -> 500
-- `BadGatewayException` -> 502
+## Inicializadores y seeders
 
-Convenciones:
-
-- DEBERÍA incluir constructor con `String detail`.
-- DEBERÍA incluir constructor con `Throwable cause` al envolver errores.
-- DEBERÍA usar `IllegalStateException` para estados imposibles.
-- DEBE mantener excepciones específicas de un servicio dentro de ese servicio.
-
-## Inicializadores
-
-- DEBE implementarse como `ApplicationRunner` con `@Order`.
-- DEBE anotarse con `@Component`.
-- DEBE ejecutar lógica en `run(...)`, no en constructor.
-- `SeederForDev` DEBE activarse solo con perfiles `dev` y `test`.
-- DEBERÍA usar ids fijos en seeder cuando los tests los referencien.
+- DEBE implementarse con `ApplicationRunner`.
+- DEBE ejecutar logica en `run(...)`.
+- `SeederForDev` DEBE limitarse a perfiles `dev` y `test`.
+- DEBERIA usar ids fijos cuando los tests dependan de esos ids.
 
 ## Tests
 
-Niveles esperados:
-
-- Unitarios: `XxxTest` sin contexto Spring.
-- Integración: `XxxIT` (o convención local), con `@SpringBootTest` y perfil `test`.
-- Funcionales: `XxxFT` con HTTP real (`RANDOM_PORT` + `TestRestTemplate`).
+Convencion actual:
+- Unitarios: `*Test`.
+- Integracion: `*IT`.
+- Funcionales HTTP: `*FT` (`RANDOM_PORT` + `TestRestTemplate`).
 
 Reglas:
+- DEBE cubrir casos felices y de error (autorizacion incluida).
+- DEBE restaurar estado cuando el test muta datos compartidos.
+- DEBERIA usar `@WithMockUser` en pruebas de servicio que dependan de rol.
 
-- DEBE cubrir casos felices y de error de seguridad.
-- DEBE restaurar estado cuando un test muta datos compartidos.
-- DEBERÍA usar `@WithMockUser` en integración cuando aplique.
+## Tecnologia y build
 
-## Resumen de nombres
+- Java objetivo del proyecto: **21**.
+- Spring Boot: `3.5.x`.
+- Spring Cloud: `2025.0.x`.
+- Lombok: `@Data`, `@Builder`, `@RequiredArgsConstructor`, `@Log4j2`.
+- Conversion DTO <-> entidad con `BeanUtils.copyProperties` y builders.
 
-| Tipo                 | Sufijo                                      | Paquete                |
-|----------------------|---------------------------------------------|------------------------|
-| Entidad persistencia | sin sufijo                                  | `data.entities`        |
-| Repositorio          | `Repository`                                | `data.daos`            |
-| Repo custom          | `RepositoryCustom` + `RepositoryCustomImpl` | `data.daos`            |
-| Servicio             | `Service`                                   | `services`             |
-| Criterio             | `FindCriteria`                              | `services.criteria`    |
-| Controlador          | `Resource`                                  | `resources`            |
-| DTO HTTP             | `Dto` / `CreationDto` / `UpdateDto`         | `resources.dtos`       |
-| Cliente Feign        | `WebClient`                                 | `integrations`         |
-| DTO Feign            | `Dto`                                       | `integrations.dtos`    |
-| Excepción dominio    | `Exception`                                 | `es.upm.miw.exception` |
+Regla de entorno:
+- DEBE compilarse con JDK 21 para evitar problemas de annotation processing.
+- Si se usa JDK 23+, DEBERIA activarse annotation processing de forma explicita (ejemplo CLI: `-Dmaven.compiler.proc=full`) o configurar processors en `maven-compiler-plugin`.
 
-## Tecnología y formato
-
-- Java 21.
-- Spring Boot 3.5+.
-- Lombok (`@Data`, `@Builder`, `@RequiredArgsConstructor`, `@Log4j2`).
-- JUnit 5 + AssertJ.
-- MapStruct no se usa.
-- Conversión DTO <-> entidad con `BeanUtils.copyProperties` y builders.
-- Comentarios en español; código y logs en inglés (salvo excepciones justificadas).
-
-## Antipatrones (prohibidos)
+## Antipatrones prohibidos
 
 - DTOs en capa `services`.
-- Lógica en constructores de beans.
-- Exponer entidades directamente en resources.
+- Exponer entidades directamente desde resources.
 - SpEL literal en `@PreAuthorize`.
-- Dependencias Spring dentro de `commons`.
+- Logica de negocio en constructores de beans.
+- Mezclar utilidades internas (`support`) con clientes externos (`clients`) en el mismo paquete.

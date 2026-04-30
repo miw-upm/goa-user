@@ -1,4 +1,4 @@
-package es.upm.api.data.entities;
+package es.upm.api.exceptions;
 
 public class BadCredentialsException extends RuntimeException {
     private static final String DESCRIPTION = "Bad Credentials Exception. ";

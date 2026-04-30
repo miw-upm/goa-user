@@ -1,13 +1,14 @@
 package es.upm.api.services;
 
+import es.upm.api.configurations.SeederForDev;
 import es.upm.api.data.daos.AccessLinkRepository;
-import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.UserFindCriteria;
-import es.upm.api.services.outemailfeign.EmailWriter;
+import es.upm.api.infrastructure.clients.email.GoaSupportClient;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.ForbiddenException;
+import es.upm.miw.exception.UnauthorizedException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,103 +26,98 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @ActiveProfiles("test")
 class UserServiceIT {
+    private static final String MANAGER_MOBILE = "600000111";
+    private static final String CUSTOMER_0_MOBILE = "600000100";
+    private static final String CUSTOMER_1_MOBILE = "600000101";
+    private static final String CUSTOMER_2_MOBILE = "600000102";
 
     @Autowired
     private UserService userService;
     @Autowired
     private AccessLinkRepository accessLinkRepository;
     @MockitoBean
-    private EmailWriter emailWriter;
+    private GoaSupportClient goaSupportClient;
 
     @Test
-    @WithMockUser(username = "666666003", roles = {"manager"})
+    @WithMockUser(username = MANAGER_MOBILE, roles = {"manager"})
     void testCreate() {
         User userDto = User.builder().id(UUID.randomUUID()).mobile("000000001").firstName("k").role(Role.ADMIN).build();
         assertThrows(ForbiddenException.class, () -> this.userService.create(userDto));
     }
 
     @Test
-    @WithMockUser(username = "666666003", roles = {"manager"})
+    @WithMockUser(username = MANAGER_MOBILE, roles = {"manager"})
     void testCreateForbidden() {
         User userDto = User.builder().id(UUID.randomUUID()).mobile("666000666").firstName("k").role(Role.ADMIN).build();
         assertThrows(ForbiddenException.class, () -> this.userService.create(userDto));
     }
 
     @Test
-    @WithMockUser(username = "666666003", roles = {"manager"})
+    @WithMockUser(username = MANAGER_MOBILE, roles = {"manager"})
     void testCreateUserForbiddenByEmail() {
         User userDto = User.builder().id(UUID.randomUUID()).mobile("000000002").firstName("k").email("adm@gmail.com").role(Role.ADMIN).build();
         assertThrows(ForbiddenException.class, () -> this.userService.create(userDto));
     }
 
     @Test
-    @WithMockUser(username = "666666003", roles = {"manager"})
+    @WithMockUser(username = MANAGER_MOBILE, roles = {"manager"})
     void testCreateForbiddenByDni() {
         User userDto = User.builder().id(UUID.randomUUID()).mobile("000000003").firstName("k").identity("66666601C").role(Role.ADMIN).build();
         assertThrows(ForbiddenException.class, () -> this.userService.create(userDto));
     }
 
     @Test
-    @WithMockUser(username = "61", roles = {"manager"})
+    @WithMockUser(username = MANAGER_MOBILE, roles = {"manager"})
     void testReadByIdOwnerUser() {
         UserFindCriteria criteria = new UserFindCriteria();
-        criteria.setMobile("61");
+        criteria.setMobile(MANAGER_MOBILE);
         criteria.setProjection(true);
         List<User> users = this.userService.find(criteria).toList();
         assertThat(users)
                 .isNotNull()
                 .isNotEmpty()
                 .hasSize(1)
-                .allMatch(user -> user.getMobile().equals("61"));
+                .allMatch(user -> user.getMobile().equals(MANAGER_MOBILE));
     }
 
     @Test
-    @WithMockUser(username = "666666003", roles = {"customer"})
+    @WithMockUser(username = CUSTOMER_0_MOBILE, roles = {"customer"})
     void testReadByIdOtherUser() {
         UserFindCriteria criteria = new UserFindCriteria();
-        criteria.setMobile("666666004");
+        criteria.setMobile(CUSTOMER_1_MOBILE);
         criteria.setProjection(true);
         List<User> users = this.userService.find(criteria).toList();
         assertThat(users).isEmpty();
     }
 
     @Test
-    @WithMockUser(username = "61", roles = {"manager"})
+    @WithMockUser(username = MANAGER_MOBILE, roles = {"manager"})
     void testUpdateUser() {
-        User oldUser = userService.readByMobile("666666002");
-        oldUser.setMobile("666666666");
-        this.userService.update("666666002", oldUser);
-        User user = userService.readByMobile("666666666");
+        User oldUser = userService.readByMobile(CUSTOMER_2_MOBILE);
+        UUID id = oldUser.getId();
+        oldUser.setMobile("600099999");
+        this.userService.update(id, oldUser);
+        User user = userService.readByMobile("600099999");
         assertThat(user)
                 .isNotNull()
                 .extracting(User::getFirstName)
                 .isEqualTo(oldUser.getFirstName());
-        oldUser.setMobile("666666002");
-        this.userService.update("666666666", oldUser);
+        oldUser.setMobile(CUSTOMER_2_MOBILE);
+        this.userService.update(id, oldUser);
     }
 
     @Test
-    @WithMockUser(username = "666666001", roles = {"customer"})
+    @WithMockUser(username = CUSTOMER_0_MOBILE, roles = {"customer"})
     void testUpdateByMobileWithTokenLastUsedForUpdateAt() {
-        String mobile = "666666001";
+        String mobile = CUSTOMER_0_MOBILE;
         User user = this.userService.readByMobile(mobile);
         String originalCity = user.getCity();
 
-        String token = UUID.randomUUID().toString();
-        AccessLink accessLink = AccessLink.builder()
-                .id(token)
-                .user(user)
-                .createdAt(LocalDateTime.now().minusMinutes(1))
-                .expiresAt(LocalDateTime.now().plusDays(1))
-                .remainingUses(2)
-                .scope(UserService.SCOPE_EDIT_PROFILE)
-                .build();
-        this.accessLinkRepository.save(accessLink);
-
         user.setCity("new");
-        this.userService.updateWithToken(
-                mobile,
-                token,
+        this.userService.updateByUrlIdWithToken(
+                UserService.SCOPE_EDIT_PROFILE,
+                SeederForDev.URL_0,
+                SeederForDev.TOKEN_0,
                 user,
                 true, false,
                 DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
@@ -129,7 +125,7 @@ class UserServiceIT {
         );
 
         User updatedUser = this.userService.readByMobile(mobile);
-        AccessLink updatedAccessLink = this.accessLinkRepository.findById(token).orElseThrow();
+        var updatedAccessLink = this.accessLinkRepository.findByUrlId(SeederForDev.URL_0).orElseThrow();
 
         assertThat(updatedUser).isNotNull();
         assertThat(updatedUser.getCity()).isEqualTo("new");
@@ -139,18 +135,18 @@ class UserServiceIT {
                 .isAfter(LocalDateTime.now().minusSeconds(5));
 
         updatedUser.setCity(originalCity);
-        this.userService.update(mobile, updatedUser);
-        this.accessLinkRepository.deleteById(token);
+        this.userService.update(updatedUser.getId(), updatedUser);
     }
 
     @Test
-    @WithMockUser(username = "666666001", roles = {"customer"})
+    @WithMockUser(username = CUSTOMER_2_MOBILE, roles = {"customer"})
     void testUpdateByMobileWithTokenForbiddenByScope() {
-        User user = this.userService.readByMobile("66");
+        User user = this.userService.readByMobile(CUSTOMER_2_MOBILE);
         assertThrows(ForbiddenException.class, () ->
-                this.userService.updateWithToken(
-                        "66",
-                        "XWBLFua2T6GLVh5wqKHB8w",
+                this.userService.updateByUrlIdWithToken(
+                        UserService.SCOPE_EDIT_PROFILE,
+                        SeederForDev.URL_2,
+                        SeederForDev.TOKEN_2,
                         user,
                         true,
                         false,
@@ -161,13 +157,14 @@ class UserServiceIT {
     }
 
     @Test
-    @WithMockUser(username = "666666001", roles = {"customer"})
-    void testUpdateWithTokenForbidden() {
-        User user = this.userService.readByMobile("666666001");
-        assertThrows(ForbiddenException.class, () ->
-                this.userService.updateWithToken(
-                        "666666001",
-                        "GiTBDnRkS-aNYOayM69_kA",
+    @WithMockUser(username = CUSTOMER_0_MOBILE, roles = {"customer"})
+    void testUpdateByUrlIdWithTokenForbidden() {
+        User user = this.userService.readByMobile(CUSTOMER_0_MOBILE);
+        assertThrows(UnauthorizedException.class, () ->
+                this.userService.updateByUrlIdWithToken(
+                        UserService.SCOPE_EDIT_PROFILE,
+                        SeederForDev.URL_0,
+                        SeederForDev.TOKEN_1,
                         user,
                         true,
                         false,

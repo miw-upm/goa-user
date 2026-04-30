@@ -1,8 +1,9 @@
 package es.upm.api.functionaltests;
 
 import es.upm.api.configurations.OAuth2Properties;
+import es.upm.api.configurations.SeederForDev;
 import es.upm.api.resources.UserResource;
-import es.upm.api.resources.dtos.ProvincesDto;
+import es.upm.api.resources.dtos.ProvincesResponseDto;
 import es.upm.api.resources.dtos.UserDto;
 import es.upm.miw.security.Validations;
 import lombok.extern.log4j.Log4j2;
@@ -26,9 +27,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 class UserResourceFT {
     private static final String MOBILE_PATH = "/{id}";
-    private static final UUID SEEDED_USER_ID = UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0004");
-    private static final String SEEDED_USER_MOBILE = "666666000";
-    private static final String SEEDED_USER_TOKEN = "GiTBDnRkS-aNYOayM69_kA";
+    private static final UUID SEEDED_USER_ID = SeederForDev.ID_0;
+    private static final String SEEDED_USER_MOBILE = "600000100";
+    private static final String SEEDED_SCOPE = "edit-profile";
+    private static final String SEEDED_URL_ID = SeederForDev.URL_0;
+    private static final String SEEDED_USER_TOKEN = SeederForDev.TOKEN_0;
 
     private final HttpRequestBuilder httpRequestBuilder;
 
@@ -135,9 +138,9 @@ class UserResourceFT {
     }
 
     @Test
-    void testReadByMobileWithToken() {
+    void testReadByUrlIdWithToken() {
         ResponseEntity<UserDto> response = this.httpRequestBuilder
-                .get(UserResource.USERS + UserResource.MOBILE_ID_TOKEN_ID, SEEDED_USER_MOBILE, SEEDED_USER_TOKEN)
+                .get(UserResource.USERS + UserResource.SCOPE_ID_ID_ID_TOKEN_ID, SEEDED_SCOPE, SEEDED_URL_ID, SEEDED_USER_TOKEN)
                 .exchange(UserDto.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -158,14 +161,14 @@ class UserResourceFT {
         userDto.setFirstName("ft-updated");
 
         ResponseEntity<UserDto> updateResponse = this.httpRequestBuilder
-                .put(UserResource.USERS + MOBILE_PATH, SEEDED_USER_MOBILE)
+                .put(UserResource.USERS + Validations.ID_WITH_UUID, SEEDED_USER_ID)
                 .body(userDto)
                 .role(ADMIN)
                 .exchange(UserDto.class);
 
         userDto.setFirstName(originalFirstName);
         ResponseEntity<UserDto> restoreResponse = this.httpRequestBuilder
-                .put(UserResource.USERS + MOBILE_PATH, SEEDED_USER_MOBILE)
+                .put(UserResource.USERS + Validations.ID_WITH_UUID, SEEDED_USER_ID)
                 .body(userDto)
                 .role(ADMIN)
                 .exchange(UserDto.class);
@@ -184,7 +187,7 @@ class UserResourceFT {
                 .build();
 
         ResponseEntity<UserDto> response = this.httpRequestBuilder
-                .put(UserResource.USERS + MOBILE_PATH, SEEDED_USER_MOBILE)
+                .put(UserResource.USERS + Validations.ID_WITH_UUID, SEEDED_USER_ID)
                 .body(userDto)
                 .role(CUSTOMER)
                 .exchange(UserDto.class);
@@ -208,9 +211,9 @@ class UserResourceFT {
 
     @Test
     void testFindProvinces() {
-        ResponseEntity<ProvincesDto> response = this.httpRequestBuilder
+        ResponseEntity<ProvincesResponseDto> response = this.httpRequestBuilder
                 .get(UserResource.USERS + UserResource.PROVINCES)
-                .exchange(ProvincesDto.class);
+                .exchange(ProvincesResponseDto.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();

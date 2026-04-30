@@ -3,9 +3,9 @@ package es.upm.api.resources;
 import es.upm.api.data.entities.Province;
 import es.upm.api.data.entities.User;
 import es.upm.api.resources.dtos.DataProcessingConsentCreationDto;
-import es.upm.api.resources.dtos.ProvincesDto;
+import es.upm.api.resources.dtos.ProvincesResponseDto;
 import es.upm.api.resources.dtos.UserDto;
-import es.upm.api.resources.dtos.UserUpdateWithConsentDto;
+import es.upm.api.resources.dtos.UserAndConsentUpdatingDto;
 import es.upm.api.services.UserService;
 import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.miw.device.DeviceInfoResolver;
@@ -29,7 +29,7 @@ import java.util.UUID;
 @Log4j2
 public class UserResource {
     public static final String USERS = "/users";
-    public static final String MOBILE_ID_TOKEN_ID = "/{mobile}/{token}";
+    public static final String SCOPE_ID_ID_ID_TOKEN_ID = "/{scope}/{id}/{token}";
     public static final String PROVINCES = "/provinces";
 
     private final UserService userService;
@@ -54,9 +54,9 @@ public class UserResource {
     }
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
-    @PutMapping(Validations.ID_WITH_MOBILE)
-    public UserDto update(@PathVariable("id") String mobile, @Valid @RequestBody UserDto userDto) {
-        return new UserDto(this.userService.update(mobile, userDto.toDomain()));
+    @PutMapping(Validations.ID_WITH_UUID)
+    public UserDto update(@PathVariable("id") UUID id, @Valid @RequestBody UserDto userDto) {
+        return new UserDto(this.userService.update(id, userDto.toDomain()));
     }
 
     @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
@@ -69,29 +69,29 @@ public class UserResource {
 
     @PreAuthorize(Security.ALL)
     @GetMapping(PROVINCES)
-    public ProvincesDto findProvinces() {
-        return new ProvincesDto(Arrays.stream(Province.values())
+    public ProvincesResponseDto findProvinces() {
+        return new ProvincesResponseDto(Arrays.stream(Province.values())
                 .map(Province::name)
                 .toList());
     }
 
     @PreAuthorize(Security.ALL)
-    @GetMapping(MOBILE_ID_TOKEN_ID)
-    public UserDto readByMobileWithToken(@PathVariable String mobile, @PathVariable String token) {
-        return new UserDto(this.userService.readByMobileWithToken(mobile, token))
-                .ofBasic();
+    @GetMapping(SCOPE_ID_ID_ID_TOKEN_ID)
+    public UserDto readByUrlIdWithToken(@PathVariable String scope, @PathVariable String id, @PathVariable String token) {
+        return new UserDto(this.userService.readByMobileWithToken(scope, id, token))
+                .ofProfile();
     }
 
     @PreAuthorize(Security.ALL)
-    @PutMapping(MOBILE_ID_TOKEN_ID)
-    public UserDto updateWithToken(@PathVariable String mobile, @PathVariable String token,
-                                   @Valid @RequestBody UserUpdateWithConsentDto body,
-                                   HttpServletRequest request) {
+    @PutMapping(SCOPE_ID_ID_ID_TOKEN_ID)
+    public UserDto updateByUrlIdWithToken(@PathVariable String scope, @PathVariable String id, @PathVariable String token,
+                                          @Valid @RequestBody UserAndConsentUpdatingDto body,
+                                          HttpServletRequest request) {
         User user = body.getUser().toDomain();
         DataProcessingConsentCreationDto consent = body.getDataProcessingConsentCreation();
-        return new UserDto(this.userService.updateWithToken(mobile, token, user,
+        return new UserDto(this.userService.updateByUrlIdWithToken(scope, id, token, user,
                 consent.getDataProcessingAccepted(), consent.getPromotionsAccepted(),
-                DeviceInfoResolver.resolve(request))).ofBasic();
+                DeviceInfoResolver.resolve(request))).ofProfile();
     }
 
 

@@ -1,5 +1,6 @@
 package es.upm.api.services;
 
+import es.upm.api.configurations.SeederForDev;
 import es.upm.api.data.entities.DataProcessingConsent;
 import es.upm.api.services.criteria.DataProcessingConsentFindCriteria;
 import es.upm.miw.exception.NotFoundException;
@@ -29,27 +30,26 @@ class DataProcessingConsentServiceIT {
     @Test
     void testRead() {
         DataProcessingConsent consent = this.dataProcessingConsentService.read(
-                UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeffff0100")
+                SeederForDev.ID_0
         );
         assertThat(consent)
                 .isNotNull()
                 .extracting(
                         DataProcessingConsent::getMobile,
-                        DataProcessingConsent::getSignatureToken,
                         DataProcessingConsent::getDataProcessingAccepted,
                         DataProcessingConsent::getPromotionsAccepted
                 )
-                .containsExactly("666666000", "consent-token-0001", true, true);
+                .containsExactly("600000100", true, true);
     }
 
     @Test
     void testFindByMobile() {
         DataProcessingConsentFindCriteria criteria = new DataProcessingConsentFindCriteria();
-        criteria.setAttribute("666666001");
+        criteria.setAttribute("600000101");
         List<DataProcessingConsent> consents = this.dataProcessingConsentService.find(criteria).toList();
         assertThat(consents)
                 .isNotEmpty()
-                .allMatch(consent -> "666666001".equals(consent.getMobile()));
+                .allMatch(consent -> "600000101".equals(consent.getMobile()));
     }
 
     @Test

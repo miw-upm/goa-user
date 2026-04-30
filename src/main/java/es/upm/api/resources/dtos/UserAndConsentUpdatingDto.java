@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserUpdateWithConsentDto {
+public class UserAndConsentUpdatingDto {
     @Valid
     @NotNull
     private UserDto user;
