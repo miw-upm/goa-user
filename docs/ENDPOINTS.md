@@ -18,6 +18,7 @@ Listado actualizado de endpoints expuestos por los resources actuales, incluyend
 | GET | `/users/{id}` (`mobile`) | `readByMobile` | - | `UserDto` | `User` | `ADMIN_MANAGER_OPERATOR_URL_TOKEN` |
 | PUT | `/users/{id}` (`UUID`) | `update` | `UserDto` | `UserDto` | `User` | `ADMIN_MANAGER_OPERATOR` |
 | GET | `/users` | `find` | `UserFindCriteria` (`@ModelAttribute`) | `List<UserDto>` | `User` | `ADMIN_MANAGER_OPERATOR` |
+| GET | `/users/full` | `findAllFull` | - | `List<UserDto>` (completo, JSON) | `User` | `ADMIN` |
 | GET | `/users/provinces` | `findProvinces` | - | `ProvincesResponseDto` | `Province` (enum) | `permitAll` |
 | GET | `/users/{scope}/{id}/{token}` | `readByUrlIdWithToken` | - | `UserDto` (vista profile) | `User`, `AccessLink` | `permitAll` |
 | PUT | `/users/{scope}/{id}/{token}` | `updateByUrlIdWithToken` | `UserAndConsentUpdatingDto` | `UserDto` (vista profile) | `User`, `DataProcessingConsent`, `AccessLink` | `permitAll` |
