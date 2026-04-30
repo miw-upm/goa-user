@@ -5,7 +5,7 @@ import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.UserFindCriteria;
-import es.upm.api.services.outemailfeign.EmailWriter;
+import es.upm.api.infrastructure.clients.email.GoaSupportClient;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.ForbiddenException;
 import es.upm.miw.exception.UnauthorizedException;
@@ -36,7 +36,7 @@ class UserServiceIT {
     @Autowired
     private AccessLinkRepository accessLinkRepository;
     @MockitoBean
-    private EmailWriter emailWriter;
+    private GoaSupportClient goaSupportClient;
 
     @Test
     @WithMockUser(username = MANAGER_MOBILE, roles = {"manager"})

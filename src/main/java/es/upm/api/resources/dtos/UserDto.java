@@ -76,13 +76,13 @@ public class UserDto {
                 .build();
     }
 
-    public UserDto ofBasic() {
+    public UserDto ofProfile() {
         return this.ofSummary().toBuilder()
-                .identity(this.getIdentity())
                 .address(this.getAddress())
                 .city(this.getCity())
                 .province(this.getProvince())
                 .postalCode(this.getPostalCode())
+                .identity(this.getIdentity())
                 .build();
     }
 

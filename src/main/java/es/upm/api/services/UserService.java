@@ -5,9 +5,9 @@ import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.services.criteria.UserFindCriteria;
-import es.upm.api.services.infrastructure.EncryptionService;
-import es.upm.api.services.infrastructure.ProfileUpdatedEmailTemplateService;
-import es.upm.api.services.outemailfeign.EmailWriter;
+import es.upm.api.infrastructure.support.EncryptionService;
+import es.upm.api.infrastructure.support.ProfileUpdatedEmailTemplateService;
+import es.upm.api.infrastructure.clients.email.GoaSupportClient;
 import es.upm.miw.base64url.Base64UrlGenerator;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.BadGatewayException;
@@ -38,7 +38,7 @@ public class UserService {
     private final AccessLinkService accessLinkService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailWriter emailWriter;
+    private final GoaSupportClient goaSupportClient;
     private final ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService;
     private final DataProcessingConsentService dataProcessingConsentService;
     private final CurrentUser currentUser;
@@ -81,7 +81,7 @@ public class UserService {
 
     private void sendEmail(DeviceInfo deviceInfo, User dbUser) {
         try {
-            this.emailWriter.sendHtml(
+            this.goaSupportClient.sendHtml(
                     this.profileUpdatedEmailTemplateService.buildHtmlEmail(
                             dbUser.getEmail(),
                             dbUser.getFirstName(),

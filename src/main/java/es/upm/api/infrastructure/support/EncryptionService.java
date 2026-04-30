@@ -1,4 +1,4 @@
-package es.upm.api.services.infrastructure;
+package es.upm.api.infrastructure.support;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
