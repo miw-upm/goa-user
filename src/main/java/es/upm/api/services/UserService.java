@@ -4,10 +4,10 @@ import es.upm.api.configurations.CurrentUser;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
-import es.upm.api.services.criteria.UserFindCriteria;
+import es.upm.api.infrastructure.clients.email.GoaSupportClient;
 import es.upm.api.infrastructure.support.EncryptionService;
 import es.upm.api.infrastructure.support.ProfileUpdatedEmailTemplateService;
-import es.upm.api.infrastructure.clients.email.GoaSupportClient;
+import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.miw.base64url.Base64UrlGenerator;
 import es.upm.miw.device.DeviceInfo;
 import es.upm.miw.exception.BadGatewayException;
@@ -150,6 +150,11 @@ public class UserService {
 
     public Stream<User> find(UserFindCriteria criteria) {
         return this.restrictToCurrentCustomer(this.query(criteria))
+                .map(this::decryptSensitiveFields);
+    }
+
+    public Stream<User> findAllFull() {
+        return this.userRepository.findAll().stream()
                 .map(this::decryptSensitiveFields);
     }
 

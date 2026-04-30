@@ -12,7 +12,6 @@ public class UserFindCriteria {
     private String firstName;
     private String familyName;
     private String customer;
-    private boolean projection = false;
 
     public boolean all() {
         return mobile == null && firstName == null && familyName == null && customer == null;

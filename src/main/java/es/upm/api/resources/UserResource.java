@@ -4,8 +4,8 @@ import es.upm.api.data.entities.Province;
 import es.upm.api.data.entities.User;
 import es.upm.api.resources.dtos.DataProcessingConsentCreationDto;
 import es.upm.api.resources.dtos.ProvincesResponseDto;
-import es.upm.api.resources.dtos.UserDto;
 import es.upm.api.resources.dtos.UserAndConsentUpdatingDto;
+import es.upm.api.resources.dtos.UserDto;
 import es.upm.api.services.UserService;
 import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.miw.device.DeviceInfoResolver;
@@ -31,6 +31,7 @@ public class UserResource {
     public static final String USERS = "/users";
     public static final String SCOPE_ID_ID_ID_TOKEN_ID = "/{scope}/{id}/{token}";
     public static final String PROVINCES = "/provinces";
+    public static final String FULL = "/full";
 
     private final UserService userService;
 
@@ -63,7 +64,8 @@ public class UserResource {
     @GetMapping
     public List<UserDto> find(@ModelAttribute UserFindCriteria criteria) {
         return this.userService.find(criteria)
-                .map(user -> UserDto.of(user, criteria.isProjection()))
+                .map(UserDto::new)
+                .map(UserDto::ofSummary)
                 .toList();
     }
 
@@ -94,5 +96,12 @@ public class UserResource {
                 DeviceInfoResolver.resolve(request))).ofProfile();
     }
 
+    @PreAuthorize(Security.ADMIN)
+    @GetMapping(value = FULL)
+    public List<UserDto> findAllFull() {
+        return this.userService.findAllFull()
+                .map(UserDto::new)
+                .toList();
+    }
 
 }

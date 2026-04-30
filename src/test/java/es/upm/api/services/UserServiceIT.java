@@ -71,7 +71,6 @@ class UserServiceIT {
     void testReadByIdOwnerUser() {
         UserFindCriteria criteria = new UserFindCriteria();
         criteria.setMobile(MANAGER_MOBILE);
-        criteria.setProjection(true);
         List<User> users = this.userService.find(criteria).toList();
         assertThat(users)
                 .isNotNull()
@@ -85,7 +84,6 @@ class UserServiceIT {
     void testReadByIdOtherUser() {
         UserFindCriteria criteria = new UserFindCriteria();
         criteria.setMobile(CUSTOMER_1_MOBILE);
-        criteria.setProjection(true);
         List<User> users = this.userService.find(criteria).toList();
         assertThat(users).isEmpty();
     }
