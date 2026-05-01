@@ -138,7 +138,7 @@ public class UserService {
         return this.decryptSensitiveFields(user);
     }
 
-    public User readByMobileWithToken(String scope, String urlId, String token) {
+    public User readByUrlIdWithToken(String scope, String urlId, String token) {
         return this.decryptSensitiveFields(this.accessLinkService.consumeToken(scope, urlId, token).getUser());
     }
 

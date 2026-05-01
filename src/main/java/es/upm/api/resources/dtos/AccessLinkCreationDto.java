@@ -16,9 +16,9 @@ import java.util.UUID;
 public class AccessLinkCreationDto {
     @NotNull
     @NotBlank
-    private String mobile;
+    private String scope;
     @NotNull
     @NotBlank
-    private String scope;
+    private String mobile;
     private UUID documentId;
 }
