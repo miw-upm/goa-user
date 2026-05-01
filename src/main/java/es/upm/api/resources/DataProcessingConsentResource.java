@@ -32,7 +32,7 @@ public class DataProcessingConsentResource {
     public List<DataProcessingConsentResponseDto> find(@ModelAttribute DataProcessingConsentFindCriteria criteria) {
         return this.dataProcessingConsentService.find(criteria)
                 .map(DataProcessingConsentResponseDto::new)
-                .map(DataProcessingConsentResponseDto::ofMobileFullNameSignatureAt)
+                .map(DataProcessingConsentResponseDto::ofSummary)
                 .toList();
     }
 

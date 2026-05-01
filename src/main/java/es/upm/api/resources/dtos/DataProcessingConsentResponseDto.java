@@ -32,7 +32,7 @@ public class DataProcessingConsentResponseDto {
         BeanUtils.copyProperties(consent, this);
     }
 
-    public DataProcessingConsentResponseDto ofMobileFullNameSignatureAt() {
+    public DataProcessingConsentResponseDto ofSummary() {
         return DataProcessingConsentResponseDto.builder()
                 .id(this.getId())
                 .mobile(this.getMobile())

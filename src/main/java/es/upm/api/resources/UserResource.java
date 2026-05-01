@@ -80,7 +80,7 @@ public class UserResource {
     @PreAuthorize(Security.ALL)
     @GetMapping(SCOPE_ID_ID_ID_TOKEN_ID)
     public UserDto readByUrlIdWithToken(@PathVariable String scope, @PathVariable String id, @PathVariable String token) {
-        return new UserDto(this.userService.readByMobileWithToken(scope, id, token))
+        return new UserDto(this.userService.readByUrlIdWithToken(scope, id, token))
                 .ofProfile();
     }
 

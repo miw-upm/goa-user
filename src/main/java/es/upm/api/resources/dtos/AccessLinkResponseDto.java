@@ -40,11 +40,12 @@ public class AccessLinkResponseDto {
     public AccessLinkResponseDto ofSummary() {
         return AccessLinkResponseDto.builder()
                 .id(this.getId())
+                .urlId(this.getUrlId())
                 .fullName(this.getFullName())
                 .lastUsedAt(this.getLastUsedAt())
                 .expiresAt(this.getExpiresAt())
+                .remainingUses(this.getRemainingUses())
                 .scope(this.getScope())
-                .urlId(this.getUrlId())
                 .build();
     }
 
