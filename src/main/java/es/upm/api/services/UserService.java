@@ -33,7 +33,6 @@ import static es.upm.api.data.entities.Role.CUSTOMER;
 @RequiredArgsConstructor
 public class UserService {
     public static final String SCOPE_EDIT_PROFILE = "edit-profile";
-    public static final String SCOPE_ALL = "";
 
     private final AccessLinkService accessLinkService;
     private final UserRepository userRepository;
@@ -177,17 +176,16 @@ public class UserService {
         return users.filter(user -> user.getMobile().equals(this.currentUser.mobile()));
     }
 
+    private void encryptSensitiveFields(User user) {
+        user.setIdentity(this.encryptionService.encrypt(user.getIdentity()));
+        user.setEmail(this.encryptionService.encrypt(user.getEmail()));
+        user.setAddress(this.encryptionService.encrypt(user.getAddress()));
+    }
+
     private User decryptSensitiveFields(User user) {
-        user.setAddress(this.encryptionService.decrypt(user.getAddress()));
-        user.setEmail(this.encryptionService.decrypt(user.getEmail()));
         user.setIdentity(this.encryptionService.decrypt(user.getIdentity()));
+        user.setEmail(this.encryptionService.decrypt(user.getEmail()));
+        user.setAddress(this.encryptionService.decrypt(user.getAddress()));
         return user;
     }
-
-    private void encryptSensitiveFields(User user) {
-        user.setAddress(this.encryptionService.encrypt(user.getAddress()));
-        user.setEmail(this.encryptionService.encrypt(user.getEmail()));
-        user.setIdentity(this.encryptionService.encrypt(user.getIdentity()));
-    }
-
 }
