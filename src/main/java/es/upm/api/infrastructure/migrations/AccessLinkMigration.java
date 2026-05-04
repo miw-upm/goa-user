@@ -39,7 +39,7 @@ public class AccessLinkMigration implements ApplicationRunner {
             newAccessLink.put("token", this.hashService.hash(oldId));
             newAccessLink.put("user", accessLink.get("user"));
             newAccessLink.put("createdAt", accessLink.get("createdAt"));
-            newAccessLink.put("lastUsedAt", accessLink.get("lastUsedAt"));
+            newAccessLink.put("lastUsedAt", accessLink.get("lastUsedForUpdatedAt"));
             newAccessLink.put("expiresAt", accessLink.get("expiresAt"));
             newAccessLink.put("remainingUses", accessLink.get("remainingUses"));
             newAccessLink.put("scope", accessLink.get("scope"));
