@@ -17,7 +17,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-@Profile("dev")
+@Profile("prod")
 public class AccessLinkMigration implements ApplicationRunner {
 
     private final MongoTemplate mongoTemplate;

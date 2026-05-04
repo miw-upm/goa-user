@@ -15,7 +15,7 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-@Profile("dev")
+@Profile("prod")
 public class UserMigration implements ApplicationRunner {
     private final EncryptionService encryptionService;
     private final UserRepository userRepository;
