@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class EncryptionService {
-    private static final String PREFIX = "enc::";
+    public static final String PREFIX = "enc::";
     private static final Pattern HEX_PATTERN = Pattern.compile("^[0-9a-fA-F]+$");
 
     private final TextEncryptor textEncryptor;
@@ -37,6 +37,10 @@ public class EncryptionService {
             }
         }
         return value;
+    }
+
+    public boolean isEncrypted(String value) {
+        return StringUtils.hasText(value) && this.isPrefixed(value);
     }
 
     private String decryptCipher(String cipherText) {
