@@ -1,5 +1,6 @@
 package es.upm.api.infrastructure.support;
 
+import es.upm.miw.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,5 +29,11 @@ public class HashService {
 
     public boolean isHashed(String value) {
         return StringUtils.hasText(value) && value.startsWith(BCRYPT_PREFIX);
+    }
+
+    public void matches(String rawToken, String hashToken) {
+        if (!this.passwordEncoder.matches(rawToken, hashToken)) {
+            throw new UnauthorizedException("Unauthorized. Token Invalid");
+        }
     }
 }

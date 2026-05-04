@@ -3,7 +3,6 @@ package es.upm.api.infrastructure.migrations;
 import es.upm.api.data.daos.DataProcessingConsentRepository;
 import es.upm.api.data.entities.DataProcessingConsent;
 import es.upm.api.infrastructure.support.HashService;
-import es.upm.miw.device.DeviceInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.ApplicationArguments;
