@@ -37,7 +37,7 @@ public class AccessLinkService {
                 .id(UUID.randomUUID())
                 .urlId(Base64UrlGenerator.encode())
                 .user(user)
-                .tokenHash(this.hashService.hash(token))
+                .token(this.hashService.hash(token))
                 .createdAt(LocalDateTime.now())
                 .expiresAt(LocalDateTime.now().plusDays(TOKEN_DURATION_DAYS))
                 .remainingUses(TOKEN_USAGE_LIMIT)
@@ -72,7 +72,7 @@ public class AccessLinkService {
     public AccessLink consumeToken(String scope, String urlId, String token) {
         AccessLink accessLink = this.accessLinkRepository.findByUrlId(urlId).orElseThrow(
                 () -> new UnauthorizedException("Unauthorized. Access Link Not Found"));
-        this.hashService.matches(token, accessLink.getTokenHash());
+        this.hashService.matches(token, accessLink.getToken());
         accessLink.use(scope);
         return this.accessLinkRepository.save(accessLink);
     }

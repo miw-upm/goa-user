@@ -5,7 +5,7 @@ import es.upm.api.data.daos.DataProcessingConsentRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.*;
 import es.upm.api.infrastructure.support.EncryptionService;
-import es.upm.api.services.UserService;
+import es.upm.api.infrastructure.support.HashService;
 import es.upm.miw.device.DeviceInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -14,7 +14,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -231,10 +230,9 @@ public class SeederForDev implements ApplicationRunner {
     public static final String URL_3 = "aaaaaaaaaaaaaaaaaaaaa3";
 
     private final UserRepository userRepository;
-    private final UserService userService;
     private final AccessLinkRepository accessLinkRepository;
     private final DataProcessingConsentRepository dataProcessingConsentRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final HashService hashService;
     private final EncryptionService encryptionService;
 
     @Value("${app.db.password}")
@@ -255,7 +253,7 @@ public class SeederForDev implements ApplicationRunner {
 
     private void seed() {
         log.warn("------- Initial Load from JAVA -----------");
-        String pass = this.passwordEncoder.encode(this.password);
+        String pass = this.hashService.hash(this.password);
         DeviceInfo deviceInfo = DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
                 .operatingSystem("Windows").deviceType("Desktop").build();
 
@@ -289,7 +287,7 @@ public class SeederForDev implements ApplicationRunner {
                         .id(ID_0)
                         .urlId(URL_0)
                         .user(C_0)
-                        .tokenHash(passwordEncoder.encode(TOKEN_0))
+                        .token(hashService.hash(TOKEN_0))
                         .createdAt(now.minusDays(1))
                         .lastUsedAt(now)
                         .expiresAt(now.plusDays(5))
@@ -301,7 +299,7 @@ public class SeederForDev implements ApplicationRunner {
                         .id(ID_1)
                         .urlId(URL_1)
                         .user(C_1)
-                        .tokenHash(passwordEncoder.encode(TOKEN_1))
+                        .token(hashService.hash(TOKEN_1))
                         .createdAt(now.minusDays(2))
                         .lastUsedAt(now.minusDays(1))
                         .expiresAt(now.plusDays(5))
@@ -313,7 +311,7 @@ public class SeederForDev implements ApplicationRunner {
                         .id(ID_2)
                         .urlId(URL_2)
                         .user(C_2)
-                        .tokenHash(passwordEncoder.encode(TOKEN_2))
+                        .token(hashService.hash(TOKEN_2))
                         .createdAt(now.minusDays(1))
                         .expiresAt(now.plusDays(5))
                         .remainingUses(2)
@@ -325,7 +323,7 @@ public class SeederForDev implements ApplicationRunner {
                         .id(ID_3)
                         .urlId(URL_3)
                         .user(C_3)
-                        .tokenHash(passwordEncoder.encode(TOKEN_3))
+                        .token(hashService.hash(TOKEN_3))
                         .createdAt(now.minusDays(2))
                         .expiresAt(now.plusDays(5))
                         .remainingUses(1)
@@ -342,12 +340,12 @@ public class SeederForDev implements ApplicationRunner {
                         .signatureAt(LocalDateTime.now().minusDays(10))
                         .signer(C_0)
                         .signerFullName(C_0.fullName())
-                        .signerIdentity(this.passwordEncoder.encode(C_0.getIdentity()))
+                        .signerIdentity(this.hashService.hash(C_0.getIdentity()))
                         .mobile(C_0.getMobile())
-                        .signerEmail(this.passwordEncoder.encode(C_0.getEmail()))
-                        .signatureToken(this.passwordEncoder.encode("consent-token-0001"))
+                        .signerEmail(this.hashService.hash(C_0.getEmail()))
+                        .signatureToken(this.hashService.hash("consent-token-0001"))
                         .deviceInfo(DeviceInfo.builder()
-                                .ipAddress(this.passwordEncoder.encode("83.52.10.24"))
+                                .ipAddress(this.hashService.hash("83.52.10.24"))
                                 .browser("Chrome")
                                 .operatingSystem("Windows")
                                 .deviceType("Desktop")
@@ -362,10 +360,10 @@ public class SeederForDev implements ApplicationRunner {
                         .signatureAt(LocalDateTime.now().minusDays(3))
                         .signer(C_1)
                         .signerFullName(C_1.fullName())
-                        .signerIdentity(this.passwordEncoder.encode(C_1.getIdentity()))
+                        .signerIdentity(this.hashService.hash(C_1.getIdentity()))
                         .mobile(C_1.getMobile())
-                        .signerEmail(this.passwordEncoder.encode(C_1.getEmail()))
-                        .signatureToken(this.passwordEncoder.encode("consent-token-0002"))
+                        .signerEmail(this.hashService.hash(C_1.getEmail()))
+                        .signatureToken(this.hashService.hash("consent-token-0002"))
                         .deviceInfo(this.hashIpAddress(deviceInfo))
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true)
@@ -377,10 +375,10 @@ public class SeederForDev implements ApplicationRunner {
                         .signatureAt(LocalDateTime.now().minusHours(6))
                         .signer(C_2)
                         .signerFullName(C_2.fullName())
-                        .signerIdentity(this.passwordEncoder.encode(C_2.getIdentity()))
+                        .signerIdentity(this.hashService.hash(C_2.getIdentity()))
                         .mobile(C_2.getMobile())
-                        .signerEmail(this.passwordEncoder.encode(C_2.getEmail()))
-                        .signatureToken(this.passwordEncoder.encode("consent-token-0003"))
+                        .signerEmail(this.hashService.hash(C_2.getEmail()))
+                        .signatureToken(this.hashService.hash("consent-token-0003"))
                         .deviceInfo(this.hashIpAddress(deviceInfo))
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true)
@@ -392,10 +390,10 @@ public class SeederForDev implements ApplicationRunner {
                         .signatureAt(LocalDateTime.now().minusMinutes(20))
                         .signer(C_3)
                         .signerFullName(C_3.fullName())
-                        .signerIdentity(this.passwordEncoder.encode(C_3.getIdentity()))
+                        .signerIdentity(this.hashService.hash(C_3.getIdentity()))
                         .mobile(C_3.getMobile())
-                        .signerEmail(this.passwordEncoder.encode(C_3.getEmail()))
-                        .signatureToken(this.passwordEncoder.encode("consent-token-0004"))
+                        .signerEmail(this.hashService.hash(C_3.getEmail()))
+                        .signatureToken(this.hashService.hash("consent-token-0004"))
                         .deviceInfo(this.hashIpAddress(deviceInfo))
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true)
@@ -430,7 +428,7 @@ public class SeederForDev implements ApplicationRunner {
             return null;
         }
         return DeviceInfo.builder()
-                .ipAddress(this.passwordEncoder.encode(deviceInfo.getIpAddress()))
+                .ipAddress(this.hashService.hash(deviceInfo.getIpAddress()))
                 .browser(deviceInfo.getBrowser())
                 .operatingSystem(deviceInfo.getOperatingSystem())
                 .deviceType(deviceInfo.getDeviceType())
