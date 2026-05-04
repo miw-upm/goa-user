@@ -6,6 +6,7 @@ import es.upm.api.data.entities.Role;
 import es.upm.api.data.entities.User;
 import es.upm.api.infrastructure.clients.email.GoaSupportClient;
 import es.upm.api.infrastructure.support.EncryptionService;
+import es.upm.api.infrastructure.support.HashService;
 import es.upm.api.infrastructure.support.ProfileUpdatedEmailTemplateService;
 import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.miw.base64url.Base64UrlGenerator;
@@ -18,7 +19,6 @@ import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.BeanUtils;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -33,16 +33,15 @@ import static es.upm.api.data.entities.Role.CUSTOMER;
 @RequiredArgsConstructor
 public class UserService {
     public static final String SCOPE_EDIT_PROFILE = "edit-profile";
-    public static final String SCOPE_ALL = "";
 
     private final AccessLinkService accessLinkService;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final GoaSupportClient goaSupportClient;
     private final ProfileUpdatedEmailTemplateService profileUpdatedEmailTemplateService;
     private final DataProcessingConsentService dataProcessingConsentService;
     private final CurrentUser currentUser;
     private final EncryptionService encryptionService;
+    private final HashService hashService;
 
     public void create(User user) {
         this.validateAuthorizedRole(user.getRole());
@@ -51,7 +50,7 @@ public class UserService {
         if (Objects.isNull(user.getPassword())) {
             user.setPassword(Base64UrlGenerator.encode());
         }
-        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        user.setPassword(this.hashService.hash(user.getPassword()));
         user.setRegistrationDate(LocalDate.now());
         this.encryptSensitiveFields(user);
         this.userRepository.save(user);
@@ -102,7 +101,7 @@ public class UserService {
             this.assertNoExistByMobile(user.getMobile());
         }
         if (!Objects.isNull(user.getPassword())) {
-            existing.setPassword(this.passwordEncoder.encode(user.getPassword()));
+            existing.setPassword(this.hashService.hash(user.getPassword()));
         }
         BeanUtils.copyProperties(user, existing, "id", "password", "registrationDate", "active");
         this.encryptSensitiveFields(existing);
@@ -177,17 +176,16 @@ public class UserService {
         return users.filter(user -> user.getMobile().equals(this.currentUser.mobile()));
     }
 
+    private void encryptSensitiveFields(User user) {
+        user.setIdentity(this.encryptionService.encrypt(user.getIdentity()));
+        user.setEmail(this.encryptionService.encrypt(user.getEmail()));
+        user.setAddress(this.encryptionService.encrypt(user.getAddress()));
+    }
+
     private User decryptSensitiveFields(User user) {
-        user.setAddress(this.encryptionService.decrypt(user.getAddress()));
-        user.setEmail(this.encryptionService.decrypt(user.getEmail()));
         user.setIdentity(this.encryptionService.decrypt(user.getIdentity()));
+        user.setEmail(this.encryptionService.decrypt(user.getEmail()));
+        user.setAddress(this.encryptionService.decrypt(user.getAddress()));
         return user;
     }
-
-    private void encryptSensitiveFields(User user) {
-        user.setAddress(this.encryptionService.encrypt(user.getAddress()));
-        user.setEmail(this.encryptionService.encrypt(user.getEmail()));
-        user.setIdentity(this.encryptionService.encrypt(user.getIdentity()));
-    }
-
 }

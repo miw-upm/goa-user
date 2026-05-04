@@ -5,7 +5,7 @@ import es.upm.api.data.daos.DataProcessingConsentRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.*;
 import es.upm.api.infrastructure.support.EncryptionService;
-import es.upm.api.services.UserService;
+import es.upm.api.infrastructure.support.HashService;
 import es.upm.miw.device.DeviceInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -14,7 +14,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -30,22 +29,6 @@ import java.util.UUID;
 public class SeederForDev implements ApplicationRunner {
     public static final String PREFIX = "aaaaaaaa-bbbb-cccc-dddd-eeeeffff";
     public static final UUID ID_0 = UUID.fromString(PREFIX + "0000");
-    public static final UUID ID_1 = UUID.fromString(PREFIX + "0001");
-    public static final UUID ID_2 = UUID.fromString(PREFIX + "0002");
-    public static final UUID ID_3 = UUID.fromString(PREFIX + "0003");
-    public static final UUID ID_4 = UUID.fromString(PREFIX + "0004");
-    public static final UUID ID_5 = UUID.fromString(PREFIX + "0005");
-    public static final UUID ID_6 = UUID.fromString(PREFIX + "0006");
-    public static final UUID ID_7 = UUID.fromString(PREFIX + "0007");
-    public static final UUID ID_8 = UUID.fromString(PREFIX + "0008");
-    public static final UUID ID_9 = UUID.fromString(PREFIX + "0009");
-    public static final UUID ID_A = UUID.fromString(PREFIX + "000a");
-    public static final UUID ID_B = UUID.fromString(PREFIX + "000b");
-    public static final UUID ID_C = UUID.fromString(PREFIX + "000c");
-    public static final UUID ID_D = UUID.fromString(PREFIX + "000d");
-    public static final UUID ID_E = UUID.fromString(PREFIX + "000e");
-    public static final UUID ID_F = UUID.fromString(PREFIX + "000f");
-
     public static final User C_0 = User.builder()
             .id(ID_0)
             .mobile("600000100")
@@ -61,6 +44,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2024, 1, 1))
             .active(true)
             .build();
+    public static final UUID ID_1 = UUID.fromString(PREFIX + "0001");
     public static final User C_1 = User.builder()
             .id(ID_1)
             .mobile("600000101")
@@ -76,6 +60,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 2, 1))
             .active(true)
             .build();
+    public static final UUID ID_2 = UUID.fromString(PREFIX + "0002");
     public static final User C_2 = User.builder()
             .id(ID_2)
             .mobile("600000102")
@@ -91,6 +76,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 3, 1))
             .active(true)
             .build();
+    public static final UUID ID_3 = UUID.fromString(PREFIX + "0003");
     public static final User C_3 = User.builder()
             .id(ID_3)
             .mobile("600000103")
@@ -106,6 +92,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 4, 1))
             .active(true)
             .build();
+    public static final UUID ID_4 = UUID.fromString(PREFIX + "0004");
     public static final User C_4 = User.builder()
             .id(ID_4)
             .mobile("600000104")
@@ -121,6 +108,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 5, 1))
             .active(true)
             .build();
+    public static final UUID ID_5 = UUID.fromString(PREFIX + "0005");
     public static final User C_5 = User.builder()
             .id(ID_5)
             .mobile("600000105")
@@ -136,6 +124,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 6, 1))
             .active(true)
             .build();
+    public static final UUID ID_6 = UUID.fromString(PREFIX + "0006");
     public static final User C_6 = User.builder()
             .id(ID_6)
             .mobile("600000106")
@@ -144,6 +133,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 6, 7))
             .active(true)
             .build();
+    public static final UUID ID_7 = UUID.fromString(PREFIX + "0007");
     public static final User C_7 = User.builder()
             .id(ID_7)
             .mobile("600000107")
@@ -152,6 +142,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 7, 7))
             .active(true)
             .build();
+    public static final UUID ID_8 = UUID.fromString(PREFIX + "0008");
     public static final User C_8 = User.builder()
             .id(ID_8)
             .mobile("600000108")
@@ -160,6 +151,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 8, 7))
             .active(true)
             .build();
+    public static final UUID ID_9 = UUID.fromString(PREFIX + "0009");
     public static final User C_9 = User.builder()
             .id(ID_9)
             .mobile("600000109")
@@ -168,6 +160,9 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 9, 7))
             .active(true)
             .build();
+    public static final UUID ID_A = UUID.fromString(PREFIX + "000a");
+    public static final UUID ID_B = UUID.fromString(PREFIX + "000b");
+    public static final UUID ID_C = UUID.fromString(PREFIX + "000c");
     public static final User ADMIN_6 = User.builder()
             .id(ID_C)
             .mobile("6")
@@ -176,6 +171,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 10, 1))
             .active(true)
             .build();
+    public static final UUID ID_D = UUID.fromString(PREFIX + "000d");
     public static final User ADMIN = User.builder()
             .id(ID_D)
             .mobile("600000110")
@@ -191,6 +187,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 10, 1))
             .active(true)
             .build();
+    public static final UUID ID_E = UUID.fromString(PREFIX + "000e");
     public static final User MANAGER = User.builder()
             .id(ID_E)
             .mobile("600000111")
@@ -206,6 +203,7 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 11, 1))
             .active(true)
             .build();
+    public static final UUID ID_F = UUID.fromString(PREFIX + "000f");
     public static final User OPERATOR = User.builder()
             .id(ID_F)
             .mobile("600000112")
@@ -232,10 +230,9 @@ public class SeederForDev implements ApplicationRunner {
     public static final String URL_3 = "aaaaaaaaaaaaaaaaaaaaa3";
 
     private final UserRepository userRepository;
-    private final UserService userService;
     private final AccessLinkRepository accessLinkRepository;
     private final DataProcessingConsentRepository dataProcessingConsentRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final HashService hashService;
     private final EncryptionService encryptionService;
 
     @Value("${app.db.password}")
@@ -256,7 +253,7 @@ public class SeederForDev implements ApplicationRunner {
 
     private void seed() {
         log.warn("------- Initial Load from JAVA -----------");
-        String pass = this.passwordEncoder.encode(this.password);
+        String pass = this.hashService.hash(this.password);
         DeviceInfo deviceInfo = DeviceInfo.builder().ipAddress("83.52.10.24").browser("Chrome")
                 .operatingSystem("Windows").deviceType("Desktop").build();
 
@@ -290,7 +287,7 @@ public class SeederForDev implements ApplicationRunner {
                         .id(ID_0)
                         .urlId(URL_0)
                         .user(C_0)
-                        .tokenHash(passwordEncoder.encode(TOKEN_0))
+                        .token(hashService.hash(TOKEN_0))
                         .createdAt(now.minusDays(1))
                         .lastUsedAt(now)
                         .expiresAt(now.plusDays(5))
@@ -302,7 +299,7 @@ public class SeederForDev implements ApplicationRunner {
                         .id(ID_1)
                         .urlId(URL_1)
                         .user(C_1)
-                        .tokenHash(passwordEncoder.encode(TOKEN_1))
+                        .token(hashService.hash(TOKEN_1))
                         .createdAt(now.minusDays(2))
                         .lastUsedAt(now.minusDays(1))
                         .expiresAt(now.plusDays(5))
@@ -314,7 +311,7 @@ public class SeederForDev implements ApplicationRunner {
                         .id(ID_2)
                         .urlId(URL_2)
                         .user(C_2)
-                        .tokenHash(passwordEncoder.encode(TOKEN_2))
+                        .token(hashService.hash(TOKEN_2))
                         .createdAt(now.minusDays(1))
                         .expiresAt(now.plusDays(5))
                         .remainingUses(2)
@@ -326,7 +323,7 @@ public class SeederForDev implements ApplicationRunner {
                         .id(ID_3)
                         .urlId(URL_3)
                         .user(C_3)
-                        .tokenHash(passwordEncoder.encode(TOKEN_3))
+                        .token(hashService.hash(TOKEN_3))
                         .createdAt(now.minusDays(2))
                         .expiresAt(now.plusDays(5))
                         .remainingUses(1)
@@ -343,12 +340,12 @@ public class SeederForDev implements ApplicationRunner {
                         .signatureAt(LocalDateTime.now().minusDays(10))
                         .signer(C_0)
                         .signerFullName(C_0.fullName())
-                        .signerIdentity(this.passwordEncoder.encode(C_0.getIdentity()))
+                        .signerIdentity(this.hashService.hash(C_0.getIdentity()))
                         .mobile(C_0.getMobile())
-                        .signerEmail(this.passwordEncoder.encode(C_0.getEmail()))
-                        .signatureToken(this.passwordEncoder.encode("consent-token-0001"))
+                        .signerEmail(this.hashService.hash(C_0.getEmail()))
+                        .signatureToken(this.hashService.hash("consent-token-0001"))
                         .deviceInfo(DeviceInfo.builder()
-                                .ipAddress(this.passwordEncoder.encode("83.52.10.24"))
+                                .ipAddress(this.hashService.hash("83.52.10.24"))
                                 .browser("Chrome")
                                 .operatingSystem("Windows")
                                 .deviceType("Desktop")
@@ -363,10 +360,10 @@ public class SeederForDev implements ApplicationRunner {
                         .signatureAt(LocalDateTime.now().minusDays(3))
                         .signer(C_1)
                         .signerFullName(C_1.fullName())
-                        .signerIdentity(this.passwordEncoder.encode(C_1.getIdentity()))
+                        .signerIdentity(this.hashService.hash(C_1.getIdentity()))
                         .mobile(C_1.getMobile())
-                        .signerEmail(this.passwordEncoder.encode(C_1.getEmail()))
-                        .signatureToken(this.passwordEncoder.encode("consent-token-0002"))
+                        .signerEmail(this.hashService.hash(C_1.getEmail()))
+                        .signatureToken(this.hashService.hash("consent-token-0002"))
                         .deviceInfo(this.hashIpAddress(deviceInfo))
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true)
@@ -378,10 +375,10 @@ public class SeederForDev implements ApplicationRunner {
                         .signatureAt(LocalDateTime.now().minusHours(6))
                         .signer(C_2)
                         .signerFullName(C_2.fullName())
-                        .signerIdentity(this.passwordEncoder.encode(C_2.getIdentity()))
+                        .signerIdentity(this.hashService.hash(C_2.getIdentity()))
                         .mobile(C_2.getMobile())
-                        .signerEmail(this.passwordEncoder.encode(C_2.getEmail()))
-                        .signatureToken(this.passwordEncoder.encode("consent-token-0003"))
+                        .signerEmail(this.hashService.hash(C_2.getEmail()))
+                        .signatureToken(this.hashService.hash("consent-token-0003"))
                         .deviceInfo(this.hashIpAddress(deviceInfo))
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true)
@@ -393,10 +390,10 @@ public class SeederForDev implements ApplicationRunner {
                         .signatureAt(LocalDateTime.now().minusMinutes(20))
                         .signer(C_3)
                         .signerFullName(C_3.fullName())
-                        .signerIdentity(this.passwordEncoder.encode(C_3.getIdentity()))
+                        .signerIdentity(this.hashService.hash(C_3.getIdentity()))
                         .mobile(C_3.getMobile())
-                        .signerEmail(this.passwordEncoder.encode(C_3.getEmail()))
-                        .signatureToken(this.passwordEncoder.encode("consent-token-0004"))
+                        .signerEmail(this.hashService.hash(C_3.getEmail()))
+                        .signatureToken(this.hashService.hash("consent-token-0004"))
                         .deviceInfo(this.hashIpAddress(deviceInfo))
                         .policyVersion("2026-04-25")
                         .dataProcessingAccepted(true)
@@ -431,7 +428,7 @@ public class SeederForDev implements ApplicationRunner {
             return null;
         }
         return DeviceInfo.builder()
-                .ipAddress(this.passwordEncoder.encode(deviceInfo.getIpAddress()))
+                .ipAddress(this.hashService.hash(deviceInfo.getIpAddress()))
                 .browser(deviceInfo.getBrowser())
                 .operatingSystem(deviceInfo.getOperatingSystem())
                 .deviceType(deviceInfo.getDeviceType())

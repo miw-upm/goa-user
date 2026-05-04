@@ -4,12 +4,12 @@ import es.upm.api.data.daos.AccessLinkRepository;
 import es.upm.api.data.daos.UserRepository;
 import es.upm.api.data.entities.AccessLink;
 import es.upm.api.data.entities.User;
+import es.upm.api.infrastructure.support.HashService;
 import es.upm.api.services.criteria.AccessLinkFindCriteria;
 import es.upm.miw.base64url.Base64UrlGenerator;
 import es.upm.miw.exception.NotFoundException;
 import es.upm.miw.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,8 +27,7 @@ public class AccessLinkService {
 
     private final UserRepository userRepository;
     private final AccessLinkRepository accessLinkRepository;
-    private final PasswordEncoder passwordEncoder;
-
+    private final HashService hashService;
 
     public AccessLinkCreationResult create(String mobile, String scope, UUID documentId) {
         User user = this.userRepository.findByMobile(mobile)
@@ -38,7 +37,7 @@ public class AccessLinkService {
                 .id(UUID.randomUUID())
                 .urlId(Base64UrlGenerator.encode())
                 .user(user)
-                .tokenHash(this.passwordEncoder.encode(token))
+                .token(this.hashService.hash(token))
                 .createdAt(LocalDateTime.now())
                 .expiresAt(LocalDateTime.now().plusDays(TOKEN_DURATION_DAYS))
                 .remainingUses(TOKEN_USAGE_LIMIT)
@@ -73,9 +72,7 @@ public class AccessLinkService {
     public AccessLink consumeToken(String scope, String urlId, String token) {
         AccessLink accessLink = this.accessLinkRepository.findByUrlId(urlId).orElseThrow(
                 () -> new UnauthorizedException("Unauthorized. Access Link Not Found"));
-        if (!passwordEncoder.matches(token, accessLink.getTokenHash())) {
-            throw new UnauthorizedException("Unauthorized. Token Invalid");
-        }
+        this.hashService.matches(token, accessLink.getToken());
         accessLink.use(scope);
         return this.accessLinkRepository.save(accessLink);
     }

@@ -27,7 +27,7 @@ public class AccessLink {
     private String urlId;
     @DBRef
     private User user;
-    private String tokenHash;
+    private String token;
     private LocalDateTime createdAt;
     private LocalDateTime lastUsedAt;
     private LocalDateTime expiresAt;
