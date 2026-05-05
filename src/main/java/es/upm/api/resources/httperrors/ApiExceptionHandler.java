@@ -2,6 +2,8 @@ package es.upm.api.resources.httperrors;
 
 import es.upm.api.exceptions.BadCredentialsException;
 import es.upm.miw.exception.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -15,15 +17,9 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ControllerAdvice
+@RequiredArgsConstructor
+@Log4j2
 public class ApiExceptionHandler {
-
-
-    private final Environment environment;
-
-    @Autowired
-    public ApiExceptionHandler(Environment environment) {
-        this.environment = environment;
-    }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({
@@ -104,9 +100,7 @@ public class ApiExceptionHandler {
     })
     @ResponseBody
     public ErrorMessage exception(Exception exception) { //WARNING!!!. It is caught for unforeseen cases.The error must be properly handled or caught.
-        if (environment.acceptsProfiles(Profiles.of("dev", "test"))) {
-            exception.printStackTrace();
-        }
+        log.error("Unexpected exception", exception);
         return new ErrorMessage(exception);
     }
 
