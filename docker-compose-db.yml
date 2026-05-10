@@ -30,7 +30,7 @@ networks:
 #> docker compose -f docker-compose-db.yml -p databases up -d
 
 # CONSOLA & COMANDOS mongo
-#> docker exec -it mongo-server mongosh "mongodb://mongo:mongo@localhost:27017/devops?authSource=admin"
+#> docker exec -it mongo-server mongosh "mongodb://mongo:mongo@localhost:27017/goauserdb?authSource=admin"
 #  help
 #  db.version()
 #  db.stats()

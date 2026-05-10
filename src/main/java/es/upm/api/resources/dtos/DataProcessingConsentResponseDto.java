@@ -38,6 +38,8 @@ public class DataProcessingConsentResponseDto {
                 .mobile(this.getMobile())
                 .signerFullName(this.getSignerFullName())
                 .signatureAt(this.getSignatureAt())
+                .dataProcessingAccepted(this.getDataProcessingAccepted())
+                .promotionsAccepted(this.getPromotionsAccepted())
                 .build();
     }
 }
