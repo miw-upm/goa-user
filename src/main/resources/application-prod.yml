@@ -25,6 +25,9 @@ app:
       key-store-base64: ${JWT_KEYSTORE_BASE64}
       key-store-password: ${JWT_STORE_PASSWORD}
       key-password: ${JWT_KEY_PASSWORD}
+  crypto:
+    password: ${APP_CRYPTO_PASSWORD}
+    salt: ${APP_CRYPTO_SALT}
 
 eureka:
   client:
