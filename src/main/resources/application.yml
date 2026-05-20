@@ -32,8 +32,8 @@ app:
     mobile: ${DB_MOBILE:6}
     password: ${DB_PASSWORD:6}
   crypto:
-    password: ${APP_CRYPTO_PASSWORD:dev-crypto-password-please-change-in-production}
     salt: ${APP_CRYPTO_SALT:0123456789abcdef0123456789abcdef}
+    password: ${APP_CRYPTO_PASSWORD:dev-crypto-password-please-change-in-production}
   oauth2:
     token-uri: ${BASE_URL:http://localhost:8080}/api/goa-user/oauth2/token
     open-api-client-id: client-id

@@ -79,6 +79,8 @@ jobs:
               -e JWT_KEYSTORE_BASE64="${{ secrets.JWT_KEYSTORE_BASE64_MAIN }}" \
               -e JWT_STORE_PASSWORD="${{ secrets.JWT_STORE_PASSWORD_MAIN }}" \
               -e JWT_KEY_PASSWORD="${{ secrets.JWT_KEY_PASSWORD_MAIN }}" \
+              -e APP_CRYPTO_SALT="${{ secrets.APP_CRYPTO_SALT_MAIN }}" \
+              -e APP_CRYPTO_PASSWORD="${{ secrets.APP_CRYPTO_PASSWORD_MAIN }}" \
               ghcr.io/${{ env.REPOSITORY }}:latest
             
             echo "⏳ Esperando a que se levante"
