@@ -1,5 +1,6 @@
 package es.upm.api.infrastructure.support;
 
+import es.upm.miw.exception.ConflictException;
 import es.upm.miw.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -17,8 +18,11 @@ public class HashService {
     private final PasswordEncoder passwordEncoder;
 
     public String hash(String value) {
-        if (!StringUtils.hasText(value) || this.isHashed(value)) {
+        if (!StringUtils.hasText(value)) {
             return value;
+        }
+        if (this.isHashed(value)) {
+            throw new ConflictException("Value is already hashed");
         }
         String hashed = this.passwordEncoder.encode(value);
         if (!hashed.startsWith(BCRYPT_PREFIX)) {
@@ -31,7 +35,7 @@ public class HashService {
         return StringUtils.hasText(value) && value.startsWith(BCRYPT_PREFIX);
     }
 
-    public void matches(String rawToken, String hashToken) {
+    public void assertMatches(String rawToken, String hashToken) {
         if (!this.passwordEncoder.matches(rawToken, hashToken)) {
             throw new UnauthorizedException("Unauthorized. Token Invalid");
         }

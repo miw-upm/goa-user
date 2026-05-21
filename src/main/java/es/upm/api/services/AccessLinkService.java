@@ -72,7 +72,7 @@ public class AccessLinkService {
     public AccessLink consumeToken(String scope, String urlId, String token) {
         AccessLink accessLink = this.accessLinkRepository.findByUrlId(urlId).orElseThrow(
                 () -> new UnauthorizedException("Unauthorized. Access Link Not Found"));
-        this.hashService.matches(token, accessLink.getToken());
+        this.hashService.assertMatches(token, accessLink.getToken());
         accessLink.use(scope);
         return this.accessLinkRepository.save(accessLink);
     }
