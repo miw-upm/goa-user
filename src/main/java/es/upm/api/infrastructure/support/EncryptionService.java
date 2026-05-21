@@ -1,23 +1,29 @@
 package es.upm.api.infrastructure.support;
 
+import es.upm.miw.exception.ConflictException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.regex.Pattern;
-
 @Service
 @RequiredArgsConstructor
 public class EncryptionService {
-    public static final String PREFIX = "enc::";
-    private static final Pattern HEX_PATTERN = Pattern.compile("^[0-9a-fA-F]+$");
+    private static final char SEPARATOR = ':';
+    public static final String PREFIX_BASE = "enc" + SEPARATOR;
+    public static final String PREFIX = PREFIX_BASE + "v1" + SEPARATOR;
+
+    private static final int PREVIEW_CHARS = 6;
+    private static final String PREVIEW_TRUNCATION_MARK = "****";
 
     private final TextEncryptor textEncryptor;
 
     public String encrypt(String value) {
-        if (!StringUtils.hasText(value) || this.isPrefixed(value)) {
+        if (!StringUtils.hasText(value)) {
             return value;
+        }
+        if (this.isPrefixed(value)) {
+            throw new ConflictException("Value is already encrypted");
         }
         return PREFIX + this.textEncryptor.encrypt(value);
     }
@@ -26,36 +32,37 @@ public class EncryptionService {
         if (!StringUtils.hasText(value)) {
             return value;
         }
-        if (this.isPrefixed(value)) {
-            return this.decryptCipher(value.substring(PREFIX.length()));
+        if (!this.isPrefixed(value)) {
+            throw new ConflictException("Expected an encrypted value with a valid prefix");
         }
-        if (this.isLegacyCipherText(value)) {
-            try {
-                return this.textEncryptor.decrypt(value);
-            } catch (IllegalArgumentException e) {
-                return value;
-            }
-        }
-        return value;
+        String valueWithoutPrefix = value.substring(this.extractAllPrefix(value).length());
+        return this.textEncryptor.decrypt(valueWithoutPrefix);
     }
 
     public boolean isEncrypted(String value) {
         return StringUtils.hasText(value) && this.isPrefixed(value);
     }
 
-    private String decryptCipher(String cipherText) {
-        try {
-            return this.textEncryptor.decrypt(cipherText);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalStateException("Cannot decrypt value", e);
+    public String extractPreview(String value) {
+        String prefix = this.extractAllPrefix(value);
+        String cipherText = value.substring(prefix.length());
+        String previewChars = cipherText.substring(0, PREVIEW_CHARS);
+        return prefix + previewChars + PREVIEW_TRUNCATION_MARK;
+    }
+
+    public String extractAllPrefix(String value) {
+        if (!value.startsWith(PREFIX_BASE)) {
+            throw new ConflictException("Unsupported encryption prefix format");
         }
+        int separatorIndex = value.indexOf(SEPARATOR, PREFIX_BASE.length());
+        if (separatorIndex < 0) {
+            throw new ConflictException("Malformed encryption prefix - missing separator");
+        }
+        return value.substring(0, separatorIndex + 1);
     }
 
     private boolean isPrefixed(String value) {
-        return value.startsWith(PREFIX);
+        return value.startsWith(PREFIX_BASE);
     }
 
-    private boolean isLegacyCipherText(String value) {
-        return value.length() % 2 == 0 && value.length() >= 32 && HEX_PATTERN.matcher(value).matches();
-    }
 }

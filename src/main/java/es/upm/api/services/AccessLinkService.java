@@ -59,7 +59,7 @@ public class AccessLinkService {
 
     public Stream<AccessLink> find(AccessLinkFindCriteria criteria) {
         if (criteria.all()) {
-            return this.accessLinkRepository.findAll().stream();
+            return this.accessLinkRepository.findAllByOrderByCreatedAtDesc().stream();
         }
         List<UUID> ids = criteria.getClient() != null
                 ? this.userRepository.findCustomersByText(criteria.getClient(), List.of(CUSTOMER)).stream().map(User::getId).toList()
@@ -72,7 +72,7 @@ public class AccessLinkService {
     public AccessLink consumeToken(String scope, String urlId, String token) {
         AccessLink accessLink = this.accessLinkRepository.findByUrlId(urlId).orElseThrow(
                 () -> new UnauthorizedException("Unauthorized. Access Link Not Found"));
-        this.hashService.matches(token, accessLink.getToken());
+        this.hashService.assertMatches(token, accessLink.getToken());
         accessLink.use(scope);
         return this.accessLinkRepository.save(accessLink);
     }
