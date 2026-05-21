@@ -51,9 +51,8 @@ app:
   crypto:
     salt: ${APP_CRYPTO_SALT:0123456789abcdef0123456789abcde1}
     password: ${APP_CRYPTO_PASSWORD:dev-crypto-password-please-change-in-production-v1}
-    # Solo durante ventana de rotación (lectura de antiguos):
-    previous-salt: ${APP_CRYPTO_PREVIOUS_SALT:0123456789abcdef0123456789abcdef}
-    previous-password: ${APP_CRYPTO_PREVIOUS_PASSWORD:dev-crypto-password-please-change-in-production}
+#    previous-salt: ${APP_CRYPTO_PREVIOUS_SALT:0123456789abcdef0123456789abcdef}
+#    previous-password: ${APP_CRYPTO_PREVIOUS_PASSWORD:dev-crypto-password-please-change-in-production}
 
 management:
   endpoints:

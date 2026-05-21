@@ -13,7 +13,7 @@ public class EncryptionService {
     public static final String PREFIX_BASE = "enc" + SEPARATOR;
     public static final String PREFIX = PREFIX_BASE + "v1" + SEPARATOR;
 
-    private static final int PREVIEW_CHARS = 6;
+    private static final int PREVIEW_CHARS = 12;
     private static final String PREVIEW_TRUNCATION_MARK = "****";
 
     private final TextEncryptor textEncryptor;
@@ -23,7 +23,7 @@ public class EncryptionService {
             return value;
         }
         if (this.isPrefixed(value)) {
-            throw new ConflictException("Value is already encrypted");
+            throw new ConflictException("Value is already encrypted: " + value);
         }
         return PREFIX + this.textEncryptor.encrypt(value);
     }
@@ -33,7 +33,7 @@ public class EncryptionService {
             return value;
         }
         if (!this.isPrefixed(value)) {
-            throw new ConflictException("Expected an encrypted value with a valid prefix");
+            throw new ConflictException("Expected an encrypted value with a valid prefix: " + value);
         }
         String valueWithoutPrefix = value.substring(this.extractAllPrefix(value).length());
         return this.textEncryptor.decrypt(valueWithoutPrefix);
@@ -52,11 +52,11 @@ public class EncryptionService {
 
     public String extractAllPrefix(String value) {
         if (!value.startsWith(PREFIX_BASE)) {
-            throw new ConflictException("Unsupported encryption prefix format");
+            throw new ConflictException("Unsupported encryption prefix format: " + value);
         }
         int separatorIndex = value.indexOf(SEPARATOR, PREFIX_BASE.length());
         if (separatorIndex < 0) {
-            throw new ConflictException("Malformed encryption prefix - missing separator");
+            throw new ConflictException("Malformed encryption prefix - missing separator: " + value);
         }
         return value.substring(0, separatorIndex + 1);
     }

@@ -22,7 +22,7 @@ public class HashService {
             return value;
         }
         if (this.isHashed(value)) {
-            throw new ConflictException("Value is already hashed");
+            throw new ConflictException("Value is already hashed:  " + value);
         }
         String hashed = this.passwordEncoder.encode(value);
         if (!hashed.startsWith(BCRYPT_PREFIX)) {
@@ -37,7 +37,7 @@ public class HashService {
 
     public void assertMatches(String rawToken, String hashToken) {
         if (!this.passwordEncoder.matches(rawToken, hashToken)) {
-            throw new UnauthorizedException("Unauthorized. Token Invalid");
+            throw new UnauthorizedException("Unauthorized. Token Invalid: " + rawToken + ", " + hashToken);
         }
     }
 }

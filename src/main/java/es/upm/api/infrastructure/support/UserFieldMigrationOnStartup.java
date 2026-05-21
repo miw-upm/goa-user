@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 @Service
 @Log4j2
-@Profile({"dev", "prod"})
+@Profile("NONE")
 public class UserFieldMigrationOnStartup implements ApplicationRunner {
     private static final String LEGACY_PREFIX = "enc::";
     private final UserRepository userRepository;

@@ -28,8 +28,8 @@ app:
   crypto:
     salt: ${APP_CRYPTO_SALT}
     password: ${APP_CRYPTO_PASSWORD}
-    previous-salt: ${APP_CRYPTO_PREVIOUS_SALT}
-    previous-password: ${APP_CRYPTO_PREVIOUS_PASSWORD}
+#    previous-salt: ${APP_CRYPTO_PREVIOUS_SALT}
+#    previous-password: ${APP_CRYPTO_PREVIOUS_PASSWORD}
 
 eureka:
   client:
