@@ -88,7 +88,7 @@ public class UserFieldMigrationOnStartup implements ApplicationRunner {
     }
 
     private String tryRotateField(String value) {
-        if (value == null || !LEGACY_PREFIX.equals(this.encryptionService.extractAllPrefix(value))) {
+        if (value == null || !value.startsWith(LEGACY_PREFIX)) {
             return null;
         }
         String legacyPayload = value.substring(LEGACY_PREFIX.length());
