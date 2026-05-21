@@ -59,7 +59,7 @@ public class AccessLinkService {
 
     public Stream<AccessLink> find(AccessLinkFindCriteria criteria) {
         if (criteria.all()) {
-            return this.accessLinkRepository.findAll().stream();
+            return this.accessLinkRepository.findAllByOrderByCreatedAtDesc().stream();
         }
         List<UUID> ids = criteria.getClient() != null
                 ? this.userRepository.findCustomersByText(criteria.getClient(), List.of(CUSTOMER)).stream().map(User::getId).toList()
