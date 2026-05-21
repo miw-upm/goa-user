@@ -94,6 +94,7 @@ class UserServiceIT {
         User oldUser = userService.readByMobile(CUSTOMER_2_MOBILE);
         UUID id = oldUser.getId();
         oldUser.setMobile("600099999");
+        oldUser.setPassword(null);
         this.userService.update(id, oldUser);
         User user = userService.readByMobile("600099999");
         assertThat(user)
@@ -112,6 +113,7 @@ class UserServiceIT {
         String originalCity = user.getCity();
 
         user.setCity("new");
+        user.setPassword(null);
         this.userService.updateByUrlIdWithToken(
                 UserService.SCOPE_EDIT_PROFILE,
                 SeederForDev.URL_0,
@@ -133,6 +135,7 @@ class UserServiceIT {
                 .isAfter(LocalDateTime.now().minusSeconds(5));
 
         updatedUser.setCity(originalCity);
+        updatedUser.setPassword(null);
         this.userService.update(updatedUser.getId(), updatedUser);
     }
 

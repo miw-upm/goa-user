@@ -19,6 +19,9 @@ public class EncryptionService {
     private final TextEncryptor textEncryptor;
 
     public String encrypt(String value) {
+        if (!StringUtils.hasText(value)) {
+            return value;
+        }
         if (this.isPrefixed(value)) {
             throw new ConflictException("Value is already encrypted");
         }
@@ -26,6 +29,9 @@ public class EncryptionService {
     }
 
     public String decrypt(String value) {
+        if (!StringUtils.hasText(value)) {
+            return value;
+        }
         if (!this.isPrefixed(value)) {
             throw new ConflictException("Expected an encrypted value with a valid prefix");
         }
