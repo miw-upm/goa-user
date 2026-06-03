@@ -54,6 +54,11 @@ public class UserDto {
         BeanUtils.copyProperties(user, this);
     }
 
+    public static UserDto of(User user, boolean full) {
+        UserDto dto = new UserDto(user);
+        return full ? dto : dto.ofSummary();
+    }
+
     public boolean isBillable() {
         return this.familyName != null && !this.familyName.isBlank()
                 && this.email != null && !this.email.isBlank()
@@ -62,11 +67,6 @@ public class UserDto {
                 && this.city != null && !this.city.isBlank()
                 && this.province != null
                 && this.postalCode != null;
-    }
-
-    public static UserDto of(User user, boolean full) {
-        UserDto dto = new UserDto(user);
-        return full ? dto : dto.ofSummary();
     }
 
     public void doDefault() {
