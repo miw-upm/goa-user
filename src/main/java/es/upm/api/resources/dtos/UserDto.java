@@ -47,9 +47,21 @@ public class UserDto {
     @JsonProperty(access = Access.READ_ONLY)
     private LocalDate registrationDate;
     private Boolean active;
+    @JsonProperty(access = Access.READ_ONLY)
+    private Boolean billable;
 
     public UserDto(User user) {
         BeanUtils.copyProperties(user, this);
+    }
+
+    public boolean isBillable() {
+        return this.familyName != null && !this.familyName.isBlank()
+                && this.email != null && !this.email.isBlank()
+                && this.identity != null && !this.identity.isBlank()
+                && this.address != null && !this.address.isBlank()
+                && this.city != null && !this.city.isBlank()
+                && this.province != null
+                && this.postalCode != null;
     }
 
     public static UserDto of(User user, boolean full) {
@@ -67,12 +79,20 @@ public class UserDto {
     }
 
     public UserDto ofSummary() {
+        boolean result = this.familyName != null && !this.familyName.isBlank()
+                && this.email != null && !this.email.isBlank()
+                && this.identity != null && !this.identity.isBlank()
+                && this.address != null && !this.address.isBlank()
+                && this.city != null && !this.city.isBlank()
+                && this.province != null
+                && this.postalCode != null;
         return UserDto.builder()
                 .id(this.getId())
                 .mobile(this.getMobile())
                 .firstName(this.getFirstName())
                 .familyName(this.getFamilyName())
                 .email(this.getEmail())
+                .billable(result)
                 .build();
     }
 
