@@ -38,4 +38,14 @@ public class User {
     public String fullName() {
         return (Objects.toString(this.firstName, "") + " " + Objects.toString(this.familyName, "")).trim();
     }
+
+    public boolean isBillable() {
+        return this.familyName != null && !this.familyName.isBlank()
+                && this.email != null && !this.email.isBlank()
+                && this.identity != null && !this.identity.isBlank()
+                && this.address != null && !this.address.isBlank()
+                && this.city != null && !this.city.isBlank()
+                && this.province != null
+                && this.postalCode != null;
+    }
 }

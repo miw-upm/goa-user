@@ -210,6 +210,23 @@ class UserResourceFT {
     }
 
     @Test
+    void testFindByNewCriteria() {
+        ResponseEntity<UserDto[]> response = this.httpRequestBuilder
+                .get(UserResource.USERS)
+                .param("customer", SEEDED_USER_MOBILE)
+                .param("active", true)
+                .param("billable", true)
+                .role(ADMIN)
+                .exchange(UserDto[].class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody())
+                .isNotNull()
+                .isNotEmpty()
+                .allSatisfy(userDto -> assertThat(userDto.getMobile()).contains(SEEDED_USER_MOBILE));
+    }
+
+    @Test
     void testFindProvinces() {
         ResponseEntity<ProvincesResponseDto> response = this.httpRequestBuilder
                 .get(UserResource.USERS + UserResource.PROVINCES)

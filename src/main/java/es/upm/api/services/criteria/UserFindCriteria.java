@@ -8,12 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserFindCriteria {
-    private String mobile;
-    private String firstName;
-    private String familyName;
+    private Boolean active;
     private String customer;
+    private Boolean billable;
 
     public boolean all() {
-        return mobile == null && firstName == null && familyName == null && customer == null;
+        return active == null && (customer == null || customer.isBlank()) && billable == null;
     }
 }

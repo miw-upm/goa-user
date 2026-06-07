@@ -52,21 +52,7 @@ public class UserDto {
 
     public UserDto(User user) {
         BeanUtils.copyProperties(user, this);
-    }
-
-    public static UserDto of(User user, boolean full) {
-        UserDto dto = new UserDto(user);
-        return full ? dto : dto.ofSummary();
-    }
-
-    public boolean isBillable() {
-        return this.familyName != null && !this.familyName.isBlank()
-                && this.email != null && !this.email.isBlank()
-                && this.identity != null && !this.identity.isBlank()
-                && this.address != null && !this.address.isBlank()
-                && this.city != null && !this.city.isBlank()
-                && this.province != null
-                && this.postalCode != null;
+        this.billable = user.isBillable();
     }
 
     public void doDefault() {
@@ -79,20 +65,13 @@ public class UserDto {
     }
 
     public UserDto ofSummary() {
-        boolean result = this.familyName != null && !this.familyName.isBlank()
-                && this.email != null && !this.email.isBlank()
-                && this.identity != null && !this.identity.isBlank()
-                && this.address != null && !this.address.isBlank()
-                && this.city != null && !this.city.isBlank()
-                && this.province != null
-                && this.postalCode != null;
         return UserDto.builder()
                 .id(this.getId())
                 .mobile(this.getMobile())
                 .firstName(this.getFirstName())
                 .familyName(this.getFamilyName())
                 .email(this.getEmail())
-                .billable(result)
+                .billable(this.billable)
                 .build();
     }
 

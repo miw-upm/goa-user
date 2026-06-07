@@ -148,8 +148,15 @@ public class UserService {
     }
 
     public Stream<User> find(UserFindCriteria criteria) {
+        Boolean billable = criteria.getBillable();
         return this.restrictToCurrentCustomer(this.query(criteria))
-                .map(this::decryptSensitiveFields);
+                .map(this::decryptSensitiveFields)
+                .filter(user -> {
+                    if (billable == null) {
+                        return true;
+                    }
+                    return billable.equals(user.isBillable());
+                });
     }
 
     public Stream<User> findAllFull() {
@@ -161,12 +168,7 @@ public class UserService {
         if (criteria.all()) {
             return this.userRepository.findByRoleIn(this.validRoles()).stream();
         }
-        if (criteria.getCustomer() != null) {
-            return this.userRepository.findCustomersByText(criteria.getCustomer(), List.of(CUSTOMER)).stream();
-        }
-        return this.userRepository.findCustomers(
-                criteria.getMobile(), criteria.getFirstName(), criteria.getFamilyName(), this.validRoles()
-        ).stream();
+        return this.userRepository.findUsers(criteria.getCustomer(), criteria.getActive(), this.validRoles()).stream();
     }
 
     private Stream<User> restrictToCurrentCustomer(Stream<User> users) {

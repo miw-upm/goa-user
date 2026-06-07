@@ -22,36 +22,42 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public List<User> findCustomers(String mobile, String firstName, String familyName, Collection<Role> roles) {
-        Criteria criteria = new Criteria();
-        if (StringUtils.hasText(mobile))
-            criteria.and("mobile").regex(mobile, "i");
-        if (StringUtils.hasText(firstName))
-            criteria.and("firstName").regex(firstName, "i");
-        if (StringUtils.hasText(familyName))
-            criteria.and("familyName").regex(familyName, "i");
-        criteria.and("role").in(roles);
-        return mongoTemplate.find(Query.query(criteria), User.class);
+    public List<User> findUsers(String customer, Boolean active, Collection<Role> roles) {
+        List<Criteria> criteria = new ArrayList<>();
+        criteria.add(Criteria.where("role").in(roles));
+        if (active != null) {
+            criteria.add(Criteria.where("active").is(active));
+        }
+        criteria.addAll(this.customerTextCriteria(customer));
+        return mongoTemplate.find(
+                Query.query(new Criteria().andOperator(criteria.toArray(Criteria[]::new))),
+                User.class
+        );
     }
 
     @Override
     public List<User> findCustomersByText(String text, Collection<Role> roles) {
         List<Criteria> criteria = new ArrayList<>();
         criteria.add(Criteria.where("role").in(roles));
-        if (StringUtils.hasText(text)) {
-            Arrays.stream(text.trim().split("\\s+"))
-                    .filter(StringUtils::hasText)
-                    .map(Pattern::quote)
-                    .map(term -> new Criteria().orOperator(
-                            Criteria.where("mobile").regex(term, "i"),
-                            Criteria.where("firstName").regex(term, "i"),
-                            Criteria.where("familyName").regex(term, "i")
-                    ))
-                    .forEach(criteria::add);
-        }
+        criteria.addAll(this.customerTextCriteria(text));
         return mongoTemplate.find(
                 Query.query(new Criteria().andOperator(criteria.toArray(Criteria[]::new))),
                 User.class
         );
+    }
+
+    private List<Criteria> customerTextCriteria(String text) {
+        if (!StringUtils.hasText(text)) {
+            return List.of();
+        }
+        return Arrays.stream(text.trim().split("\\s+"))
+                .filter(StringUtils::hasText)
+                .map(Pattern::quote)
+                .map(term -> new Criteria().orOperator(
+                        Criteria.where("mobile").regex(term, "i"),
+                        Criteria.where("firstName").regex(term, "i"),
+                        Criteria.where("familyName").regex(term, "i")
+                ))
+                .toList();
     }
 }

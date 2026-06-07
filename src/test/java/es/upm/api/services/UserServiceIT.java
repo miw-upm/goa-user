@@ -70,7 +70,7 @@ class UserServiceIT {
     @WithMockUser(username = MANAGER_MOBILE, roles = {"manager"})
     void testReadByIdOwnerUser() {
         UserFindCriteria criteria = new UserFindCriteria();
-        criteria.setMobile(MANAGER_MOBILE);
+        criteria.setCustomer(MANAGER_MOBILE);
         List<User> users = this.userService.find(criteria).toList();
         assertThat(users)
                 .isNotNull()
@@ -83,9 +83,42 @@ class UserServiceIT {
     @WithMockUser(username = CUSTOMER_0_MOBILE, roles = {"customer"})
     void testReadByIdOtherUser() {
         UserFindCriteria criteria = new UserFindCriteria();
-        criteria.setMobile(CUSTOMER_1_MOBILE);
+        criteria.setCustomer(CUSTOMER_1_MOBILE);
         List<User> users = this.userService.find(criteria).toList();
         assertThat(users).isEmpty();
+    }
+
+    @Test
+    @WithMockUser(username = MANAGER_MOBILE, roles = {"manager"})
+    void testFindByActive() {
+        UserFindCriteria criteria = new UserFindCriteria();
+        criteria.setActive(true);
+        List<User> users = this.userService.find(criteria).toList();
+        assertThat(users)
+                .isNotEmpty()
+                .allMatch(user -> Boolean.TRUE.equals(user.getActive()));
+    }
+
+    @Test
+    @WithMockUser(username = MANAGER_MOBILE, roles = {"manager"})
+    void testFindByBillable() {
+        UserFindCriteria criteria = new UserFindCriteria();
+        criteria.setBillable(true);
+        List<User> users = this.userService.find(criteria).toList();
+        assertThat(users)
+                .isNotEmpty()
+                .allMatch(User::isBillable);
+    }
+
+    @Test
+    @WithMockUser(username = MANAGER_MOBILE, roles = {"manager"})
+    void testFindByNotBillable() {
+        UserFindCriteria criteria = new UserFindCriteria();
+        criteria.setBillable(false);
+        List<User> users = this.userService.find(criteria).toList();
+        assertThat(users)
+                .isNotEmpty()
+                .allMatch(user -> !user.isBillable());
     }
 
     @Test
