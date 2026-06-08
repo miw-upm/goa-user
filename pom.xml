@@ -14,7 +14,7 @@
 
     <groupId>es.upm</groupId>
     <artifactId>goa-user</artifactId>
-    <version>1.18.0-RC2</version>
+    <version>1.18.0</version>
     <packaging>jar</packaging>
     <name>${project.groupId}.${project.artifactId}</name>
     <url>http://github.com/miw-upm/${project.artifactId}</url>
