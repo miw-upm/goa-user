@@ -103,7 +103,7 @@ public class UserService {
         if (!Objects.isNull(user.getPassword())) {
             existing.setPassword(this.hashService.hash(user.getPassword()));
         }
-        BeanUtils.copyProperties(user, existing, "id", "password", "registrationDate", "active");
+        BeanUtils.copyProperties(user, existing, "id", "password", "registrationDate");
         this.encryptSensitiveFields(existing);
         return this.decryptSensitiveFields(this.userRepository.save(existing));
     }
