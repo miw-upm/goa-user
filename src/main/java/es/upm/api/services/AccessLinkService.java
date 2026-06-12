@@ -23,7 +23,7 @@ import static es.upm.api.data.entities.Role.CUSTOMER;
 @Service
 public class AccessLinkService {
     public static final int TOKEN_DURATION_DAYS = 7;
-    public static final int TOKEN_USAGE_LIMIT = 7;
+    public static final int TOKEN_USAGE_LIMIT = 15;
 
     private final UserRepository userRepository;
     private final AccessLinkRepository accessLinkRepository;
