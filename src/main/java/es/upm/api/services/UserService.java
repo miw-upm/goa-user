@@ -11,12 +11,11 @@ import es.upm.api.infrastructure.support.ProfileUpdatedEmailTemplateService;
 import es.upm.api.services.criteria.UserFindCriteria;
 import es.upm.miw.base64url.Base64UrlGenerator;
 import es.upm.miw.device.DeviceInfo;
-import es.upm.miw.exception.BadGatewayException;
-import es.upm.miw.exception.ConflictException;
+import es.upm.miw.exception.ClientBusinessException;
 import es.upm.miw.exception.ForbiddenException;
 import es.upm.miw.exception.NotFoundException;
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -31,6 +30,7 @@ import static es.upm.api.data.entities.Role.CUSTOMER;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserService {
     public static final String SCOPE_EDIT_PROFILE = "edit-profile";
 
@@ -88,10 +88,8 @@ public class UserService {
                             deviceInfo
                     )
             );
-        } catch (FeignException.BadRequest e) {
-            throw new BadGatewayException("Error de email: (" + dbUser.getEmail() + ")", e.getCause());
         } catch (Exception e) {
-            throw new BadGatewayException("Error del host de email", e.getCause());
+            log.error("Could not send notification email to {}", dbUser.getEmail(), e);
         }
     }
 
@@ -143,7 +141,7 @@ public class UserService {
 
     private void assertNoExistByMobile(String mobile) {
         if (this.userRepository.existsByMobile(mobile)) {
-            throw new ConflictException("The mobile already exists: " + mobile);
+            throw new ClientBusinessException("El móvil ya existe: " + mobile);
         }
     }
 

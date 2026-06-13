@@ -100,7 +100,7 @@ class UserResourceFT {
                 .role(ADMIN)
                 .exchange(Void.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
