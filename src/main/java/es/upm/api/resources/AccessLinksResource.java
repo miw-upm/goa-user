@@ -49,7 +49,7 @@ public class AccessLinksResource {
     public List<AccessLinkResponseDto> find(@ModelAttribute AccessLinkFindCriteria criteria) {
         return this.accessLinkService.find(criteria)
                 .map(AccessLinkResponseDto::new)
-                .map(AccessLinkResponseDto::ofSummary)
+                .map(AccessLinkResponseDto::toSummary)
                 .toList();
     }
 

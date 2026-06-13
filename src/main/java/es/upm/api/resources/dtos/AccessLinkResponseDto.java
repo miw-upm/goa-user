@@ -37,7 +37,7 @@ public class AccessLinkResponseDto {
         this.setToken(creationResult.token());
     }
 
-    public AccessLinkResponseDto ofSummary() {
+    public AccessLinkResponseDto toSummary() {
         return AccessLinkResponseDto.builder()
                 .id(this.getId())
                 .urlId(this.getUrlId())

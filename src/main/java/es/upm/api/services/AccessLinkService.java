@@ -7,6 +7,7 @@ import es.upm.api.data.entities.User;
 import es.upm.api.infrastructure.support.HashService;
 import es.upm.api.services.criteria.AccessLinkFindCriteria;
 import es.upm.miw.base64url.Base64UrlGenerator;
+import es.upm.miw.exception.ClientBusinessException;
 import es.upm.miw.exception.NotFoundException;
 import es.upm.miw.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,9 @@ public class AccessLinkService {
     public AccessLinkCreationResult create(String mobile, String scope, UUID documentId) {
         User user = this.userRepository.findByMobile(mobile)
                 .orElseThrow(() -> new NotFoundException("User not found: " + mobile));
+        if (!CUSTOMER.equals(user.getRole())) {
+            throw new ClientBusinessException("Sólo se pueden crear enlaces a los clientes");
+        }
         String token = Base64UrlGenerator.token();
         AccessLink accessLink = AccessLink.builder()
                 .id(UUID.randomUUID())
@@ -45,7 +49,6 @@ public class AccessLinkService {
                 .documentId(documentId).build();
         AccessLink saved = this.accessLinkRepository.save(accessLink);
         return new AccessLinkCreationResult(saved, token);
-
     }
 
     public AccessLink read(UUID id) {
