@@ -30,6 +30,7 @@ public class User {
     private String city;
     private Province province;
     private Integer postalCode;
+    private String notes;
     private String password;
     private Role role;
     private LocalDate registrationDate;
