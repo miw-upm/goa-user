@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum Role {
-    ADMIN, MANAGER, OPERATOR, CUSTOMER, URL_TOKEN, ANONYMOUS, AUTHENTICATED;
+    ADMIN, MANAGER, LAWYER, OPERATOR, CUSTOMER, URL_TOKEN, ANONYMOUS, AUTHENTICATED;
 
     public static final String PREFIX = "ROLE_";
 
