@@ -41,6 +41,7 @@ public class UserDto {
     private String city;
     private Province province;
     private Integer postalCode;
+    private String notes;
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
     private Role role;
@@ -66,12 +67,13 @@ public class UserDto {
 
     public UserDto ofSummary() {
         return UserDto.builder()
-                .id(this.getId())
-                .mobile(this.getMobile())
-                .firstName(this.getFirstName())
-                .familyName(this.getFamilyName())
-                .email(this.getEmail())
+                .id(this.id)
+                .mobile(this.mobile)
+                .firstName(this.firstName)
+                .familyName(this.familyName)
+                .email(this.email)
                 .billable(this.billable)
+                .notes(this.notes)
                 .build();
     }
 
