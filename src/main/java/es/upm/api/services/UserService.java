@@ -68,6 +68,7 @@ public class UserService {
             throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + retrieverUser.getRole());
         }
         user.setRole(CUSTOMER);
+        user.setActive(retrieverUser.getActive());
         boolean profileChanged = !EqualsBuilder.reflectionEquals(retrieverUser, user,
                 "id", "password", "role", "registrationDate", "active");
         User dbUser = this.updateUser(retrieverUser.getId(), user);
