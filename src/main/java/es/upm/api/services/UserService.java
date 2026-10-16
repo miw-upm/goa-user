@@ -63,11 +63,15 @@ public class UserService {
 
     public User updateByUrlIdWithToken(String scope, String urlId, String token, User user, boolean dataProcessingAccepted,
                                        boolean promotionsAccepted, DeviceInfo deviceInfo) {
+        if (!SCOPE_EDIT_PROFILE.equals(scope)) {
+            throw new ForbiddenException("Scope not allowed for profile access");
+        }
         User retrieverUser = this.decryptSensitiveFields(this.accessLinkService.consumeToken(scope, urlId, token).getUser());
         if (!CUSTOMER.equals(retrieverUser.getRole())) {
             throw new ForbiddenException("Forbidden. Only CUSTOMER allowed. Role:" + retrieverUser.getRole());
         }
         user.setRole(CUSTOMER);
+        user.setActive(retrieverUser.getActive());
         boolean profileChanged = !EqualsBuilder.reflectionEquals(retrieverUser, user,
                 "id", "password", "role", "registrationDate", "active");
         User dbUser = this.updateUser(retrieverUser.getId(), user);
@@ -136,6 +140,9 @@ public class UserService {
     }
 
     public User readByUrlIdWithToken(String scope, String urlId, String token) {
+        if (!SCOPE_EDIT_PROFILE.equals(scope)) {
+            throw new ForbiddenException("Scope not allowed for profile access");
+        }
         return this.decryptSensitiveFields(this.accessLinkService.consumeToken(scope, urlId, token).getUser());
     }
 

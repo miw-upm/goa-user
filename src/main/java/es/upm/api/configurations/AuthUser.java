@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class AuthUser implements UserDetails {
+    private final boolean enabled;
     private final String username;
     private final String password;
     @Getter
@@ -17,6 +18,7 @@ public class AuthUser implements UserDetails {
     private final Collection<? extends GrantedAuthority> authorities;
 
     public AuthUser(User user) {
+        this.enabled = Boolean.TRUE.equals(user.getActive());
         this.username = user.getMobile();
         this.password = user.getPassword();
         this.firstName = user.getFirstName();
@@ -36,6 +38,11 @@ public class AuthUser implements UserDetails {
     @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
     }
 }
 

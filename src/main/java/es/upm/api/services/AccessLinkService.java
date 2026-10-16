@@ -25,12 +25,19 @@ import static es.upm.api.data.entities.Role.CUSTOMER;
 public class AccessLinkService {
     public static final int TOKEN_DURATION_DAYS = 7;
     public static final int TOKEN_USAGE_LIMIT = 15;
+    public static final int CUSTOM_EXPIRATION_USAGE_LIMIT = 100;
 
     private final UserRepository userRepository;
     private final AccessLinkRepository accessLinkRepository;
     private final HashService hashService;
 
-    public AccessLinkCreationResult create(String mobile, String scope, UUID documentId) {
+    public AccessLinkCreationResult create(String mobile, String scope, UUID documentId, LocalDateTime expiresAt) {
+        LocalDateTime now = LocalDateTime.now();
+        int usageLimit = expiresAt == null ? TOKEN_USAGE_LIMIT : CUSTOM_EXPIRATION_USAGE_LIMIT;
+
+        if (expiresAt == null) {
+            expiresAt = now.plusDays(TOKEN_DURATION_DAYS);
+        }
         User user = this.userRepository.findByMobile(mobile)
                 .orElseThrow(() -> new NotFoundException("User not found: " + mobile));
         if (!CUSTOMER.equals(user.getRole())) {
@@ -42,9 +49,9 @@ public class AccessLinkService {
                 .urlId(Base64UrlGenerator.encode())
                 .user(user)
                 .token(this.hashService.hash(token))
-                .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusDays(TOKEN_DURATION_DAYS))
-                .remainingUses(TOKEN_USAGE_LIMIT)
+                .createdAt(now)
+                .expiresAt(expiresAt)
+                .remainingUses(usageLimit)
                 .scope(scope)
                 .documentId(documentId).build();
         AccessLink saved = this.accessLinkRepository.save(accessLink);
