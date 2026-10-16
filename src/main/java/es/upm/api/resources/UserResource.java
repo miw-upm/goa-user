@@ -42,25 +42,25 @@ public class UserResource {
         this.userService.create(userDto.toDomain());
     }
 
-    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_URL_TOKEN)
+    @PreAuthorize(Security.ADMIN_MANAGER_LAWYER_OPERATOR_URL_TOKEN)
     @GetMapping(Validations.ID_WITH_UUID)
     public UserDto readById(@PathVariable UUID id) {
         return new UserDto(this.userService.readById(id));
     }
 
-    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_URL_TOKEN)
+    @PreAuthorize(Security.ADMIN_MANAGER_LAWYER_OPERATOR_URL_TOKEN)
     @GetMapping(Validations.ID_WITH_MOBILE)
     public UserDto readByMobile(@PathVariable("id") String mobile) {
         return new UserDto(this.userService.readByMobile(mobile));
     }
 
-    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
+    @PreAuthorize(Security.ADMIN_MANAGER_LAWYER_OPERATOR)
     @PutMapping(Validations.ID_WITH_UUID)
     public UserDto update(@PathVariable("id") UUID id, @Valid @RequestBody UserDto userDto) {
         return new UserDto(this.userService.update(id, userDto.toDomain()));
     }
 
-    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
+    @PreAuthorize(Security.ADMIN_MANAGER_LAWYER_OPERATOR)
     @GetMapping
     public List<UserDto> find(@ModelAttribute UserFindCriteria criteria) {
         return this.userService.find(criteria)

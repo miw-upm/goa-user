@@ -120,9 +120,9 @@ public class UserService {
     private List<Role> validRoles() {
         Role authRole = this.currentUser.getRole();
         return switch (authRole) {
-            case ADMIN -> List.of(Role.ADMIN, Role.MANAGER, Role.OPERATOR, CUSTOMER);
-            case MANAGER -> List.of(Role.MANAGER, Role.OPERATOR, CUSTOMER);
-            case OPERATOR, CUSTOMER, URL_TOKEN -> List.of(CUSTOMER);
+            case ADMIN -> List.of(Role.ADMIN, Role.MANAGER, Role.LAWYER, Role.OPERATOR, CUSTOMER);
+            case MANAGER -> List.of(Role.MANAGER, Role.LAWYER, Role.OPERATOR, CUSTOMER);
+            case LAWYER, OPERATOR, CUSTOMER, URL_TOKEN -> List.of(CUSTOMER);
             default -> List.of();
         };
     }
