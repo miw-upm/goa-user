@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@PreAuthorize(Security.ADMIN_MANAGER_OPERATOR)
+@PreAuthorize(Security.ADMIN_MANAGER_LAWYER_OPERATOR)
 @RestController
 @RequestMapping(AccessLinksResource.ACCESS_LINKS)
 @RequiredArgsConstructor
@@ -57,7 +57,7 @@ public class AccessLinksResource {
                 .toList();
     }
 
-    @PreAuthorize(Security.ADMIN_MANAGER_OPERATOR_URL_TOKEN)
+    @PreAuthorize(Security.ADMIN_MANAGER_LAWYER_OPERATOR_URL_TOKEN)
     @PostMapping(SCOPE_ID + Validations.ID_WITH_UUID_BASE64 + CONSUME)
     public AccessLinkResponseDto consumeToken(@PathVariable String scope, @PathVariable String id, @RequestBody String token) {
         return new AccessLinkResponseDto(this.accessLinkService.consumeToken(scope, id, token));
