@@ -15,5 +15,6 @@ public class DataProcessingConsentCreationDto {
     @NotNull
     @AssertTrue
     private Boolean dataProcessingAccepted;
+    @NotNull
     private Boolean promotionsAccepted;
 }
