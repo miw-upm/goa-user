@@ -219,6 +219,22 @@ public class SeederForDev implements ApplicationRunner {
             .registrationDate(LocalDate.of(2025, 12, 1))
             .active(true)
             .build();
+    public static final UUID ID_10 = UUID.fromString(PREFIX + "0010");
+    public static final User LAWYER = User.builder()
+            .id(ID_10)
+            .mobile("600000113")
+            .firstName("Lawyer1")
+            .familyName("García López")
+            .role(Role.LAWYER)
+            .identity("00000013J")
+            .address("C/ Alcalá, 13")
+            .email("lawyer1@example.com")
+            .city("Madrid")
+            .province(Province.MADRID)
+            .postalCode(28001)
+            .registrationDate(LocalDate.of(2026, 1, 1))
+            .active(true)
+            .build();
     public static final String TOKEN_0 = "fffffffffffffffffffffffffffffffffffffffff0";
     public static final String TOKEN_1 = "fffffffffffffffffffffffffffffffffffffffff1";
     public static final String TOKEN_2 = "fffffffffffffffffffffffffffffffffffffffff2";
@@ -270,6 +286,7 @@ public class SeederForDev implements ApplicationRunner {
                 withEncodedPassword(C_9, pass),
                 withEncodedPassword(ADMIN, pass),
                 withEncodedPassword(MANAGER, pass),
+                withEncodedPassword(LAWYER, pass),
                 withEncodedPassword(OPERATOR, pass),
                 withEncodedPassword(ADMIN_6, pass)
         );
