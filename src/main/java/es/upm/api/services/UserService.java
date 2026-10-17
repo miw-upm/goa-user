@@ -140,9 +140,6 @@ public class UserService {
     }
 
     public User readByUrlIdWithToken(String scope, String urlId, String token) {
-        if (!SCOPE_EDIT_PROFILE.equals(scope)) {
-            throw new ForbiddenException("Scope not allowed for profile access");
-        }
         return this.decryptSensitiveFields(this.accessLinkService.consumeToken(scope, urlId, token).getUser());
     }
 
